@@ -1,0 +1,50 @@
+@use "~/assets/scss/Variables.scss" as *;
+
+.dataTable_style{
+    .MuiPaper-root{
+        --Paper-shadow: none !important;
+        background: #f9f9f9;
+        border: 2px solid #e5e5e5;
+        padding: 10px 15px 10px;
+    }
+
+    table{
+        thead{
+            tr{
+                th{
+                    padding: 10px 5px !important;
+                }
+            }
+        }
+        tbody{
+            tr{
+                td{
+                    padding: 5px 5px !important;
+
+                    .stats{
+                        width: 100%;
+                    }
+                    a{
+                        width: 100%;
+                    }
+                    .acoes{
+                        display: flex;
+                        gap: 4px;
+                        justify-content: flex-end;
+                        
+                        button{
+                            background: $color1;
+                            color: #fff;
+                            width: 20px;
+
+                            svg{
+                                width: 23px;
+                                height: auto;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

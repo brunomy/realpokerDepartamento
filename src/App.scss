@@ -1,0 +1,24 @@
+@use '~/assets/scss/reset.scss' as *;
+@use '~/assets/scss/Variables.scss' as *;
+@import '@fontsource/roboto/300.css';
+@import '@fontsource/roboto/400.css';
+@import '@fontsource/roboto/500.css';
+@import '@fontsource/roboto/700.css';
+
+body {
+  font-family: Roboto, sans-serif;
+  background: rgba($color1, 0.3);
+}
+
+#root{
+    width: 100%;
+    height: 100vh;
+}
+
+.container{
+    width: 100%;
+    height: 100%;
+    max-width: 1200px;
+    padding: 0;
+    margin: 0 auto;
+}
