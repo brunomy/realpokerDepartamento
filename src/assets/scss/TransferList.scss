@@ -1,0 +1,47 @@
+@use '~/assets/scss/Variables' as *;
+
+.transfer_component{
+    .side_content{
+        position: relative;
+        width: 250px;
+        overflow: hidden;
+
+        &::before{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            text-transform: uppercase;
+            font-weight: bold;
+            color: #fff;
+            background: $color1;
+            padding: 5px 0;
+            font-size: .8em;
+            border-radius: 3px;
+            z-index: 1;
+        }
+
+        >div{
+            width: 100%;
+            border: 3px solid $color1;
+            padding: 10px 0 0;
+        }
+    }
+    .left_content{
+        &::before{
+            content: 'Selecionados';
+        }
+        >div{
+        }
+    }
+    .right_content{
+        &::before{
+            content: 'Remessas';
+        }
+
+        >div{
+        }
+    }
+}

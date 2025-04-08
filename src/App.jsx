@@ -8,6 +8,8 @@ import Atividade from './pages/Atividade';
 import Checklists from './pages/Checklists';
 import Equipes from './pages/Equipes';
 import Equipe from './pages/Equipe';
+import Remessas from './pages/Remessas';
+import Remessa from './pages/Remessa';
 
 function App() {
 
@@ -27,6 +29,9 @@ function App() {
 
           <Route path="/equipes" element={<Equipes />} />
           <Route path="/equipes/:id" element={<Equipe />} />
+
+          <Route path="/remessas" element={<Remessas />} />
+          <Route path="/remessas/:id" element={<Remessa />} />
         </Routes>
       </Router>
     </section>
