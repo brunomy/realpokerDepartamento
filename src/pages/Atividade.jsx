@@ -13,12 +13,8 @@ import ArchiveTwoToneIcon from '@mui/icons-material/ArchiveTwoTone';
 import CalendarMonthTwoToneIcon from '@mui/icons-material/CalendarMonthTwoTone';
 import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
 import TagIcon from '@mui/icons-material/Tag';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
 import DeleteIcon from '@mui/icons-material/Delete';
-
-import Fab from '@mui/material/Fab';
-import AddIcon from '@mui/icons-material/Add';
 
 import Layout from "./components/Layout";
 import Title from "./components/Title";
@@ -26,7 +22,6 @@ import Modal from './components/Modal';
 import ChangeStatus from './components/ChangeStatus';
 
 import { Requisitos, Volumes } from './Pedido';
-import AdicionarChecklist from './components/AdicionarChecklist';
 
 export default function Atividade() {
     const { id } = useParams();
@@ -246,7 +241,7 @@ function Informacoes({ setTab, open, openModal, status, setStatus }) {
                     </p>
                     <p>
                         <span className="icon"><CalendarMonthTwoToneIcon/></span>
-                        <b>CRIAÇÃO: </b>01/11/2024
+                        <b>PRODUÇÃO: </b>01/11/2024
                     </p>
                     <p className="full">
                         <span className="icon"><InfoTwoToneIcon/></span>

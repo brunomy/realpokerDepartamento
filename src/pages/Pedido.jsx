@@ -25,7 +25,6 @@ import Modal from './components/Modal';
 import AdicionarAtividade from './components/AdicionarAtividade';
 import ChangeStatus from './components/ChangeStatus';
 import AdicionarVolume from './components/AdicionarVolume';
-import ProgressLabel from './components/ProgressLabel';
 
 export default function Pedidos() {
     const { id } = useParams();

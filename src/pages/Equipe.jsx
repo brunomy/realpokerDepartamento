@@ -1,8 +1,7 @@
 import '~/assets/scss/Show.scss';
 
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 
 import DataTable from './components/DataTable';
 import Switch from '@mui/material/Switch';
@@ -13,21 +12,13 @@ import GroupTwoToneIcon from '@mui/icons-material/GroupTwoTone';
 import CheckBoxTwoToneIcon from '@mui/icons-material/CheckBoxTwoTone';
 import AssignmentTwoToneIcon from '@mui/icons-material/AssignmentTwoTone';
 
-import CalendarMonthTwoToneIcon from '@mui/icons-material/CalendarMonthTwoTone';
 import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
-import TagIcon from '@mui/icons-material/Tag';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-
-import Fab from '@mui/material/Fab';
-import AddIcon from '@mui/icons-material/Add';
 
 import Layout from "./components/Layout";
 import Title from "./components/Title";
 import Modal from './components/Modal';
-import ChangeStatus from './components/ChangeStatus';
 
-import { Requisitos, Volumes, Atividades } from './Pedido';
-import AdicionarChecklist from './components/AdicionarChecklist';
+import { Volumes, Atividades } from './Pedido';
 
 export default function Equipe() {
     const { id } = useParams();
