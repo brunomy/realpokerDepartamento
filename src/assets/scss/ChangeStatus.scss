@@ -1,0 +1,14 @@
+.changeStatus{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 350px;
+    border: none;
+
+    button{
+        &:not(.active){
+            background: #c1c1c1;
+            color: #fff;
+        }
+    }
+}

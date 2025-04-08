@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Box, Autocomplete, Typography, TextField } from '@mui/material';
 
 export default function InputAuto({ label, list, setValue, width }) {
@@ -19,8 +19,8 @@ export default function InputAuto({ label, list, setValue, width }) {
                 hint.current = '';
             }}
             onChange={(event, newValue) => {
-                setInputValue(newValue && newValue.label ? newValue.label : '');
-                setValue(newValue && newValue ? newValue : '');
+                setInputValue(newValue?.label || '');
+                setValue(newValue || null);
             }}
             disablePortal
             inputValue={inputValue}
@@ -44,21 +44,16 @@ export default function InputAuto({ label, list, setValue, width }) {
                         {hint.current}
                         </Typography>
                         <TextField
-                        {...params}
-                        onChange={(event) => {
-                            const newValue = event.target.value;
-                            setInputValue(newValue);
-                            const matchingOption = list.find((option) =>
-                            option.label.startsWith(newValue),
-                            );
-
-                            if (newValue && matchingOption) {
-                            hint.current = matchingOption.label;
-                            } else {
-                            hint.current = '';
-                            }
-                        }}
-                        label={label}
+                            {...params}
+                            onChange={(event) => {
+                                const newValue = event.target.value || '';
+                                setInputValue(newValue);
+                                const matchingOption = list.find((option) =>
+                                option.label.toLowerCase().startsWith(newValue.toLowerCase())
+                                );
+                                hint.current = matchingOption ? matchingOption.label : '';
+                            }}
+                            label={label}
                         />
                     </Box>
                 );

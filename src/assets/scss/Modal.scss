@@ -1,0 +1,13 @@
+@use "~/assets/scss/Variables.scss" as *;
+
+.modalContent{
+    h2{
+        background: $color1;
+        color: #fff;
+        text-transform: uppercase;
+        font-size: 1em !important;
+    }
+    .closeModal{
+        color: #fff;
+    }
+}

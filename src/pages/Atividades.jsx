@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import { Link } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 import dayjs from 'dayjs';
@@ -14,10 +14,11 @@ import Title from "./components/Title";
 import InputAuto from './components/InputAuto';
 import InputCalendarRange from './components/InputCalendarRange';
 
-export default function Pedidos() {
+export default function Atividades() {
     const hoje = dayjs();
 
     const [statusFilter, setStatusFilter] = useState([]);
+    const [teamFilter, setTeamFilter] = useState([]);
     const [idFilter, setIdFilter] = useState([]);
     const [dateFilterDe, setDateFilterDe] = useState(hoje.format('YYYY-MM-DD'));
     const [dateFilterAte, setDateFilterAte] = useState(hoje.format('YYYY-MM-DD'));
@@ -28,6 +29,11 @@ export default function Pedidos() {
         { label: 'Parado', value: 3},
         { label: 'Concluído', value: 4},
     ]
+    const teamList = [
+        { label: 'M1', value: 1},
+        { label: 'M2', value: 2},
+        { label: 'M3', value: 3}
+    ]
     const idList = [
         { label: '#5951', value: 5951},
         { label: '#5952', value: 5952},
@@ -36,11 +42,11 @@ export default function Pedidos() {
     ]
 
     //dados da tabela
-    const createData = (id, descricao, criacao, producao, status, link) => {
+    const createData = (id, equipe, descricao, producao, status, link) => {
         return {
             id,
+            equipe,
             descricao,
-            criacao,
             producao,
             status,
             link,
@@ -48,92 +54,60 @@ export default function Pedidos() {
     }
     const rows = [
         createData(
-            '#5951', 
-            'Mesa de poker profissional para clubes de poker e residências',
-            '01/11/2024',
+            '#3489857', 
+            'M1',
+            'Cortar + Montar Base 1 Coluna Retangular',
             '01/11/2024',
             <Chip className="stats" size="small" label="Pendente" />,
-            <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">Detalhes</Button>
+            <Button component={Link} to="/atividades/3489857" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
-            '#5952', 
-            'Mesa de poker profissional',
-            '02/11/2024',
-            '02/11/2024',
+            '#3489858', 
+            'M2',
+            'Cortar Também Dividido + Réguas',
+            '01/11/2024',
             <Chip className="stats" size="small" color="primary" label="Em andamento" />,
-            <Button component={Link} to="/pedidos/5952" variant="outlined" size="small">Detalhes</Button>
+            <Button component={Link} to="/atividades/3489858" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
-            '#5953', 
-            'Mesa de poker profissional para clubes',
-            '03/11/2024',
-            '03/11/2024',
+            '#3489859', 
+            'M3',
+            'Fazer Furo das Vailhas Tampão Dividido	',
+            '01/11/2024',
             <Chip className="stats" size="small" color="error" label="Parado" />,
-            <Button component={Link} to="/pedidos/5953" variant="outlined" size="small">Detalhes</Button>
+            <Button component={Link} to="/atividades/3489859" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
-            '#5955', 
-            'Mesa de poker profissional para residencias',
-            '04/11/2024',
-            '04/11/2024',
+            '#3489860', 
+            'M1',
+            'Fitar Borda Alta',
+            '01/11/2024',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
-            <Button component={Link} to="/pedidos/5955" variant="outlined" size="small">Detalhes</Button>
+            <Button component={Link} to="/atividades/3489860" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
-            '#5956', 
-            'Mesa de poker profissional para residencias',
-            '04/11/2024',
-            '04/11/2024',
+            '#3489861', 
+            'M1',
+            'Fitar Borda Alta',
+            '01/11/2024',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
-            <Button component={Link} to="/pedidos/5956" variant="outlined" size="small">Detalhes</Button>
+            <Button component={Link} to="/atividades/3489861" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
-            '#5957', 
-            'Mesa de poker profissional para residencias',
-            '04/11/2024',
-            '04/11/2024',
+            '#3489862', 
+            'M1',
+            'Fitar Borda Alta',
+            '01/11/2024',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
-            <Button component={Link} to="/pedidos/5957" variant="outlined" size="small">Detalhes</Button>
+            <Button component={Link} to="/atividades/3489862" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
-            '#5958', 
-            'Mesa de poker profissional para residencias',
-            '04/11/2024',
-            '04/11/2024',
+            '#3489863', 
+            'M1',
+            'Fitar Borda Alta',
+            '01/11/2024',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
-            <Button component={Link} to="/pedidos/5958" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createData(
-            '#5959', 
-            'Mesa de poker profissional para residencias',
-            '04/11/2024',
-            '04/11/2024',
-            <Chip className="stats" size="small" color="success" label="Finalizado" />,
-            <Button component={Link} to="/pedidos/5959" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createData(
-            '#5960', 
-            'Mesa de poker profissional para residencias',
-            '04/11/2024',
-            '04/11/2024',
-            <Chip className="stats" size="small" color="success" label="Finalizado" />,
-            <Button component={Link} to="/pedidos/5960" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createData(
-            '#5961', 
-            'Mesa de poker profissional para residencias',
-            '04/11/2024',
-            '04/11/2024',
-            <Chip className="stats" size="small" color="success" label="Finalizado" />,
-            <Button component={Link} to="/pedidos/5961" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createData(
-            '#5962', 
-            'Mesa de poker profissional para residencias',
-            '04/11/2024',
-            '04/11/2024',
-            <Chip className="stats" size="small" color="success" label="Finalizado" />,
-            <Button component={Link} to="/pedidos/5962" variant="outlined" size="small">Detalhes</Button>
+            <Button component={Link} to="/atividades/3489863" variant="outlined" size="small">Detalhes</Button>
         ),
     ];
     const headCells = [
@@ -143,14 +117,14 @@ export default function Pedidos() {
             label: 'Id',
         },
         {
+            id: 'equipe',
+            numeric: false,
+            label: 'Equipe',
+        },
+        {
             id: 'descricao',
             numeric: false,
             label: 'Descrição',
-        },
-        {
-            id: 'criacao',
-            numeric: false,
-            label: 'Criação',
         },
         {
             id: 'producao',
@@ -171,13 +145,16 @@ export default function Pedidos() {
 
     return (
         <Layout>
-            <Title title="Lista de pedidos" icon={<ShoppingCartIcon/>} />
-            <Box className="index_content">
+            <Title title="Lista de atividades" icon={<AssignmentIcon/>} />
+            <Box className="index_content atividades_list">
                 <Box className="filtros">
                     <h2>Filtros:</h2>
                     <Box className="filter_list">
                         <Box className="item">
                             <InputAuto label="id" list={idList} setValue={setIdFilter} width={'100%'} />
+                        </Box>
+                        <Box className="item">
+                            <InputAuto label="Equipe" list={teamList} setValue={setTeamFilter} width={'100%'} />
                         </Box>
                         <Box className="item">
                             <InputAuto label="Status" list={statusList} setValue={setStatusFilter} width={'100%'} />
@@ -189,7 +166,7 @@ export default function Pedidos() {
                 </Box>
                 <Box className="table_content">
                     <DataTable headCells={headCells} rows={rows}/>
-                    <Button className="relatorio" variant="contained"><PictureAsPdfIcon /> Gerar relatório</Button>
+                    <Button className="relatorio" variant="contained"><PictureAsPdfIcon/> Gerar relatório</Button>
                 </Box>
             </Box>
         </Layout>

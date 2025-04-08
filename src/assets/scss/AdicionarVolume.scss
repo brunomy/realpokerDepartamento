@@ -1,0 +1,21 @@
+@use '~/assets/scss/Variables.scss' as *;
+
+.adicionarVolume{
+    width: 550px;
+    max-width: 100%;
+
+    form{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px 10px;
+        align-items: flex-end;
+
+        .item{
+            width: calc((100% - 10px)/2);
+
+            &.full{
+                width: 100%;
+            }
+        }
+    }
+}
