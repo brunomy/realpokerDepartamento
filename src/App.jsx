@@ -17,7 +17,7 @@ function App() {
     <section className="container">
       <Router>
         <Routes>
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Login />} />
 
           <Route path="/pedidos" element={<Pedidos />} />
           <Route path="/pedidos/:id" element={<Pedido />} />

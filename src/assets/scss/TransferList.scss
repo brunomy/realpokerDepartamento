@@ -1,10 +1,14 @@
 @use '~/assets/scss/Variables' as *;
 
 .transfer_component{
+    margin: 0 0 50px;
+    align-items: flex-start !important;
+
     .side_content{
         position: relative;
-        width: 250px;
+        width: calc((100% - 134px)/2);
         overflow: hidden;
+        background: #f9f9f9;
 
         &::before{
             position: absolute;
@@ -25,8 +29,18 @@
 
         >div{
             width: 100%;
+            height: 100%;
             border: 3px solid $color1;
-            padding: 10px 0 0;
+            padding: 20px 0 0;
+            min-height: 82px;
+
+            >div{
+                padding: 0;
+
+                >div:nth-child(2n - 1){
+                    background: #f9f9f9;
+                }
+            }
         }
     }
     .left_content{
@@ -38,7 +52,7 @@
     }
     .right_content{
         &::before{
-            content: 'Remessas';
+            content: 'Pedidos';
         }
 
         >div{

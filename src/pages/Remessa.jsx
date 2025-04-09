@@ -18,6 +18,10 @@ import TagIcon from '@mui/icons-material/Tag';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
 import DeleteIcon from '@mui/icons-material/Delete';
 
+import MonetizationOnTwoToneIcon from '@mui/icons-material/MonetizationOnTwoTone';
+import LocalAtmTwoToneIcon from '@mui/icons-material/LocalAtmTwoTone';
+import ScaleTwoToneIcon from '@mui/icons-material/ScaleTwoTone';
+
 import Layout from "./components/Layout";
 import Title from "./components/Title";
 import Modal from './components/Modal';
@@ -32,7 +36,6 @@ export default function Remessa() {
     const [tab, setTab] = useState(0);
 
     const [statusModalChange, setStatusModalChange] = useState(false);
-    const [addVolumeModal, setAddVolumeModal] = useState(false);
     const [status, setStatus] = useState(1);
 
     const [left, setLeft] = useState([
@@ -122,30 +125,38 @@ export default function Remessa() {
                 { tab == 0 && 
                     <>
                         <Informacoes 
-                            setTab={setTab} 
-                            open={statusModalChange} 
-                            openModal={setStatusModalChange} 
+                            setStatusModalChange={setStatusModalChange} 
+                            open={statusModalChange}
                             status={status} 
-                            setStatus={setStatus} 
-                        /> 
+                            setStatus={setStatus}
+                            setTab={setTab} />
                         <MudarRemessa left={left} setLeft={setLeft} right={right} setRight={setRight}/>
                     </>
                 }
-                { tab == 1 && <Volumes openModal={setAddVolumeModal} open={addVolumeModal} headCells={headCells} rows={rows} adicionar={false} /> }
+                { tab == 1 && <Volumes headCells={headCells} rows={rows} adicionar={false} /> }
             </Box>
         </Layout>
     )
 }
 
-function Informacoes({ setTab }) {
+function Informacoes({ setStatusModalChange, open, setStatus, status, setTab }) {
     return (
         <>
         <Box className="informacoes">
             <Box className="info_pedido">
+                { status == 0 && <Chip className="stats" label="Pendente" /> }
+                { status == 1 && <Chip className="stats" color="primary" label="Em andamento" /> }
+                { status == 2 && <Chip className="stats" color="error" label="Parado" /> }
+                { status == 3 && <Chip className="stats" color="success" label="Finalizado" /> }
+
                 <Box className="info">
-                    <p className="full">
+                    <p>
                         <span className="icon"><CalendarMonthTwoToneIcon/></span>
                         <b>ENTREGA: </b>01/11/2024
+                    </p>
+                    <p>
+                        <span className="icon"><LocalAtmTwoToneIcon /></span>
+                        <b>VALOR: </b>R$500,00
                     </p>
                     <p>
                         <span className="icon"><ShoppingCartTwoToneIcon/></span>
@@ -171,9 +182,17 @@ function Informacoes({ setTab }) {
                         <span className="icon"><VerticalAlignTopTwoToneIcon /></span>
                         <b>ALTURA: </b>100cm
                     </p>
+                    <p>
+                        <span className="icon"><ScaleTwoToneIcon /></span>
+                        <b>PESO: </b>30kg
+                    </p>
+                    <Button variant="contained" onClick={() => setStatusModalChange(true)}>Alterar status</Button>
                 </Box>
             </Box>
         </Box>
+        <Modal open={open} setOpen={setStatusModalChange} title="Alterar status">
+            <ChangeStatus status={status} setStatus={setStatus} />
+        </Modal>
         </>
     )
 }
