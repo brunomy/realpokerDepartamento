@@ -51,8 +51,8 @@ export default function Remessas() {
         createData(
             '#3486-1', 
             <Box className="pedidos">
-                <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">5952</Button>
-                <Button component={Link} to="/pedidos/5952" variant="outlined" size="small">5953</Button>
+                <Button component={Link} to="/pedidos/5952" variant="outlined" size="small">5952</Button>
+                <Button component={Link} to="/pedidos/5953" variant="outlined" size="small">5953</Button>
             </Box>,
             'R$500,00',
             'Goiânia/GO',

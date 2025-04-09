@@ -1,5 +1,7 @@
 import './App.scss'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { UserProvider } from './context/UserContext';
+
 import Login from './pages/Login'
 import Pedidos from './pages/Pedidos';
 import Pedido from './pages/Pedido';
@@ -14,6 +16,7 @@ import Remessa from './pages/Remessa';
 function App() {
 
   return (
+    <UserProvider>
     <section className="container">
       <Router>
         <Routes>
@@ -35,6 +38,7 @@ function App() {
         </Routes>
       </Router>
     </section>
+    </UserProvider>
   )
 }
 

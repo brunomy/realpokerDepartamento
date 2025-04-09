@@ -4,6 +4,8 @@ import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 
 import '@mui/material/BottomNavigationAction';
 
+import { useUser } from '../../context/UserContext';
+
 import ShoppingCartTwoToneIcon from '@mui/icons-material/ShoppingCartTwoTone';
 import AssignmentTwoToneIcon from '@mui/icons-material/AssignmentTwoTone';
 import GroupsTwoToneIcon from '@mui/icons-material/GroupsTwoTone';
@@ -11,23 +13,24 @@ import LocalShippingTwoToneIcon from '@mui/icons-material/LocalShippingTwoTone';
 import CheckBoxTwoToneIcon from '@mui/icons-material/CheckBoxTwoTone';
 
 export default function Footer() {
+    const { usuarioLogado, setUsuarioLogado } = useUser();
     const location = useLocation();
     const path = location.pathname;
 
     const currentTab = () => {
-        if (path.startsWith('/pedidos')) return 'pedidos';
-        if (path.startsWith('/atividades')) return 'atividades';
-        if (path.startsWith('/checklists')) return 'checklists';
-        if (path.startsWith('/remessas')) return 'remessas';
-        if (path.startsWith('/equipes')) return 'equipes';
-        return null;
+        if (path.includes('/pedidos')) return 'pedidos';
+        if (path.includes('/atividades')) return 'atividades';
+        if (path.includes('/checklists')) return 'checklists';
+        if (path.includes('/remessas')) return 'remessas';
+        if (path.includes('/equipes')) return 'equipes';
+        return 'atividades'; // fallback
       };
 
     return (
         <BottomNavigation
             className="bottomNavigation"
             sx={{ width: '100%' }}
-            value={currentTab()}
+            value={currentTab() ?? 'atividades'}
             showLabels
         >
             <BottomNavigationAction
@@ -36,6 +39,7 @@ export default function Footer() {
                 icon={<ShoppingCartTwoToneIcon />}
                 component={Link}
                 to="/pedidos"
+                sx={{ display: usuarioLogado.permission === "admin" ? 'flex' : 'none' }}
             />
             <BottomNavigationAction
                 label="Atividades"
@@ -43,6 +47,7 @@ export default function Footer() {
                 icon={<AssignmentTwoToneIcon />}
                 component={Link}
                 to="/atividades"
+                showLabel
             />
             <BottomNavigationAction
                 label="Checklists"
@@ -50,6 +55,8 @@ export default function Footer() {
                 icon={<CheckBoxTwoToneIcon />}
                 component={Link}
                 to="/checklists"
+                showLabel
+                sx={{ display: usuarioLogado.permission === "admin" ? 'flex' : 'none' }}
             />
             <BottomNavigationAction
                 label="Equipes"
@@ -57,6 +64,8 @@ export default function Footer() {
                 icon={<GroupsTwoToneIcon />}
                 component={Link}
                 to="/equipes"
+                showLabel
+                sx={{ display: usuarioLogado.permission === "admin" ? 'flex' : 'none' }}
             />
             <BottomNavigationAction
                 label="Remessas"
@@ -64,6 +73,8 @@ export default function Footer() {
                 icon={<LocalShippingTwoToneIcon />}
                 component={Link}
                 to="/remessas"
+                showLabel
+                sx={{ display: usuarioLogado.permission === "admin" ? 'flex' : 'none' }}
             />
         </BottomNavigation>
     )

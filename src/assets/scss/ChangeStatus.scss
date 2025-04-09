@@ -1,9 +1,10 @@
 .changeStatus{
     display: flex;
-    flex-direction: column;
     gap: 10px;
-    width: 350px;
+    width: 490px;
     border: none;
+    flex-wrap: wrap;
+    justify-content: center;
 
     button{
         &:not(.active){

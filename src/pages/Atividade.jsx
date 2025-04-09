@@ -24,7 +24,11 @@ import ChangeStatus from './components/ChangeStatus';
 
 import { Requisitos, Volumes } from './Pedido';
 
+import { useUser } from '../context/UserContext';
+
 export default function Atividade() {
+    const { usuarioLogado, setUsuarioLogado } = useUser();
+
     const { id } = useParams();
 
     const [tab, setTab] = useState(0);
@@ -199,6 +203,7 @@ export default function Atividade() {
                     openModal={setStatusModalChange} 
                     status={status} 
                     setStatus={setStatus} 
+                    usuarioLogado={usuarioLogado}
                 /> }
                 { tab == 1 && <Requisitos step_list={step_list} /> }
                 { tab == 2 && <Volumes openModal={setAddVolumeModal} open={addVolumeModal} headCells={headCells} rows={rows} /> }
@@ -207,7 +212,7 @@ export default function Atividade() {
     )
 }
 
-function Informacoes({ setTab, open, openModal, status, setStatus }) {
+function Informacoes({ setTab, open, openModal, status, setStatus, usuarioLogado }) {
     return (
         <>
         <Box className="informacoes">
@@ -248,7 +253,10 @@ function Informacoes({ setTab, open, openModal, status, setStatus }) {
                         <span className="icon"><InfoTwoToneIcon/></span>
                         <b>DESCRIÇÃO: </b>Cortar + Montar Base 1 Coluna Retangular
                     </p>
-                    <Button variant="contained" onClick={() => openModal(true)}>Alterar status</Button>
+                    {
+                        usuarioLogado.permission == "admin" && 
+                        <Button variant="contained" onClick={() => openModal(true)}>Alterar status</Button>
+                    }
                 </Box>
             </Box>
 
