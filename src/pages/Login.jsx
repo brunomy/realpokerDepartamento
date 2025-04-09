@@ -11,7 +11,6 @@ export default function Login() {
 
     const navigate = useNavigate();
 
-
     const login = () => {
         setUsuarioLogado(
             {
