@@ -80,17 +80,6 @@ export default function Header() {
             />
           </Search>
           <Box sx={{ flexGrow: 1 }} />
-          <Box>
-            <IconButton
-              size="large"
-              aria-label="show 17 new notifications"
-              color="inherit"
-            >
-              <Badge badgeContent={17} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-          </Box>
         </Toolbar>
       </AppBar>
     </Box>
