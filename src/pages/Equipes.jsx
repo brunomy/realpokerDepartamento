@@ -12,9 +12,13 @@ import Layout from "./components/Layout";
 import Title from "./components/Title";
 import InputAuto from './components/InputAuto';
 import InputCalendarRange from './components/InputCalendarRange';
+import Modal from './components/Modal';
+import AdicionarEquipe from './components/AdicionarEquipe';
 
 export default function Equipes() {
     const [tab, setTab] = useState(0);
+
+    const [openModal, setOpenModal] = useState(false);
 
     //dados da tabela
     const createData = (id, nome, descricao, funcionarios, link) => {
@@ -103,9 +107,12 @@ export default function Equipes() {
                 <br />
                 <Box className="table_content">
                     <DataTable headCells={headCells} rows={rows}/>
-                    <Button className="relatorio" variant="contained"><GroupsIcon/> Criar equipe</Button>
+                    <Button className="relatorio" variant="contained" onClick={() => setOpenModal(true)}>Criar equipe</Button>
                 </Box>
             </Box>
+            <Modal open={openModal} setOpen={setOpenModal} title="Adicionar funcionário">
+                <AdicionarEquipe />
+            </Modal>
         </Layout>
     )
 }
