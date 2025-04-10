@@ -26,7 +26,13 @@ import AdicionarAtividade from './components/AdicionarAtividade';
 import ChangeStatus from './components/ChangeStatus';
 import AdicionarVolume from './components/AdicionarVolume';
 
+
+
+import { useUser } from '~/context/UserContext';
+
 export default function Pedidos() {
+    const { atividades, setAtividades } = useUser();
+
     const { id } = useParams();
 
     const [tab, setTab] = useState(0);
@@ -37,49 +43,30 @@ export default function Pedidos() {
     const [status, setStatus] = useState(1);
 
     const createDataAtividades = (id, equipe, descricao, criacao, status, link) => {
-        return {
-            id,
-            equipe,
-            descricao,
-            criacao,
-            status,
-            link,
-        };
+        return { id, equipe, descricao, criacao, status, link };
     }
-    const rowsAtividades = [
-        createDataAtividades(
-            '#34897', 
-            'M1',
-            'Cortar + Montar Base 1 Coluna Retangular',
-            '01/11/2024',
-            <Chip className="stats" size="small" label="Pendente" />,
-            <Button component={Link} to="/atividades/34897" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createDataAtividades(
-            '#34898', 
-            'M2',
-            'Cortar Também Dividido + Réguas',
-            '01/11/2024',
-            <Chip className="stats" size="small" color="primary" label="Em andamento" />,
-            <Button component={Link} to="/atividades/34898" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createDataAtividades(
-            '#34899', 
-            'M3',
-            'Fazer Furo das Vailhas Tampão Dividido	',
-            '01/11/2024',
-            <Chip className="stats" size="small" color="error" label="Parado" />,
-            <Button component={Link} to="/atividades/34899" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createDataAtividades(
-            '#34900', 
-            'M1',
-            'Fitar Borda Alta',
-            '01/11/2024',
-            <Chip className="stats" size="small" color="success" label="Finalizado" />,
-            <Button component={Link} to="/atividades/34900" variant="outlined" size="small">Detalhes</Button>
-        ),
-    ];
+
+    const rowsAtividades = atividades.map((atividade) => {
+        return createDataAtividades(
+            atividade.id,
+            atividade.equipe,
+            atividade.descricao,
+            atividade.data,
+            <Chip className="stats" color={
+                atividade.status == 0 ? 'default' :
+                atividade.status == 1 ? 'primary' :
+                atividade.status == 2 ? 'error' :
+                atividade.status == 3 ? 'success' : ''
+            } size="small" label={
+                atividade.status == 0 ? 'Pendente' :
+                atividade.status == 1 ? 'Em andamento' :
+                atividade.status == 2 ? 'Parado' :
+                atividade.status == 3 ? 'Finalizado' : ''
+            } />,
+            <Button component={Link} to={`/atividades/${atividade.id}`} variant="outlined" size="small">Detalhes</Button>
+        )
+    })
+
     const headCellsAtividades = [
         {
             id: 'id',

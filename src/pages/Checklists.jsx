@@ -2,7 +2,7 @@ import '~/assets/scss/Index.scss';
 import { useState } from 'react';
 
 import { Link } from 'react-router-dom';
-import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
+import { Box, Autocomplete, Typography, TextField, Button, Chip, Tabs, Tab } from '@mui/material';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -17,6 +17,8 @@ import Modal from './components/Modal';
 import AdicionarChecklist from './components/AdicionarChecklist';
 
 export default function Checklists() {
+    const [tab, setTab] = useState(0);
+
     const [idFilter, setIdFilter] = useState([]);
     const [categoria, setCategoria] = useState([]);
     const [descricao, setDescricao] = useState([]);
@@ -109,9 +111,26 @@ export default function Checklists() {
         },
     ];
 
+    const handleChange = (event, newTab) => {
+        setTab(newTab);
+    };
+
     return (
         <Layout>
             <Title title="Lista de checklists" icon={<CheckBoxIcon/>} />
+            <Box className="tabs_content">
+                <Tabs
+                    value={tab}
+                    onChange={handleChange}
+                    variant="scrollable"
+                    scrollButtons
+                    allowScrollButtonsMobile
+                >
+                    <Tab label="Fábrica" />
+                    <Tab label="Fichas" />
+                    <Tab label="Comunicação" />
+                </Tabs>
+            </Box>
             <Box className="index_content atividades_list">
                 <Box className="filtros">
                     <h2>Filtros:</h2>

@@ -24,7 +24,7 @@ export default function Footer() {
         if (path.includes('/remessas')) return 'remessas';
         if (path.includes('/equipes')) return 'equipes';
         return 'atividades'; // fallback
-      };
+    };
 
     return (
         <BottomNavigation

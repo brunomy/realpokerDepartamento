@@ -2,7 +2,7 @@ import '~/assets/scss/Index.scss';
 import { useState } from 'react';
 
 import { Link } from 'react-router-dom';
-import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
+import { Box, Autocomplete, Typography, TextField, Button, Chip, Tabs, Tab } from '@mui/material';
 import GroupsIcon from '@mui/icons-material/Groups';
 
 import dayjs from 'dayjs';
@@ -14,6 +14,7 @@ import InputAuto from './components/InputAuto';
 import InputCalendarRange from './components/InputCalendarRange';
 
 export default function Equipes() {
+    const [tab, setTab] = useState(0);
 
     //dados da tabela
     const createData = (id, nome, descricao, funcionarios, presentes, link) => {
@@ -93,9 +94,26 @@ export default function Equipes() {
         },
     ];
 
+    const handleChange = (event, newTab) => {
+        setTab(newTab);
+    };
+
     return (
         <Layout>
             <Title title="Lista de equipes" icon={<GroupsIcon/>} />
+            <Box className="tabs_content">
+                <Tabs
+                    value={tab}
+                    onChange={handleChange}
+                    variant="scrollable"
+                    scrollButtons
+                    allowScrollButtonsMobile
+                >
+                    <Tab label="Fábrica" />
+                    <Tab label="Fichas" />
+                    <Tab label="Comunicação" />
+                </Tabs>
+            </Box>
             <Box className="index_content">
                 <br />
                 <br />

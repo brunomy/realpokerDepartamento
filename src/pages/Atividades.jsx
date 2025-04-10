@@ -2,7 +2,7 @@ import '~/assets/scss/Index.scss';
 import { useState } from 'react';
 
 import { Link } from 'react-router-dom';
-import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
+import { Box, Autocomplete, Typography, TextField, Button, Chip, Tabs, Tab } from '@mui/material';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
@@ -17,6 +17,7 @@ import InputCalendarRange from './components/InputCalendarRange';
 export default function Atividades() {
     const hoje = dayjs();
 
+    const [tab, setTab] = useState(0);
     const [statusFilter, setStatusFilter] = useState([]);
     const [teamFilter, setTeamFilter] = useState([]);
     const [idFilter, setIdFilter] = useState([]);
@@ -143,9 +144,26 @@ export default function Atividades() {
         },
     ];
 
+    const handleChange = (event, newTab) => {
+        setTab(newTab);
+    };
+
     return (
         <Layout>
             <Title title="Lista de atividades" icon={<AssignmentIcon/>} />
+            <Box className="tabs_content">
+                <Tabs
+                    value={tab}
+                    onChange={handleChange}
+                    variant="scrollable"
+                    scrollButtons
+                    allowScrollButtonsMobile
+                >
+                    <Tab label="Fábrica" />
+                    <Tab label="Fichas" />
+                    <Tab label="Comunicação" />
+                </Tabs>
+            </Box>
             <Box className="index_content atividades_list">
                 <Box className="filtros">
                     <h2>Filtros:</h2>
