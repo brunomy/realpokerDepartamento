@@ -17,22 +17,14 @@ export default function Equipes() {
     const [tab, setTab] = useState(0);
 
     //dados da tabela
-    const createData = (id, nome, descricao, funcionarios, presentes, link) => {
-        return {
-            id,
-            nome,
-            descricao,
-            funcionarios,
-            presentes,
-            link,
-        };
+    const createData = (id, nome, descricao, funcionarios, link) => {
+        return { id, nome, descricao, funcionarios, link };
     }
     const rows = [
         createData(
             '#1', 
             'M1',
             'Responsável por montar mesas',
-            '5',
             '5',
             <Button component={Link} to="/equipes/1" variant="outlined" size="small">Detalhes</Button>
         ),
@@ -41,7 +33,6 @@ export default function Equipes() {
             'M2',
             'Responsável por pintar mesas',
             '4',
-            '4',
             <Button component={Link} to="/equipes/2" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
@@ -49,14 +40,12 @@ export default function Equipes() {
             'M3',
             'Responsável por dar o acabamento',
             '4',
-            '3',
             <Button component={Link} to="/equipes/3" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
             '#4', 
             'M4',
             'Responsável por dar o acabamento',
-            '4',
             '4',
             <Button component={Link} to="/equipes/4" variant="outlined" size="small">Detalhes</Button>
         ),
@@ -81,11 +70,6 @@ export default function Equipes() {
             id: 'funcionarios',
             numeric: false,
             label: 'Funcionarios',
-        },
-        {
-            id: 'presentes',
-            numeric: false,
-            label: 'Presentes',
         },
         {
             id: 'link',

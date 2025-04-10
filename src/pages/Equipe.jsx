@@ -4,7 +4,6 @@ import { useParams, Link } from 'react-router-dom';
 import { useState } from 'react';
 
 import DataTable from './components/DataTable';
-import Switch from '@mui/material/Switch';
 import { Box, Button, Chip, Tabs, Tab } from '@mui/material';
 import GroupsIcon from '@mui/icons-material/Groups';
 import GroupsTwoToneIcon from '@mui/icons-material/GroupsTwoTone';
@@ -34,56 +33,39 @@ export default function Equipe() {
     };
 
     //dados funcionarios
-    const createDataFuncionarios = (nome, funcao, telefone, contratacao, aniversario, presenca) => {
-        return {
-            nome,
-            funcao,
-            telefone,
-            contratacao,
-            aniversario,
-            presenca
-        };
+    const createDataFuncionarios = (nome, funcao, contratacao, telefone) => {
+        return { nome, funcao, contratacao, telefone };
     }
     const rowsFuncionarios = [
         createDataFuncionarios(
             'Bruno', 
             'Pintor',
-            '(62) 99999-9999',
             '10/01/2025',
-            '10/01/1996',
-            <Switch defaultChecked />
+            '(62) 99999-9999',
         ),
         createDataFuncionarios(
             'João', 
             'Serralheiro',
-            '(62) 99999-9999',
             '10/01/2025',
-            '10/01/1996',
-            <Switch defaultChecked />
+            '(62) 99999-9999',
         ),
         createDataFuncionarios(
             'Rafael', 
             'Montador',
-            '(62) 99999-9999',
             '10/01/2025',
-            '10/01/1996',
-            <Switch defaultChecked />
+            '(62) 99999-9999',
         ),
         createDataFuncionarios(
             'Pedro', 
             'Montador',
-            '(62) 99999-9999',
             '10/01/2025',
-            '10/01/1996',
-            <Switch defaultChecked />
+            '(62) 99999-9999',
         ),
         createDataFuncionarios(
             'José', 
             'Transportador',
-            '(62) 99999-9999',
             '10/01/2025',
-            '10/01/1996',
-            <Switch defaultChecked />
+            '(62) 99999-9999',
         ),
 
     ];
@@ -99,24 +81,14 @@ export default function Equipe() {
             label: 'Função',
         },
         {
-            id: 'telefone',
-            numeric: false,
-            label: 'Telefone',
-        },
-        {
             id: 'contratacao',
             numeric: false,
             label: 'Contratação',
         },
         {
-            id: 'aniversario',
+            id: 'telefone',
             numeric: false,
-            label: 'Aniversário',
-        },
-        {
-            id: 'presenca',
-            numeric: true,
-            label: 'Presença',
+            label: 'Telefone',
         },
     ];
 
