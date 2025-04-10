@@ -103,6 +103,7 @@ export default function Equipes() {
                 <br />
                 <Box className="table_content">
                     <DataTable headCells={headCells} rows={rows}/>
+                    <Button className="relatorio" variant="contained"><GroupsIcon/> Criar equipe</Button>
                 </Box>
             </Box>
         </Layout>

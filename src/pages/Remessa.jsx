@@ -200,7 +200,7 @@ function Informacoes({ setStatusModalChange, open, setStatus, status, setTab }) 
 function MudarRemessa({ left, setLeft, right, setRight }) {
     return (
         <Box className="mudar_remessa">
-            <TransferList left={left} setLeft={setLeft} right={right} setRight={setRight} />
+            <TransferList className="teste" left={left} setLeft={setLeft} right={right} setRight={setRight} />
         </Box>
     )
 }

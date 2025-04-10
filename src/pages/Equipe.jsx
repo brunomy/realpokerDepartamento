@@ -10,6 +10,7 @@ import GroupsTwoToneIcon from '@mui/icons-material/GroupsTwoTone';
 import GroupTwoToneIcon from '@mui/icons-material/GroupTwoTone';
 import CheckBoxTwoToneIcon from '@mui/icons-material/CheckBoxTwoTone';
 import AssignmentTwoToneIcon from '@mui/icons-material/AssignmentTwoTone';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
 import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
 
@@ -18,6 +19,8 @@ import Title from "./components/Title";
 import Modal from './components/Modal';
 
 import { Volumes, Atividades } from './Pedido';
+import TransferList from './components/TransferList';
+import AdicionarFuncionario from './components/AdicionarFuncionario';
 
 export default function Equipe() {
     const { id } = useParams();
@@ -27,6 +30,21 @@ export default function Equipe() {
     const [addAtividadeModal, setAddAtividadeModal] = useState(false);
 
     const [addVolumeModal, setAddVolumeModal] = useState(false);
+
+    const [openModal, setOpenModal] = useState(false);
+
+
+    const [left, setLeft] = useState([
+        { label: 'Bruno', value: 5952},
+        { label: 'João', value: 5953},
+        { label: 'Rafael', value: 5953},
+        { label: 'Pedro', value: 5953},
+        { label: 'José', value: 5953},
+    ]);
+    const [right, setRight] = useState([
+        { label: 'Matheus', value: 5951},
+        { label: 'Alisson', value: 5955},
+    ]);
 
     const handleChange = (event, newTab) => {
       setTab(newTab);
@@ -236,28 +254,34 @@ export default function Equipe() {
                     <Tab label="Informações" />
                     <Tab label="Atividades" />
                     <Tab label="Volumes" />
+                    <Tab label="Membros" />
                 </Tabs>
             </Box>
             <Box className="show_content">
                 { tab == 0 && (
                     <>
                     <Informacoes /> 
-                    <Funcionarios headCells={headCellsFuncionarios} rows={rowsFuncionarios} />
+                    <Funcionarios headCells={headCellsFuncionarios} rows={rowsFuncionarios} setOpenModal={setOpenModal} />
+                    <Modal open={openModal} setOpen={setOpenModal} title="Adicionar funcionário">
+                        <AdicionarFuncionario />
+                    </Modal>
                     </>
                 )}
                 { tab == 1 && <Atividades 
-                    openModal={setAddAtividadeModal} 
-                    open={addAtividadeModal} 
                     equipe={true} 
                     headCells={headCellsAtividades} 
                     rows={rowsAtividades}
                 /> }
                 { tab == 2 && <Volumes 
-                    openModal={setAddVolumeModal} 
-                    open={addVolumeModal} 
                     adicionar={false} 
                     headCells={headCellsVolumes} 
                     rows={rowsVolumes}
+                /> }
+                { tab == 3 && <Membros 
+                    left={left}
+                    setLeft={setLeft}
+                    right={right}
+                    setRight={setRight}
                 /> }
             </Box>
         </Layout>
@@ -295,10 +319,20 @@ function Informacoes() {
     )
 }
 
-function Funcionarios({headCells, rows}) {
+function Membros({ left, setLeft, right, setRight }) {
+    return (
+        <Box className="mudar_membros">
+            <br /><br />
+            <TransferList left={left} setLeft={setLeft} right={right} setRight={setRight} />
+        </Box>
+    )
+}
+
+function Funcionarios({headCells, rows, setOpenModal}) {
     return (
         <Box className="funcionarios_content">
             <DataTable headCells={headCells} rows={rows}/>
+            <Button className="adicionar" variant="contained" onClick={() => setOpenModal(true)}>Adicionar funcionario</Button>
         </Box>
     )
 }

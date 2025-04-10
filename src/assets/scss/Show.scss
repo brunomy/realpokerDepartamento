@@ -107,6 +107,17 @@
     .funcionarios_content{
         padding: $pagePadding;
         padding-top: 0;
+
+        button.adicionar{
+            display: flex;
+            gap: 5px;
+            margin: 0 0 30px auto;
+
+            svg{
+                height: auto;
+                width: 20px;
+            }
+        }
     }
 
     .requisitos{

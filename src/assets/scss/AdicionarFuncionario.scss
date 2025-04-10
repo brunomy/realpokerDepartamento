@@ -1,0 +1,95 @@
+@use '~/assets/scss/Variables.scss' as *;
+
+.adicionarFuncionario{
+    width: 550px;
+    max-width: 100%;
+
+    form{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px 10px;
+        align-items: flex-end;
+
+        .item{
+            width: calc((100% - 10px)/2);
+
+            &.full{
+                width: 100%;
+            }
+        }
+
+        h3{
+            position: relative;
+            color: $color1;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin: 20px 0 5px;
+            text-transform: uppercase;
+            padding: 0 0 7px;
+            border-bottom: 2px solid $color1;
+            width: 100%;
+        }
+
+        .checklist{
+            width: 100%;
+
+            .select{
+                margin: 0 0 20px;
+            }
+
+            .adicionar{
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                
+                .input{
+                    width: calc(100% - 10px - 120px);
+                }
+                .adicionarFuncionario{
+                    width: 120px;
+                }
+            }
+            .list{
+                padding: 20px 0 0;
+
+                ul{
+                    list-style: none;
+                    padding: 0;
+                    background: #efefef;
+                    border: 1px solid rgba(0, 0, 0, 0.1215686275);
+                    border-radius: 3px;
+                    overflow: hidden;
+
+                    li{
+                        display: flex;
+                        align-items: center;
+                        padding: 10px 10px;
+
+                        &:nth-child(2n){
+                            background: rgba(0, 0, 0, 0.0509803922);
+                        }
+
+                        span{
+                            width: calc(100% - 50px);
+                            display: flex;
+                            align-items: center;
+                            padding: 0 20px 0 10px;
+                        }
+                        button{
+                            width: 10px;
+                            height: 100%;
+                            padding: 5px 0;
+                            min-width: 0;
+                            width: 50px;
+
+                            svg{
+                                width: 20px;
+                                height: auto;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

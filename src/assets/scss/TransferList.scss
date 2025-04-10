@@ -43,19 +43,13 @@
             }
         }
     }
-    .left_content{
-        &::before{
-            content: 'Selecionados';
-        }
-        >div{
-        }
-    }
-    .right_content{
-        &::before{
-            content: 'Pedidos';
-        }
-
-        >div{
-        }
-    }
 }
+.mudar_remessa .transfer_component{
+    .left_content::before{ content: 'Selecionados'; }
+    .right_content::before{ content: 'Pedidos'; }
+}
+.mudar_membros .transfer_component{
+    .left_content::before{ content: 'Equipe'; }
+    .right_content::before{ content: 'Sem equipe'; }
+}
+
