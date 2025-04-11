@@ -51,6 +51,27 @@
         }
     }
 
+    h2.title{
+        position: relative;
+        color: $color1;
+        font-weight: bold;
+        font-size: 0.9em;
+        margin: 0 0 20px;
+        text-transform: uppercase;
+        padding: 0 0 7px;
+        background: transparent;
+
+        &::after{
+            content: "";
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 2px;
+            background: $color1;
+        }
+    }
+
     .informacoes{
         padding: $pagePadding;
     
@@ -186,6 +207,42 @@
                     text-transform: uppercase;
                     gap: 10px;
                     font-weight: bold;
+                }
+            }
+        }
+    }
+
+    .form_accordion{
+        .accordion_item{
+            background: $grey;
+
+            .css-yfrx4k-MuiAccordionSummary-content{
+                width: 100%;
+                display: block;
+                padding-right: 20px;
+            }
+            .accordion_details{
+                >div.acoes{
+                    display: flex;
+                    gap: 10px;
+                    margin: 0 0 20px;
+                }
+                
+                >div.input_content{
+                    background: white;
+                    border: 2px solid #e9e9e9;
+                    padding: 20px 20px 10px;
+                    border-radius: 3px;
+
+                    .item{
+                        margin: 0 0 20px;
+        
+                        input{
+                            padding-left: 10px;
+                            padding-right: 10px;
+                        }
+
+                    }
                 }
             }
         }

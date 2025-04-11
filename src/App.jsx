@@ -8,6 +8,7 @@ import Pedido from './pages/Pedido';
 import Atividades from './pages/Atividades';
 import Atividade from './pages/Atividade';
 import Checklists from './pages/Checklists';
+import Checklist from './pages/Checklist';
 import Equipes from './pages/Equipes';
 import Equipe from './pages/Equipe';
 import Remessas from './pages/Remessas';
@@ -29,6 +30,7 @@ function App() {
           <Route path="/atividades/:id" element={<Atividade />} />
 
           <Route path="/checklists" element={<Checklists />} />
+          <Route path="/checklists/:id" element={<Checklist />} />
 
           <Route path="/equipes" element={<Equipes />} />
           <Route path="/equipes/:id" element={<Equipe />} />

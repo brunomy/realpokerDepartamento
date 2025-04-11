@@ -54,35 +54,9 @@ export default function Checklists() {
     const [rows, setRows] = useState([
         createData(
             '#3489787', 
-            'Criar mesa',
-            <Box className="categorias">
-                <Chip label="Mesa de poker" />
-                <Chip label="Futmesa" />
-            </Box>,
+            'Mesa de poker',
             <Box className="acoes">
-                <Button variant="outlined" size="small"><EditSquareIcon /></Button>
-                <Button variant="outlined" size="small"><DeleteIcon /></Button>
-            </Box>
-        ),
-        createData(
-            '#3489787', 
-            'Mesa com porta copos',
-            <Box className="categorias">
-                <Chip label="Mesa de poker" />
-            </Box>,
-            <Box className="acoes">
-                <Button variant="outlined" size="small"><EditSquareIcon /></Button>
-                <Button variant="outlined" size="small"><DeleteIcon /></Button>
-            </Box>
-        ),
-        createData(
-            '#3489787', 
-            'Criar cadeira',
-            <Box className="categorias">
-                <Chip label="Cadeira" />
-            </Box>,
-            <Box className="acoes">
-                <Button variant="outlined" size="small"><EditSquareIcon /></Button>
+                <Button component={Link} to={`/checklists/1`} variant="outlined" size="small"><EditSquareIcon /></Button>
                 <Button variant="outlined" size="small"><DeleteIcon /></Button>
             </Box>
         ),
@@ -94,14 +68,9 @@ export default function Checklists() {
             label: 'Id',
         },
         {
-            id: 'descricao',
+            id: 'categoria',
             numeric: false,
-            label: 'Descrição',
-        },
-        {
-            id: 'categorias',
-            numeric: false,
-            label: 'Categorias',
+            label: 'Categoria',
         },
         {
             id: 'acoes',
@@ -136,13 +105,7 @@ export default function Checklists() {
                     <h2>Filtros:</h2>
                     <Box className="filter_list">
                         <Box className="item">
-                            <InputAuto label="id" list={idList} setValue={setIdFilter} width={'100%'} />
-                        </Box>
-                        <Box className="item">
                             <InputAuto label="Categoria" list={categorias} setValue={setCategoria} width={'100%'} />
-                        </Box>
-                        <Box className="item">
-                            <InputAuto label="Descrição" list={descricaoList} setValue={setDescricao} width={'100%'} />
                         </Box>
                     </Box>
                 </Box>
