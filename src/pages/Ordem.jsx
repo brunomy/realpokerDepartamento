@@ -1,11 +1,13 @@
 import '~/assets/scss/Show.scss';
 
 import { useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
-import { Box, Button, Chip, Tabs, Tab } from '@mui/material';
+import { Box, Button, Chip, Tabs, Tab, Typography } from '@mui/material';
 
+import StairsTwoToneIcon from '@mui/icons-material/StairsTwoTone';
+import ChecklistIcon from '@mui/icons-material/Checklist';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import GroupsTwoToneIcon from '@mui/icons-material/GroupsTwoTone';
 import ShoppingCartTwoToneIcon from '@mui/icons-material/ShoppingCartTwoTone';
@@ -16,18 +18,44 @@ import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
 import TagIcon from '@mui/icons-material/Tag';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
+import Accordion from "@mui/material/Accordion";
+import AccordionActions from "@mui/material/AccordionActions";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
 
 import Layout from "./components/Layout";
 import Title from "./components/Title";
 import Modal from './components/Modal';
 import ChangeStatus from './components/ChangeStatus';
+import Stepper from "./components/Stepper";
 
-import { Requisitos, Volumes } from './Pedido';
+import { Volumes } from './Pedido';
 
 import { useUser } from '../context/UserContext';
 
-export default function Atividade() {
-    const { usuarioLogado, setUsuarioLogado } = useUser();
+export default function Ordem() {
+    const { 
+        usuarioLogado, setUsuarioLogado,
+        checklists, setChecklists,
+        checklistItem, setChecklistItem,
+    } = useUser();
+    const [draftChecklist, setDraftChecklist] = useState([]);
+    const draftRef = useRef([]);
+
+    useEffect(() => {
+        if (checklists.length > 0 && checklistItem.length > 0) {
+          const list = checklists
+            .filter((item) => item.id_categoria == 1) //Precisa mudar o id
+            .map((item) => ({
+              ...item,
+              itens: checklistItem.filter((i) => i.id_checklist === item.id),
+            }));
+          setDraftChecklist(list);
+          draftRef.current = JSON.parse(JSON.stringify(list));
+        }
+      }, [checklists, checklistItem]);
 
     const { id } = useParams();
 
@@ -43,15 +71,11 @@ export default function Atividade() {
 
     const step_list = [
         {
-            title: 'Medir a mesa',
+            title: 'Router',
             steps: [
                 {
                     label: 'Pendente',
                     description: 'Ainda não iniciado'
-                },
-                {
-                    label: 'Em andamento',
-                    description: 'Atividade iniciada dia 11/11/2024'
                 },
                 {
                     label: 'Concluído',
@@ -60,15 +84,15 @@ export default function Atividade() {
             ]
         },
         {
-            title: 'Cortar Mesa',
+            title: 'Adesivo',
             steps: [
                 {
                     label: 'Pendente',
                     description: 'Ainda não iniciado'
                 },
                 {
-                    label: 'Em andamento',
-                    description: 'Atividade iniciada dia 11/11/2024'
+                    label: 'Cliente',
+                    description: 'Aguardando aprovação do cliente'
                 },
                 {
                     label: 'Concluído',
@@ -77,32 +101,19 @@ export default function Atividade() {
             ]
         },
         {
-            title: 'Cortar coluna',
+            title: 'Tecido',
             steps: [
                 {
                     label: 'Pendente',
                     description: 'Ainda não iniciado'
                 },
                 {
-                    label: 'Em andamento',
-                    description: 'Atividade iniciada dia 11/11/2024'
+                    label: 'Cliente',
+                    description: 'Aguardando aprovação do cliente'
                 },
                 {
-                    label: 'Concluído',
-                    description: 'Finalizar este requisito (não é possível reverter este estado)'
-                },
-            ]
-        },
-        {
-            title: 'Montar a mesa',
-            steps: [
-                {
-                    label: 'Pendente',
-                    description: 'Ainda não iniciado'
-                },
-                {
-                    label: 'Em andamento',
-                    description: 'Atividade iniciada dia 11/11/2024'
+                    label: 'Impermeabilização',
+                    description: 'O tecido precisa ser impermeabilizado'
                 },
                 {
                     label: 'Concluído',
@@ -182,7 +193,7 @@ export default function Atividade() {
 
     return (
         <Layout>
-            <Title title={"Atividade Nº #"+id} icon={<AssignmentIcon/>} />
+            <Title title={"Ordem Nº #"+id} icon={<AssignmentIcon/>} />
             <Box className="tabs_content">
                 <Tabs
                     value={tab}
@@ -192,6 +203,7 @@ export default function Atividade() {
                     allowScrollButtonsMobile
                 >
                     <Tab label="Informações" />
+                    <Tab label="Requisitos" />
                     <Tab label="Checklist" />
                     <Tab label="Volumes" />
                 </Tabs>
@@ -206,7 +218,8 @@ export default function Atividade() {
                     usuarioLogado={usuarioLogado}
                 /> }
                 { tab == 1 && <Requisitos step_list={step_list} /> }
-                { tab == 2 && <Volumes openModal={setAddVolumeModal} open={addVolumeModal} headCells={headCells} rows={rows} /> }
+                { tab == 2 && <Checklist lista={draftChecklist} /> }
+                { tab == 3 && <Volumes openModal={setAddVolumeModal} open={addVolumeModal} headCells={headCells} rows={rows} /> }
             </Box>
         </Layout>
     )
@@ -224,34 +237,40 @@ function Informacoes({ setTab, open, openModal, status, setStatus, usuarioLogado
 
                 <Box className="info">
                     <p>
-                        <span className="icon"><GroupsTwoToneIcon/></span>
-                        <b>EQUIPE: </b>M1
-                    </p>
-                    <p>
                         <span className="icon"><ShoppingCartTwoToneIcon/></span>
-                        <b>PEDIDO: </b><Button variant="contained" size="small" component={Link} to="/pedidos/5952">#5952</Button>
-                    </p>
-                    <p>
-                        <span className="icon"><CheckBoxTwoToneIcon/></span>
-                        <b>CHECKLISTS: </b>
-                        <Button variant="contained" size="small" onClick={() => {setTab(1)}}>0/4</Button>
-                    </p>
-                    <p>
-                        <span className="icon"><ArchiveTwoToneIcon/></span>
-                        <b>VOLUMES: </b>
-                        <Button variant="contained" size="small" onClick={() => {setTab(2)}}>2</Button>
-                    </p>
-                    <p>
-                        <span className="icon"><TagIcon/></span>
-                        <b>CATEGORIA: </b>Mesas de Poker
+                        <b>PEDIDO: </b><Button variant="contained" size="small" component={Link} to="/pedidos/5951">#5951</Button>
                     </p>
                     <p>
                         <span className="icon"><CalendarMonthTwoToneIcon/></span>
                         <b>PRODUÇÃO: </b>01/11/2024
                     </p>
+                    <p>
+                        <span className="icon"><GroupsTwoToneIcon/></span>
+                        <b>EQUIPE: </b>M1
+                    </p>
+                    <p>
+                        <span className="icon"><CheckBoxTwoToneIcon/></span>
+                        <b>REQUISITOS: </b>
+                        <Button variant="contained" size="small" onClick={() => {setTab(1)}}>0/3</Button>
+                    </p>
+                    <p>
+                        <span className="icon"><StairsTwoToneIcon/></span>
+                        <b>ETAPA: </b>
+                        <Button variant="contained" size="small" onClick={() => {setTab(1)}}>0/6</Button>
+                    </p>
+                    <p>
+                        <span className="icon"><ArchiveTwoToneIcon/></span>
+                        <b>VOLUMES: </b>
+                        <Button variant="contained" size="small" onClick={() => {setTab(3)}}>2</Button>
+                    </p>
+                    <p>
+                        <span className="icon"><TagIcon/></span>
+                        <b>CATEGORIA: </b>Mesa de Poker
+                    </p>
+                
                     <p className="full">
                         <span className="icon"><InfoTwoToneIcon/></span>
-                        <b>DESCRIÇÃO: </b>Cortar + Montar Base 1 Coluna Retangular
+                        <b>DESCRIÇÃO: </b>Mesa de poker profissional
                     </p>
                     {
                         usuarioLogado.permission == "admin" && 
@@ -264,9 +283,7 @@ function Informacoes({ setTab, open, openModal, status, setStatus, usuarioLogado
                 <h3>
                     <b>PRODUTO: </b>MESA DE POKER PROFISSIONAL PARA CLUBES DE POKER E RESIDÊNCIAS
                 </h3>
-                <p>
-                    <b>Quantidade: </b>1
-                </p>
+              
                 <Box className="info_table">
                     <div>
                         <h4>TAMANHO DA MESA:</h4>
@@ -339,5 +356,61 @@ function Informacoes({ setTab, open, openModal, status, setStatus, usuarioLogado
             <ChangeStatus status={status} setStatus={setStatus} />
         </Modal>
         </>
+    )
+}
+export function Requisitos({ step_list }) {
+    return (
+        <Box className="requisitos">
+            { 
+                step_list.map((step, index) => (
+                    <RequisitoItem step={step} key={index} />
+                ))
+            }
+        </Box>
+    )
+}
+function RequisitoItem({ step }){
+    return (
+        <div className="requisito_item">
+            <h3>
+                <span className="icon">
+                    <ChecklistIcon />
+                </span>
+                {step.title}
+            </h3>
+            <div className="step_content">
+                <Stepper steps={step.steps} />
+            </div>
+        </div>
+    )
+}
+function Checklist({ lista }) {
+    return (
+        <Box className="order_checklist">
+        {lista?.map((item, index) => (
+            <Accordion className="accordion_item" key={index}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography className="titulo" component="span" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span>{item.title}</span> <span className="equipe">M1</span>
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails className="accordion_details">
+                    {item.itens.map((i, indx) => (
+                        <Box className="item" key={indx}>
+                            {i.title}
+                        </Box>
+                    ))}
+                </AccordionDetails>
+                {/* <AccordionActions>
+                    <Button onClick={() => removerUltimoItem(item.id)}>
+                        Remover último
+                    </Button>
+                    <Button onClick={() => adicionarItemVazio(item.id)}>
+                        Adicionar
+                    </Button>
+                </AccordionActions> */}
+            </Accordion>
+        ))}
+        </Box>
     )
 }

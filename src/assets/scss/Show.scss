@@ -147,8 +147,32 @@
         flex-wrap: wrap;
         gap: 10px;
     }
+    .order_checklist{
+        padding: $pagePadding;
+
+        .accordion_item{
+            .titulo{
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+
+                .equipe{
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    background: $color1;
+                    color: #fff;
+                    font-size: .8em;
+                    font-weight: bold;
+                    width: 50px;
+                    height: 20px;
+                }
+            }
+        }
+    }
     
-    .atividades, .volumes{
+    .atividades, .table_content{
         padding: $pagePadding;
     
         button.adicionar{

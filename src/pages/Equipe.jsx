@@ -18,7 +18,7 @@ import Layout from "./components/Layout";
 import Title from "./components/Title";
 import Modal from './components/Modal';
 
-import { Volumes, Atividades } from './Pedido';
+import { Volumes, Ordens } from './Pedido';
 import TransferList from './components/TransferList';
 import AdicionarFuncionario from './components/AdicionarFuncionario';
 
@@ -27,7 +27,7 @@ export default function Equipe() {
 
     const [tab, setTab] = useState(0);
 
-    const [addAtividadeModal, setAddAtividadeModal] = useState(false);
+    const [addOrdemModal, setAddOrdemModal] = useState(false);
 
     const [addVolumeModal, setAddVolumeModal] = useState(false);
 
@@ -110,8 +110,8 @@ export default function Equipe() {
         },
     ];
 
-    //dados atividades
-    const createDataAtividades = (id, descricao, criacao, status, link) => {
+    //dados ordens
+    const createDataOrdens = (id, descricao, criacao, status, link) => {
         return {
             id,
             descricao,
@@ -120,37 +120,37 @@ export default function Equipe() {
             link,
         };
     }
-    const rowsAtividades = [
-        createDataAtividades(
+    const rowsOrdens = [
+        createDataOrdens(
             '#34897', 
             'Cortar + Montar Base 1 Coluna Retangular',
             '01/11/2024',
             <Chip className="stats" size="small" label="Pendente" />,
-            <Button component={Link} to="/atividades/34897" variant="outlined" size="small">Detalhes</Button>
+            <Button component={Link} to="/ordens/34897" variant="outlined" size="small">Detalhes</Button>
         ),
-        createDataAtividades(
+        createDataOrdens(
             '#34898', 
             'Cortar Também Dividido + Réguas',
             '01/11/2024',
             <Chip className="stats" size="small" color="primary" label="Em andamento" />,
-            <Button component={Link} to="/atividades/34898" variant="outlined" size="small">Detalhes</Button>
+            <Button component={Link} to="/ordens/34898" variant="outlined" size="small">Detalhes</Button>
         ),
-        createDataAtividades(
+        createDataOrdens(
             '#34899', 
             'Fazer Furo das Vailhas Tampão Dividido	',
             '01/11/2024',
             <Chip className="stats" size="small" color="error" label="Parado" />,
-            <Button component={Link} to="/atividades/34899" variant="outlined" size="small">Detalhes</Button>
+            <Button component={Link} to="/ordens/34899" variant="outlined" size="small">Detalhes</Button>
         ),
-        createDataAtividades(
+        createDataOrdens(
             '#34900', 
             'Fitar Borda Alta',
             '01/11/2024',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
-            <Button component={Link} to="/atividades/34900" variant="outlined" size="small">Detalhes</Button>
+            <Button component={Link} to="/ordens/34900" variant="outlined" size="small">Detalhes</Button>
         ),
     ];
-    const headCellsAtividades = [
+    const headCellsOrdens = [
         {
             id: 'id',
             numeric: false,
@@ -179,14 +179,14 @@ export default function Equipe() {
     ];
 
     //dados volumes
-    const createDataVolumes = (id, descricao, dimensoes, peso, criacao, atividade) => {
+    const createDataVolumes = (id, descricao, dimensoes, peso, criacao, ordem) => {
         return {
             id,
             descricao,
             dimensoes,
             peso,
             criacao,
-            atividade
+            ordem
         };
     }
     const rowsVolumes = [
@@ -196,7 +196,7 @@ export default function Equipe() {
             '200 x 400 x 50',
             '20',
             '01/11/2024',
-            <Button component={Link} to="/atividades/34897" variant="outlined" size="small">#34897</Button>
+            <Button component={Link} to="/ordens/34897" variant="outlined" size="small">#34897</Button>
         ),
         createDataVolumes(
             '#3489788', 
@@ -204,7 +204,7 @@ export default function Equipe() {
             '50 x 50 x 50',
             '10',
             '01/11/2024',
-            <Button component={Link} to="/atividades/34897" variant="outlined" size="small">#34897</Button>
+            <Button component={Link} to="/ordens/34897" variant="outlined" size="small">#34897</Button>
         ),
     ];
     const headCellsVolumes = [
@@ -234,9 +234,9 @@ export default function Equipe() {
             label: 'Criação',
         },
         {
-            id: 'atividade',
+            id: 'ordem',
             numeric: false,
-            label: 'Atividade',
+            label: 'Ordem',
         },
     ];
 
@@ -252,7 +252,7 @@ export default function Equipe() {
                     allowScrollButtonsMobile
                 >
                     <Tab label="Informações" />
-                    <Tab label="Atividades" />
+                    <Tab label="Ordens" />
                     <Tab label="Volumes" />
                     <Tab label="Membros" />
                 </Tabs>
@@ -267,10 +267,10 @@ export default function Equipe() {
                     </Modal>
                     </>
                 )}
-                { tab == 1 && <Atividades 
+                { tab == 1 && <Ordens 
                     equipe={true} 
-                    headCells={headCellsAtividades} 
-                    rows={rowsAtividades}
+                    headCells={headCellsOrdens} 
+                    rows={rowsOrdens}
                 /> }
                 { tab == 2 && <Volumes 
                     adicionar={false} 

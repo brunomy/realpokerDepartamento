@@ -22,7 +22,7 @@ export default function Login() {
         if (user === 'admin') {
             navigate('/pedidos');
         } else {
-            navigate('/atividades');
+            navigate('/ordens');
         }
     }
 

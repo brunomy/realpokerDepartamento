@@ -11,7 +11,7 @@ export function UserProvider({ children }) {
     }
   );
 
-  const [atividades, setAtividades] = useState([
+  const [ordens, setOrdens] = useState([
     {
       id: 3489857,
       id_pedido: 5951,
@@ -209,7 +209,7 @@ export function UserProvider({ children }) {
     <UserContext.Provider value={{ 
       usuarioLogado, setUsuarioLogado,
       categorias, setCategorias,
-      atividades, setAtividades,
+      ordens, setOrdens,
       checklists, setChecklists,
       checklistItem, setChecklistItem
     }}>

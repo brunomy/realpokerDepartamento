@@ -14,7 +14,7 @@ import Title from "./components/Title";
 import InputAuto from './components/InputAuto';
 import InputCalendarRange from './components/InputCalendarRange';
 
-export default function Atividades() {
+export default function Ordens() {
     const hoje = dayjs();
 
     const [tab, setTab] = useState(0);
@@ -43,84 +43,44 @@ export default function Atividades() {
     ]
 
     //dados da tabela
-    const createData = (id, equipe, descricao, producao, status, link) => {
-        return {
-            id,
-            equipe,
-            descricao,
-            producao,
-            status,
-            link,
-        };
+    const createDataOrdens = (id, Pedido, categoria, descricao, producao, status, link) => {
+        return { id, Pedido, categoria, descricao, producao, status, link };
     }
-    const rows = [
-        createData(
-            '#3489857', 
-            'M1',
-            'Cortar + Montar Base 1 Coluna Retangular',
-            '01/11/2024',
-            <Chip className="stats" size="small" label="Pendente" />,
-            <Button component={Link} to="/atividades/3489857" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createData(
-            '#3489858', 
-            'M2',
-            'Cortar Também Dividido + Réguas',
-            '01/11/2024',
+    const rowsOrdens = [
+        createDataOrdens(
+            '#3568',
+            <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">5951</Button>,
+            <Chip className="stats" size="small" label="Mesa de poker" />,
+            'Mesa de poker profissional',
+            '11/042025',
             <Chip className="stats" size="small" color="primary" label="Em andamento" />,
-            <Button component={Link} to="/atividades/3489858" variant="outlined" size="small">Detalhes</Button>
+            <Button component={Link} to="/ordens/3568" variant="outlined" size="small">Detalhes</Button>
         ),
-        createData(
-            '#3489859', 
-            'M3',
-            'Fazer Furo das Vailhas Tampão Dividido	',
-            '01/11/2024',
-            <Chip className="stats" size="small" color="error" label="Parado" />,
-            <Button component={Link} to="/atividades/3489859" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createData(
-            '#3489860', 
-            'M1',
-            'Fitar Borda Alta',
-            '01/11/2024',
+        createDataOrdens(
+            '#3569',
+            <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">5951</Button>,
+            <Chip className="stats" size="small" label="Mesa de poker" />,
+            'Mesa de poker redonda',
+            '11/042025',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
-            <Button component={Link} to="/atividades/3489860" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createData(
-            '#3489861', 
-            'M1',
-            'Fitar Borda Alta',
-            '01/11/2024',
-            <Chip className="stats" size="small" color="success" label="Finalizado" />,
-            <Button component={Link} to="/atividades/3489861" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createData(
-            '#3489862', 
-            'M1',
-            'Fitar Borda Alta',
-            '01/11/2024',
-            <Chip className="stats" size="small" color="success" label="Finalizado" />,
-            <Button component={Link} to="/atividades/3489862" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createData(
-            '#3489863', 
-            'M1',
-            'Fitar Borda Alta',
-            '01/11/2024',
-            <Chip className="stats" size="small" color="success" label="Finalizado" />,
-            <Button component={Link} to="/atividades/3489863" variant="outlined" size="small">Detalhes</Button>
+            <Button component={Link} to="/ordens/3569" variant="outlined" size="small">Detalhes</Button>
         ),
     ];
-    const headCells = [
+    const headCellsOrdens = [
         {
             id: 'id',
             numeric: false,
             label: 'Id',
         },
         {
-            id: 'equipe',
+            id: 'pedido',
             numeric: false,
-            label: 'Equipe',
+            label: 'Pedido',
+        },
+        {
+            id: 'categoria',
+            numeric: false,
+            label: 'Categoria',
         },
         {
             id: 'descricao',
@@ -129,7 +89,7 @@ export default function Atividades() {
         },
         {
             id: 'producao',
-            numeric: false,
+            numeric: true,
             label: 'Produção',
         },
         {
@@ -150,7 +110,7 @@ export default function Atividades() {
 
     return (
         <Layout>
-            <Title title="Lista de atividades" icon={<AssignmentIcon/>} />
+            <Title title="Lista de ordens" icon={<AssignmentIcon/>} />
             <Box className="tabs_content">
                 <Tabs
                     value={tab}
@@ -183,7 +143,7 @@ export default function Atividades() {
                     </Box>
                 </Box>
                 <Box className="table_content">
-                    <DataTable headCells={headCells} rows={rows}/>
+                    <DataTable headCells={headCellsOrdens} rows={rowsOrdens}/>
                     <Button className="relatorio" variant="contained"><PictureAsPdfIcon/> Gerar relatório</Button>
                 </Box>
             </Box>

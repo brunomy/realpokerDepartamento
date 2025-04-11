@@ -13,70 +13,62 @@ import StoreTwoToneIcon from '@mui/icons-material/StoreTwoTone';
 import PermIdentityTwoToneIcon from '@mui/icons-material/PermIdentityTwoTone';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
 import DeleteIcon from '@mui/icons-material/Delete';
-import ChecklistIcon from '@mui/icons-material/Checklist';
-import TagIcon from '@mui/icons-material/Tag';
 import AssignmentTwoToneIcon from '@mui/icons-material/AssignmentTwoTone';
+import CalendarMonthTwoToneIcon from '@mui/icons-material/CalendarMonthTwoTone';
 
 import Layout from "./components/Layout";
 import Title from "./components/Title";
-import Stepper from "./components/Stepper";
 import DataTable from './components/DataTable';
 import Modal from './components/Modal';
 import AdicionarAtividade from './components/AdicionarAtividade';
 import ChangeStatus from './components/ChangeStatus';
 import AdicionarVolume from './components/AdicionarVolume';
 
-
-
 import { useUser } from '~/context/UserContext';
 
 export default function Pedidos() {
-    const { atividades, setAtividades } = useUser();
+    const { ordens, setOrdens } = useUser();
 
     const { id } = useParams();
 
     const [tab, setTab] = useState(0);
 
-    const [statusModalChange, setStatusModalChange] = useState(false);
-    const [addAtividadeModal, setAddAtividadeModal] = useState(false);
     const [addVolumeModal, setAddVolumeModal] = useState(false);
     const [status, setStatus] = useState(1);
 
-    const createDataAtividades = (id, equipe, descricao, criacao, status, link) => {
-        return { id, equipe, descricao, criacao, status, link };
+
+    //dados
+    const createDataOrdens = (id, categoria, descricao, producao, status, link) => {
+        return { id, categoria, descricao, producao, status, link };
     }
-
-    const rowsAtividades = atividades.map((atividade) => {
-        return createDataAtividades(
-            atividade.id,
-            atividade.equipe,
-            atividade.descricao,
-            atividade.data,
-            <Chip className="stats" color={
-                atividade.status == 0 ? 'default' :
-                atividade.status == 1 ? 'primary' :
-                atividade.status == 2 ? 'error' :
-                atividade.status == 3 ? 'success' : ''
-            } size="small" label={
-                atividade.status == 0 ? 'Pendente' :
-                atividade.status == 1 ? 'Em andamento' :
-                atividade.status == 2 ? 'Parado' :
-                atividade.status == 3 ? 'Finalizado' : ''
-            } />,
-            <Button component={Link} to={`/atividades/${atividade.id}`} variant="outlined" size="small">Detalhes</Button>
-        )
-    })
-
-    const headCellsAtividades = [
+    const rowsOrdens = [
+        createDataOrdens(
+            '#3568',
+            <Chip className="stats" size="small" label="Mesa de poker" />,
+            'Mesa de poker profissional',
+            '11/042025',
+            <Chip className="stats" size="small" color="primary" label="Em andamento" />,
+            <Button component={Link} to="/ordens/3568" variant="outlined" size="small">Detalhes</Button>
+        ),
+        createDataOrdens(
+            '#3569',
+            <Chip className="stats" size="small" label="Mesa de poker" />,
+            'Mesa de poker redonda',
+            '11/042025',
+            <Chip className="stats" size="small" color="success" label="Finalizado" />,
+            <Button component={Link} to="/ordens/3569" variant="outlined" size="small">Detalhes</Button>
+        ),
+    ];
+    const headCellsOrdens = [
         {
             id: 'id',
             numeric: false,
             label: 'Id',
         },
         {
-            id: 'equipe',
+            id: 'categoria',
             numeric: false,
-            label: 'Equipe',
+            label: 'Categoria',
         },
         {
             id: 'descricao',
@@ -84,9 +76,9 @@ export default function Pedidos() {
             label: 'Descrição',
         },
         {
-            id: 'criacao',
-            numeric: false,
-            label: 'Criação',
+            id: 'producao',
+            numeric: true,
+            label: 'Produção',
         },
         {
             id: 'status',
@@ -99,7 +91,6 @@ export default function Pedidos() {
             label: 'Link',
         },
     ];
-
 
     const createData = (id, descricao, dimensoes, peso, criacao, acoes) => {
         return {
@@ -169,64 +160,9 @@ export default function Pedidos() {
         },
     ];
     
-
     const handleChange = (event, newTab) => {
       setTab(newTab);
     };
-
-    const step_list = [
-        {
-            title: 'Router',
-            steps: [
-                {
-                    label: 'Pendente',
-                    description: 'Ainda não iniciado'
-                },
-                {
-                    label: 'Concluído',
-                    description: 'Finalizar este requisito (não é possível reverter este estado)'
-                },
-            ]
-        },
-        {
-            title: 'Adesivo',
-            steps: [
-                {
-                    label: 'Pendente',
-                    description: 'Ainda não iniciado'
-                },
-                {
-                    label: 'Cliente',
-                    description: 'Aguardando aprovação do cliente'
-                },
-                {
-                    label: 'Concluído',
-                    description: 'Finalizar este requisito (não é possível reverter este estado)'
-                },
-            ]
-        },
-        {
-            title: 'Tecido',
-            steps: [
-                {
-                    label: 'Pendente',
-                    description: 'Ainda não iniciado'
-                },
-                {
-                    label: 'Cliente',
-                    description: 'Aguardando aprovação do cliente'
-                },
-                {
-                    label: 'Impermeabilização',
-                    description: 'O tecido precisa ser impermeabilizado'
-                },
-                {
-                    label: 'Concluído',
-                    description: 'Finalizar este requisito (não é possível reverter este estado)'
-                },
-            ]
-        },
-    ];
 
     return (
         <Layout>
@@ -240,28 +176,17 @@ export default function Pedidos() {
                     allowScrollButtonsMobile
                 >
                     <Tab label="Informações" />
-                    <Tab label="Requisitos" />
-                    <Tab label="Atividades" />
+                    <Tab label="Ordens" />
                     <Tab label="Volumes" />
-                    <Tab label="Finalizar pedido" disabled />
                 </Tabs>
             </Box>
             <Box className="show_content">
                 { tab == 0 && <Informacoes 
-                    setStatusModalChange={setStatusModalChange} 
-                    open={statusModalChange}
                     status={status} 
-                    setStatus={setStatus}
                     setTab={setTab} />
                 }
-                { tab == 1 && <Requisitos step_list={step_list} /> }
-                { tab == 2 && <Atividades 
-                    openModal={setAddAtividadeModal} 
-                    open={addAtividadeModal}
-                    headCells={headCellsAtividades} 
-                    rows={rowsAtividades} />
-                }
-                { tab == 3 && <Volumes 
+                { tab == 1 && <Ordens headCells={headCellsOrdens} rows={rowsOrdens}/> }
+                { tab == 2 && <Volumes 
                     openModal={setAddVolumeModal} 
                     open={addVolumeModal} 
                     headCells={headCellsVolumes} 
@@ -272,7 +197,7 @@ export default function Pedidos() {
     )
 }
 
-function Informacoes({setStatusModalChange, open, setStatus, status, setTab}) {
+function Informacoes({ status, setTab}) {
     return (
         <>
         <Box className="informacoes">
@@ -287,6 +212,10 @@ function Informacoes({setStatusModalChange, open, setStatus, status, setTab}) {
                         <b>REMESSA: </b>33045-1
                     </p>
                     <p>
+                        <span className="icon"><CalendarMonthTwoToneIcon/></span>
+                        <b>ENTREGA: </b>01/11/2024
+                    </p>
+                    <p>
                         <span className="icon"><PermIdentityTwoToneIcon/></span>
                         <b>COMPRADOR(A): </b>João Felipe
                     </p>
@@ -295,156 +224,37 @@ function Informacoes({setStatusModalChange, open, setStatus, status, setTab}) {
                         <b>CIDADE / EST: </b>Goiânia / GO
                     </p>
                     <p>
-                        <span className="icon"><StoreTwoToneIcon/></span>
-                        <b>VENDEDOR: </b>Daniele
-                    </p>
-                    <p>
-                        <span className="icon"><TagIcon/></span>
-                        <b>CATEGORIA: </b>Mesas de Poker
-                    </p>
-                    <p>
                         <span className="icon"><AssignmentTwoToneIcon/></span>
-                        <b>ATIVIDADES: </b>
-                        <Button variant="contained" size="small" onClick={() => {setTab(2)}}>1/4</Button>
+                        <b>ORDENS: </b>
+                        <Button variant="contained" size="small" onClick={() => {setTab(1)}}>1/2</Button>
                     </p>
-                    
-                    <Button variant="contained" onClick={() => setStatusModalChange(true)}>Alterar status</Button>
-                </Box>
-            </Box>
-
-            <Box className="info_produto">
-                <h3>
-                    <b>PRODUTO: </b>MESA DE POKER PROFISSIONAL PARA CLUBES DE POKER E RESIDÊNCIAS
-                </h3>
-                <p>
-                    <b>Quantidade: </b>1
-                </p>
-                <Box className="info_table">
-                    <div>
-                        <h4>TAMANHO DA MESA:</h4>
-                        <p>9 (2,40 x 1,10M)</p>
-                    </div>
-                    <div>
-                        <h4>EMBARALHADOR AUTOMÁTICO:</h4>
-                        <p>Sem embaralhador</p>
-                    </div>
-                    <div>
-                        <h4>TIPO DA COLUNA DA MESA:</h4>
-                        <p>Retangular</p>
-                    </div>
-                    <div>
-                        <h4>TEXTURA DA COLUNA DA MESA:</h4>
-                        <p>Branco Fosco</p>
-                    </div>
-                    <div>
-                        <h4>PISTA PARA FICHAS:</h4>
-                        <p>Sem embaralhador</p>
-                    </div>
-                    <div>
-                        <h4>EMBARALHADOR AUTOMÁTICO:</h4>
-                        <p>Sem pista</p>
-                    </div>
-                    <div>
-                        <h4>PORTA COPOS:</h4>
-                        <p>Sem Porta Copos</p>
-                    </div>
-                    <div>
-                        <h4>COURÍSSIMO DA BORDA:</h4>
-                        <p>Preto</p>
-                    </div>
-                    <div>
-                        <h4>COR DO TECIDO DA MESA:</h4>
-                        <p>Preto</p>
-                    </div>
-                    <div>
-                        <h4>PERSONALIZE COM SUA MARCA:</h4>
-                        <p>Sem Logo ou Escrita</p>
-                    </div>
-                    <div>
-                        <h4>DESENHO DE FUNDO:</h4>
-                        <p>Sem Personalização</p>
-                    </div>
-                    <div>
-                        <h4>TAMPÃO DE JANTAR / TÊNIS DE MESA:</h4>
-                        <p>Sem tampão</p>
-                    </div>
-                    <div>
-                        <h4>TIPO DE BORDA:</h4>
-                        <p>Borda Baixa</p>
-                    </div>
-                    <div>
-                        <h4>COR DO LED:</h4>
-                        <p>Sem LED</p>
-                    </div>
-                    <div>
-                        <h4>GAVETA E RACK PARA FICHAS:</h4>
-                        <p>Para Cash Game + Rack METAL 500 Fichas (39mm)</p>
-                    </div>
-                    <div>
-                        <h4>CONFIGURAÇÃO DO TAMPÃO:</h4>
-                        <p>Configuração do Tampão</p>
-                    </div>
+                    <p>
+                        <span className="icon"><ArchiveTwoToneIcon/></span>
+                        <b>VOLUMES: </b>
+                        <Button variant="contained" size="small" onClick={() => {setTab(2)}}>2</Button>
+                    </p>
                 </Box>
             </Box>
         </Box>
-        <Modal open={open} setOpen={setStatusModalChange} title="Alterar status">
-            <ChangeStatus status={status} setStatus={setStatus} />
-        </Modal>
         </>
     )
 }
-export function Requisitos({ step_list }) {
-    return (
-        <Box className="requisitos">
-            { 
-                step_list.map((step, index) => (
-                    <RequisitoItem step={step} key={index} />
-                ))
-            }
-        </Box>
-    )
-}
-export function RequisitoItem({ step }){
-    return (
-        <div className="requisito_item">
-            <h3>
-                <span className="icon">
-                    <ChecklistIcon />
-                </span>
-                {step.title}
-            </h3>
-            <div className="step_content">
-                <Stepper steps={step.steps} />
-            </div>
-        </div>
-    )
-}
-export function Atividades({ openModal, open, equipe = false, headCells, rows }) {
+
+
+export function Ordens({ headCells, rows }) {
     return (
         <>
-            <Box className="atividades">
-                <DataTable headCells={headCells} rows={rows}/>
-                { !equipe &&
-                    <Button className="adicionar" variant="contained" onClick={() => openModal(true)}>Adicionar atividade</Button>
-                }
-                { equipe &&
-                    <Button className="relatorio" variant="contained"><PictureAsPdfIcon/> Gerar relatório</Button>
-                }
-            </Box>
-            { !equipe &&
-                <Modal open={open} setOpen={openModal} title="Adicionar atividade">
-                    <AdicionarAtividade />
-                </Modal>
-            }
+        <Box className="table_content">
+            <DataTable headCells={headCells} rows={rows}/>
+        </Box>
         </>
     )
 }
 
 export function Volumes({ openModal, open, adicionar = true, headCells, rows }) {
-
     return (
         <>
-        <Box className="volumes">
+        <Box className="table_content">
             <DataTable headCells={headCells} rows={rows}/>
             { adicionar && 
                 <>

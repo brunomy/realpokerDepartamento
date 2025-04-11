@@ -5,8 +5,8 @@ import { UserProvider } from './context/UserContext';
 import Login from './pages/Login'
 import Pedidos from './pages/Pedidos';
 import Pedido from './pages/Pedido';
-import Atividades from './pages/Atividades';
-import Atividade from './pages/Atividade';
+import Ordens from './pages/Ordens';
+import Ordem from './pages/Ordem';
 import Checklists from './pages/Checklists';
 import Checklist from './pages/Checklist';
 import Equipes from './pages/Equipes';
@@ -26,8 +26,8 @@ function App() {
           <Route path="/pedidos" element={<Pedidos />} />
           <Route path="/pedidos/:id" element={<Pedido />} />
 
-          <Route path="/atividades" element={<Atividades />} />
-          <Route path="/atividades/:id" element={<Atividade />} />
+          <Route path="/ordens" element={<Ordens />} />
+          <Route path="/ordens/:id" element={<Ordem />} />
 
           <Route path="/checklists" element={<Checklists />} />
           <Route path="/checklists/:id" element={<Checklist />} />

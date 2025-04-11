@@ -38,83 +38,83 @@ export default function Pedidos() {
     ]
 
     //dados da tabela
-    const createData = (id, descricao, criacao, status, link) => {
-        return { id, descricao, criacao, status, link };
+    const createData = (id, ordens, criacao, status, link) => {
+        return { id, ordens, criacao, status, link };
     }
     const rows = [
         createData(
             '#5951', 
-            'Mesa de poker profissional para clubes de poker e residências',
+            '0/2',
             '01/11/2024',
-            <Chip className="stats" size="small" label="Pendente" />,
+            <Chip className="stats" size="small" color="primary" label="Em andamento" />,
             <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
             '#5952', 
-            'Mesa de poker profissional',
+            '0/2',
             '02/11/2024',
-            <Chip className="stats" size="small" color="primary" label="Em andamento" />,
+            <Chip className="stats" size="small" label="Pendente" />,
             <Button component={Link} to="/pedidos/5952" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
             '#5953', 
-            'Mesa de poker profissional para clubes',
+            '1/2',
             '03/11/2024',
             <Chip className="stats" size="small" color="error" label="Parado" />,
             <Button component={Link} to="/pedidos/5953" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
             '#5955', 
-            'Mesa de poker profissional para residencias',
+            '2/2',
             '04/11/2024',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
             <Button component={Link} to="/pedidos/5955" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
             '#5956', 
-            'Mesa de poker profissional para residencias',
+            '2/2',
             '04/11/2024',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
             <Button component={Link} to="/pedidos/5956" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
             '#5957', 
-            'Mesa de poker profissional para residencias',
+            '2/2',
             '04/11/2024',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
             <Button component={Link} to="/pedidos/5957" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
             '#5958', 
-            'Mesa de poker profissional para residencias',
+            '4/4',
             '04/11/2024',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
             <Button component={Link} to="/pedidos/5958" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
             '#5959', 
-            'Mesa de poker profissional para residencias',
+            '1/1',
             '04/11/2024',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
             <Button component={Link} to="/pedidos/5959" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
             '#5960', 
-            'Mesa de poker profissional para residencias',
+            '2/2',
             '04/11/2024',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
             <Button component={Link} to="/pedidos/5960" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
             '#5961', 
-            'Mesa de poker profissional para residencias',
+            '2/2',
             '04/11/2024',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
             <Button component={Link} to="/pedidos/5961" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
             '#5962', 
-            'Mesa de poker profissional para residencias',
+            '2/2',
             '04/11/2024',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
             <Button component={Link} to="/pedidos/5962" variant="outlined" size="small">Detalhes</Button>
@@ -127,9 +127,9 @@ export default function Pedidos() {
             label: 'Id',
         },
         {
-            id: 'descricao',
+            id: 'ordens',
             numeric: false,
-            label: 'Descrição',
+            label: 'Ordens',
         },
         {
             id: 'criacao',

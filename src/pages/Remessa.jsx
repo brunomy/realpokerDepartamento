@@ -27,7 +27,9 @@ import Title from "./components/Title";
 import Modal from './components/Modal';
 import ChangeStatus from './components/ChangeStatus';
 
-import { Requisitos, Volumes } from './Pedido';
+import { Requisitos } from './Ordem';
+import { Volumes } from './Pedido';
+
 import TransferList from './components/TransferList';
 
 export default function Remessa() {

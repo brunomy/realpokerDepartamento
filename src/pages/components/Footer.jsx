@@ -19,18 +19,18 @@ export default function Footer() {
 
     const currentTab = () => {
         if (path.includes('/pedidos')) return 'pedidos';
-        if (path.includes('/atividades')) return 'atividades';
+        if (path.includes('/ordens')) return 'ordens';
         if (path.includes('/checklists')) return 'checklists';
         if (path.includes('/remessas')) return 'remessas';
         if (path.includes('/equipes')) return 'equipes';
-        return 'atividades'; // fallback
+        return 'ordens'; // fallback
     };
 
     return (
         <BottomNavigation
             className="bottomNavigation"
             sx={{ width: '100%' }}
-            value={currentTab() ?? 'atividades'}
+            value={currentTab() ?? 'ordens'}
             showLabels
         >
             <BottomNavigationAction
@@ -42,11 +42,11 @@ export default function Footer() {
                 sx={{ display: usuarioLogado.permission === "admin" ? 'flex' : 'none' }}
             />
             <BottomNavigationAction
-                label="Atividades"
-                value="atividades"
+                label="Ordens"
+                value="ordens"
                 icon={<AssignmentTwoToneIcon />}
                 component={Link}
-                to="/atividades"
+                to="/ordens"
                 showLabel
             />
             <BottomNavigationAction
