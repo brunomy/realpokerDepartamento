@@ -43,17 +43,14 @@ export default function Checklists() {
     ]
 
     //dados da tabela
-    const createData = (id, descricao, categorias, acoes) => {
+    const createData = (categorias, acoes) => {
         return {
-            id,
-            descricao,
             categorias,
             acoes,
         };
     }
     const [rows, setRows] = useState([
         createData(
-            '#3489787', 
             'Mesa de poker',
             <Box className="acoes">
                 <Button component={Link} to={`/checklists/1`} variant="outlined" size="small"><EditSquareIcon /></Button>
@@ -62,11 +59,6 @@ export default function Checklists() {
         ),
     ]);
     const headCells = [
-        {
-            id: 'id',
-            numeric: false,
-            label: 'Id',
-        },
         {
             id: 'categoria',
             numeric: false,
