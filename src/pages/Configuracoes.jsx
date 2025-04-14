@@ -21,7 +21,7 @@ import { useUser } from "../context/UserContext";
 export default function Configuracoes() {
     const [tab, setTab] = useState(0);
 
-    const { etapas, setEtapas, atividades, setAtividades, categorias, setCategorias, checklists, setChecklists } = useUser();
+    const { etapas, atividades, categorias, checklists } = useUser();
 
     //dados da tabela
     const createData = (categorias, etapas, atividades, checklists, acoes) => {

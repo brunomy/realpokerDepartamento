@@ -24,7 +24,7 @@ import AdicionarString from './components/AdicionarString';
 
 export default function ConfiguracaoAtividades() {
     const { id, id_etapa } = useParams();
-    const { etapas, setEtapas, atividades, setAtividades, checklists, setChecklists } = useUser();
+    const { atividades, setAtividades, checklists, setChecklists } = useUser();
 
     const [novaAtividade, setNovaAtividade] = useState("");
 
@@ -50,51 +50,34 @@ export default function ConfiguracaoAtividades() {
 
 
     //dados da tabela
-    const createData = (etapa, atividades, checklists, acoes) => {
-        return {
-            etapa,
-            atividades,
-            checklists,
-            acoes,
-        };
+    const createData = (atividade, checklists, acoes) => {
+        return { atividade, checklists, acoes };
     }
-    useEffect(() => {
-        setRows(
-            (atividades.filter((item) => item.id_etapa == id_etapa))?.map((atividade) => {
-                return createData(
-                    atividade.title,
-                    checklists.filter((checklist) => checklist.id_atividade == atividade.id).length,
-                    <Box className="acoes">
-                        <Button component={Link} to={`/configuracoes/${id}/etapa/${atividade.id}/atividade/${atividade.id}`} variant="outlined" size="small">
-                            <EditSquareIcon />
-                        </Button>
-                        <Button onClick={() => {deletar(atividade.id)}} variant="outlined" size="small"><DeleteIcon /></Button>
-                    </Box>
-                );
-            }) || []
-        )
-    },[atividades])
-
-    const [rows, setRows] = useState(
-        (atividades.filter((item) => item.id_etapa == id_etapa))?.map((atividade) => {
+    const createDataItem = () => {
+        return (atividades.filter((item) => item.id_etapa == id_etapa))?.map((atividade) => {
             return createData(
                 atividade.title,
                 checklists.filter((checklist) => checklist.id_atividade == atividade.id).length,
                 <Box className="acoes">
-                    <Button component={Link} to={`/configuracoes/${id}/etapa/${id_etapa}/atividade/${atividade.id}`} variant="outlined" size="small">
+                    <Button component={Link} to={`/configuracoes/${id}/etapa/${atividade.id}/atividade/${atividade.id}`} variant="outlined" size="small">
                         <EditSquareIcon />
                     </Button>
                     <Button onClick={() => {deletar(atividade.id)}} variant="outlined" size="small"><DeleteIcon /></Button>
                 </Box>
             );
-        }) || [] 
-    );
+        }) || []
+    }
+    useEffect(() => {
+        setRows(createDataItem())
+    },[atividades])
+
+    const [rows, setRows] = useState(createDataItem());
 
     const headCells = [
         {
-            id: 'etapa',
+            id: 'atividade',
             numeric: false,
-            label: 'Etapa',
+            label: 'Atividade',
         },
         {
             id: 'checklists',

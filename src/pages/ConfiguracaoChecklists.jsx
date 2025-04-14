@@ -24,7 +24,7 @@ import AdicionarString from './components/AdicionarString';
 
 export default function ConfiguracaoChecklists() {
     const { id, id_etapa, id_atividade } = useParams();
-    const { etapas, setEtapas, atividades, setAtividades, checklists, setChecklists } = useUser();
+    const { checklists, setChecklists } = useUser();
 
     const [novoChecklist, setNovoChecklist] = useState("");
 
@@ -50,41 +50,33 @@ export default function ConfiguracaoChecklists() {
 
 
     //dados da tabela
-    const createData = (etapa, acoes) => {
+    const createData = (checklist, acoes) => {
         return {
-            etapa,
+            checklist,
             acoes,
         };
     }
-    useEffect(() => {
-        setRows(
-            (checklists.filter((item) => item.id_atividade == id_atividade))?.map((checklist) => {
-                return createData(
-                    checklist.title,
-                    <Box className="acoes">
-                        <Button onClick={() => {deletar(checklist.id)}} variant="outlined" size="small"><DeleteIcon /></Button>
-                    </Box>
-                );
-            }) || []
-        )
-    },[checklists])
-
-    const [rows, setRows] = useState(
-        (checklists.filter((item) => item.id_atividade == id_atividade))?.map((checklist) => {
+    const createDataItem = (checklist, acoes) => {
+        return (checklists.filter((item) => item.id_atividade == id_atividade))?.map((checklist) => {
             return createData(
                 checklist.title,
                 <Box className="acoes">
                     <Button onClick={() => {deletar(checklist.id)}} variant="outlined" size="small"><DeleteIcon /></Button>
                 </Box>
             );
-        }) || [] 
-    );
+        }) || []
+    }
+    useEffect(() => {
+        setRows(createDataItem())
+    },[checklists])
+
+    const [rows, setRows] = useState(createDataItem());
 
     const headCells = [
         {
-            id: 'etapa',
+            id: 'checklist',
             numeric: false,
-            label: 'Etapa',
+            label: 'Checklist',
         },
         {
             id: 'acoes',

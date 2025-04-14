@@ -24,7 +24,7 @@ import AdicionarString from './components/AdicionarString';
 
 export default function ConficuracaoEtapas() {
     const { id } = useParams();
-    const { categorias, etapas, setEtapas, atividades, setAtividades, checklists, setChecklists } = useUser();
+    const { etapas, setEtapas, atividades, setAtividades, checklists, setChecklists } = useUser();
 
     const [novaEtapa, setNovaEtapa] = useState("");
 
@@ -51,33 +51,10 @@ export default function ConficuracaoEtapas() {
 
     //dados da tabela
     const createData = (etapa, atividades, checklists, acoes) => {
-        return {
-            etapa,
-            atividades,
-            checklists,
-            acoes,
-        };
+        return { etapa, atividades, checklists, acoes };
     }
-    useEffect(() => {
-        setRows(
-            (etapas.filter((item) => item.id_categoria == id))?.map((etapa) => {
-                return createData(
-                    etapa.title,
-                    atividades.filter((atividade) => atividade.id_etapa == etapa.id).length,
-                    checklists.filter((checklist) => checklist.id_etapa == etapa.id).length,
-                    <Box className="acoes">
-                        <Button component={Link} to={`/configuracoes/${id}/etapa/${etapa.id}`} variant="outlined" size="small">
-                            <EditSquareIcon />
-                        </Button>
-                        <Button onClick={() => {deletar(etapa.id)}} variant="outlined" size="small"><DeleteIcon /></Button>
-                    </Box>
-                );
-            }) || []
-        )
-    },[etapas])
-
-    const [rows, setRows] = useState(
-        (etapas.filter((item) => item.id_categoria == id))?.map((etapa) => {
+    const createDataItens = () => {
+        return (etapas.filter((item) => item.id_categoria == id))?.map((etapa) => {
             return createData(
                 etapa.title,
                 atividades.filter((atividade) => atividade.id_etapa == etapa.id).length,
@@ -89,7 +66,14 @@ export default function ConficuracaoEtapas() {
                     <Button onClick={() => {deletar(etapa.id)}} variant="outlined" size="small"><DeleteIcon /></Button>
                 </Box>
             );
-          }) || [] 
+        }) || [] 
+    }
+    useEffect(() => {
+        setRows(createDataItens())
+    },[etapas])
+
+    const [rows, setRows] = useState(
+        createDataItens()
     );
 
     const headCells = [
