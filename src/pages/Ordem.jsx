@@ -39,23 +39,9 @@ export default function Ordem() {
     const { 
         usuarioLogado, setUsuarioLogado,
         checklists, setChecklists,
-        checklistItem, setChecklistItem,
     } = useUser();
     const [draftChecklist, setDraftChecklist] = useState([]);
     const draftRef = useRef([]);
-
-    useEffect(() => {
-        if (checklists.length > 0 && checklistItem.length > 0) {
-          const list = checklists
-            .filter((item) => item.id_categoria == 1) //Precisa mudar o id
-            .map((item) => ({
-              ...item,
-              itens: checklistItem.filter((i) => i.id_checklist === item.id),
-            }));
-          setDraftChecklist(list);
-          draftRef.current = JSON.parse(JSON.stringify(list));
-        }
-      }, [checklists, checklistItem]);
 
     const { id } = useParams();
 

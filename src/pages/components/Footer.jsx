@@ -52,14 +52,6 @@ export default function Footer() {
                 to="/ordens"
                 showLabel
             />
-            <BottomNavigationAction
-                label="Configurações"
-                value="configuracoes"
-                icon={<SettingsApplicationsTwoToneIcon />}
-                component={Link}
-                to="/configuracoes"
-                showLabel
-            />
             {/* <BottomNavigationAction
                 label="Atividades"
                 value="atividades"
@@ -68,15 +60,6 @@ export default function Footer() {
                 to="/atividades"
                 showLabel
             /> */}
-            <BottomNavigationAction
-                label="Checklists"
-                value="checklists"
-                icon={<CheckBoxTwoToneIcon />}
-                component={Link}
-                to="/checklists"
-                showLabel
-                sx={{ display: usuarioLogado.permission === "admin" ? 'flex' : 'none' }}
-            />
             <BottomNavigationAction
                 label="Equipes"
                 value="equipes"
@@ -94,6 +77,14 @@ export default function Footer() {
                 to="/remessas"
                 showLabel
                 sx={{ display: usuarioLogado.permission === "admin" ? 'flex' : 'none' }}
+            />
+            <BottomNavigationAction
+                label="Configurações"
+                value="configuracoes"
+                icon={<SettingsApplicationsTwoToneIcon />}
+                component={Link}
+                to="/configuracoes"
+                showLabel
             />
         </BottomNavigation>
     )
