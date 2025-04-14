@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import { Link } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip, Tabs, Tab } from '@mui/material';
-import AssignmentIcon from '@mui/icons-material/Assignment';
+import FactoryIcon from '@mui/icons-material/Factory';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 import dayjs from 'dayjs';
@@ -110,7 +110,7 @@ export default function Ordens() {
 
     return (
         <Layout>
-            <Title title="Lista de ordens" icon={<AssignmentIcon/>} />
+            <Title title="Lista de ordens" icon={<FactoryIcon/>} />
             <Box className="tabs_content">
                 <Tabs
                     value={tab}

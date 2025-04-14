@@ -8,9 +8,11 @@ import { useUser } from '../../context/UserContext';
 
 import ShoppingCartTwoToneIcon from '@mui/icons-material/ShoppingCartTwoTone';
 import AssignmentTwoToneIcon from '@mui/icons-material/AssignmentTwoTone';
+import FactoryTwoToneIcon from '@mui/icons-material/FactoryTwoTone';
 import GroupsTwoToneIcon from '@mui/icons-material/GroupsTwoTone';
 import LocalShippingTwoToneIcon from '@mui/icons-material/LocalShippingTwoTone';
 import CheckBoxTwoToneIcon from '@mui/icons-material/CheckBoxTwoTone';
+import SettingsApplicationsTwoToneIcon from '@mui/icons-material/SettingsApplicationsTwoTone';
 
 export default function Footer() {
     const { usuarioLogado, setUsuarioLogado } = useUser();
@@ -20,6 +22,7 @@ export default function Footer() {
     const currentTab = () => {
         if (path.includes('/pedidos')) return 'pedidos';
         if (path.includes('/ordens')) return 'ordens';
+        if (path.includes('/configuracoes')) return 'configuracoes';
         if (path.includes('/checklists')) return 'checklists';
         if (path.includes('/remessas')) return 'remessas';
         if (path.includes('/equipes')) return 'equipes';
@@ -44,11 +47,27 @@ export default function Footer() {
             <BottomNavigationAction
                 label="Ordens"
                 value="ordens"
-                icon={<AssignmentTwoToneIcon />}
+                icon={<FactoryTwoToneIcon />}
                 component={Link}
                 to="/ordens"
                 showLabel
             />
+            <BottomNavigationAction
+                label="Configurações"
+                value="configuracoes"
+                icon={<SettingsApplicationsTwoToneIcon />}
+                component={Link}
+                to="/configuracoes"
+                showLabel
+            />
+            {/* <BottomNavigationAction
+                label="Atividades"
+                value="atividades"
+                icon={<AssignmentTwoToneIcon />}
+                component={Link}
+                to="/atividades"
+                showLabel
+            /> */}
             <BottomNavigationAction
                 label="Checklists"
                 value="checklists"

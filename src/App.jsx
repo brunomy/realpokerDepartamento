@@ -13,6 +13,10 @@ import Equipes from './pages/Equipes';
 import Equipe from './pages/Equipe';
 import Remessas from './pages/Remessas';
 import Remessa from './pages/Remessa';
+import Configuracoes from './pages/Configuracoes';
+import ConficuracaoEtapas from './pages/ConficuracaoEtapas';
+import ConfiguracaoAtividades from './pages/ConfiguracaoAtividades';
+import ConfiguracaoChecklists from './pages/ConfiguracaoChecklists';
 
 function App() {
 
@@ -28,6 +32,11 @@ function App() {
 
           <Route path="/ordens" element={<Ordens />} />
           <Route path="/ordens/:id" element={<Ordem />} />
+
+          <Route path="/configuracoes" element={<Configuracoes />} />
+          <Route path="/configuracoes/:id" element={<ConficuracaoEtapas />} />
+          <Route path="/configuracoes/:id/etapa/:id_etapa" element={<ConfiguracaoAtividades />} />
+          <Route path="/configuracoes/:id/etapa/:id_etapa/atividade/:id_atividade" element={<ConfiguracaoChecklists />} />
 
           <Route path="/checklists" element={<Checklists />} />
           <Route path="/checklists/:id" element={<Checklist />} />

@@ -8,7 +8,7 @@ import { Box, Button, Chip, Tabs, Tab, Typography } from '@mui/material';
 
 import StairsTwoToneIcon from '@mui/icons-material/StairsTwoTone';
 import ChecklistIcon from '@mui/icons-material/Checklist';
-import AssignmentIcon from '@mui/icons-material/Assignment';
+import FactoryIcon from '@mui/icons-material/Factory';
 import GroupsTwoToneIcon from '@mui/icons-material/GroupsTwoTone';
 import ShoppingCartTwoToneIcon from '@mui/icons-material/ShoppingCartTwoTone';
 import CheckBoxTwoToneIcon from '@mui/icons-material/CheckBoxTwoTone';
@@ -193,7 +193,7 @@ export default function Ordem() {
 
     return (
         <Layout>
-            <Title title={"Ordem Nº #"+id} icon={<AssignmentIcon/>} />
+            <Title title={"Ordem Nº #"+id} icon={<FactoryIcon/>} />
             <Box className="tabs_content">
                 <Tabs
                     value={tab}

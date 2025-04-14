@@ -1,0 +1,111 @@
+import "~/assets/scss/Show.scss";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { useState, useEffect, useRef, memo } from "react";
+import { Box, Button, TextField, Typography, IconButton } from "@mui/material";
+import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import EditSquareIcon from '@mui/icons-material/EditSquare';
+import InputAuto from './components/InputAuto';
+import DataTable from './components/DataTable';
+
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Accordion from "@mui/material/Accordion";
+import AccordionActions from "@mui/material/AccordionActions";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+
+import Layout from "./components/Layout";
+import Title from "./components/Title";
+import { useUser } from "../context/UserContext";
+
+import Modal from './components/Modal';
+import AdicionarString from './components/AdicionarString';
+
+export default function ConfiguracaoChecklists() {
+    const { id, id_etapa, id_atividade } = useParams();
+    const { etapas, setEtapas, atividades, setAtividades, checklists, setChecklists } = useUser();
+
+    const [novoChecklist, setNovoChecklist] = useState("");
+
+    const adicionarAtividae = () => {
+        setChecklists([
+            ...checklists,
+            {
+                id: checklists.length + 1,
+                id_categoria: id,
+                id_etapa: id_etapa,
+                id_atividade: id_atividade,
+                title: novoChecklist
+            },
+        ]);
+        setNovoChecklist("");
+        setOpenModal(false);
+    }
+    const deletar = (id) => {
+        setChecklists(checklists.filter(item => item.id !== id))
+    }
+
+    const [openModal, setOpenModal] = useState(false);
+
+
+    //dados da tabela
+    const createData = (etapa, acoes) => {
+        return {
+            etapa,
+            acoes,
+        };
+    }
+    useEffect(() => {
+        setRows(
+            (checklists.filter((item) => item.id_atividade == id_atividade))?.map((checklist) => {
+                return createData(
+                    checklist.title,
+                    <Box className="acoes">
+                        <Button onClick={() => {deletar(checklist.id)}} variant="outlined" size="small"><DeleteIcon /></Button>
+                    </Box>
+                );
+            }) || []
+        )
+    },[checklists])
+
+    const [rows, setRows] = useState(
+        (checklists.filter((item) => item.id_atividade == id_atividade))?.map((checklist) => {
+            return createData(
+                checklist.title,
+                <Box className="acoes">
+                    <Button onClick={() => {deletar(checklist.id)}} variant="outlined" size="small"><DeleteIcon /></Button>
+                </Box>
+            );
+        }) || [] 
+    );
+
+    const headCells = [
+        {
+            id: 'etapa',
+            numeric: false,
+            label: 'Etapa',
+        },
+        {
+            id: 'acoes',
+            numeric: false,
+            align: "right",
+            label: 'Ações',
+        },
+    ];
+
+    return (
+        <Layout>
+            <Title title={`Configuração de Checklists`} icon={<SettingsApplicationsIcon />} />
+            <Box className="show_content">
+                <Box className="table_content" sx={{ paddingLeft: '0 !important', paddingRight: '0 !important' }}>
+                    <DataTable headCells={headCells} rows={rows}/>
+                    <Button className="adicionar" variant="contained" onClick={() => setOpenModal(true)}>Adicionar checklist</Button>
+                </Box>
+            </Box>
+            <Modal open={openModal} setOpen={setOpenModal} title="Adicionar checklist" confirm={adicionarAtividae}>
+                <AdicionarString value={novoChecklist} setValue={setNovoChecklist} />
+            </Modal>
+        </Layout>
+    );
+}

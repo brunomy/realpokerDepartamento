@@ -38,14 +38,15 @@ export default function Pedidos() {
     ]
 
     //dados da tabela
-    const createData = (id, ordens, criacao, status, link) => {
-        return { id, ordens, criacao, status, link };
+    const createData = (id, ordens, criacao, comprador, status, link) => {
+        return { id, ordens, criacao, comprador, status, link };
     }
     const rows = [
         createData(
             '#5951', 
             '0/2',
             '01/11/2024',
+            'João Felipe',
             <Chip className="stats" size="small" color="primary" label="Em andamento" />,
             <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">Detalhes</Button>
         ),
@@ -53,6 +54,7 @@ export default function Pedidos() {
             '#5952', 
             '0/2',
             '02/11/2024',
+            'João Felipe',
             <Chip className="stats" size="small" label="Pendente" />,
             <Button component={Link} to="/pedidos/5952" variant="outlined" size="small">Detalhes</Button>
         ),
@@ -60,6 +62,7 @@ export default function Pedidos() {
             '#5953', 
             '1/2',
             '03/11/2024',
+            'João Felipe',
             <Chip className="stats" size="small" color="error" label="Parado" />,
             <Button component={Link} to="/pedidos/5953" variant="outlined" size="small">Detalhes</Button>
         ),
@@ -67,6 +70,7 @@ export default function Pedidos() {
             '#5955', 
             '2/2',
             '04/11/2024',
+            'João Felipe',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
             <Button component={Link} to="/pedidos/5955" variant="outlined" size="small">Detalhes</Button>
         ),
@@ -74,6 +78,7 @@ export default function Pedidos() {
             '#5956', 
             '2/2',
             '04/11/2024',
+            'João Felipe',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
             <Button component={Link} to="/pedidos/5956" variant="outlined" size="small">Detalhes</Button>
         ),
@@ -81,6 +86,7 @@ export default function Pedidos() {
             '#5957', 
             '2/2',
             '04/11/2024',
+            'João Felipe',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
             <Button component={Link} to="/pedidos/5957" variant="outlined" size="small">Detalhes</Button>
         ),
@@ -88,6 +94,7 @@ export default function Pedidos() {
             '#5958', 
             '4/4',
             '04/11/2024',
+            'João Felipe',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
             <Button component={Link} to="/pedidos/5958" variant="outlined" size="small">Detalhes</Button>
         ),
@@ -95,6 +102,7 @@ export default function Pedidos() {
             '#5959', 
             '1/1',
             '04/11/2024',
+            'João Felipe',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
             <Button component={Link} to="/pedidos/5959" variant="outlined" size="small">Detalhes</Button>
         ),
@@ -102,6 +110,7 @@ export default function Pedidos() {
             '#5960', 
             '2/2',
             '04/11/2024',
+            'João Felipe',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
             <Button component={Link} to="/pedidos/5960" variant="outlined" size="small">Detalhes</Button>
         ),
@@ -109,6 +118,7 @@ export default function Pedidos() {
             '#5961', 
             '2/2',
             '04/11/2024',
+            'João Felipe',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
             <Button component={Link} to="/pedidos/5961" variant="outlined" size="small">Detalhes</Button>
         ),
@@ -116,6 +126,7 @@ export default function Pedidos() {
             '#5962', 
             '2/2',
             '04/11/2024',
+            'João Felipe',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
             <Button component={Link} to="/pedidos/5962" variant="outlined" size="small">Detalhes</Button>
         ),
@@ -135,6 +146,11 @@ export default function Pedidos() {
             id: 'criacao',
             numeric: false,
             label: 'Criação',
+        },
+        {
+            id: 'comprador',
+            numeric: false,
+            label: 'Comprador',
         },
         {
             id: 'status',
