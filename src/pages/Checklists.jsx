@@ -97,7 +97,7 @@ export default function Checklists() {
                     <h2>Filtros:</h2>
                     <Box className="filter_list">
                         <Box className="item">
-                            <InputAuto label="Categoria" list={categorias} setValue={setCategoria} width={'100%'} />
+                            <InputAuto value={{id: 1, label: 'M2'}} label="Categoria" list={categorias} setValue={setCategoria} width={'100%'} />
                         </Box>
                     </Box>
                 </Box>

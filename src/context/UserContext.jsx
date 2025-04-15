@@ -240,14 +240,43 @@ export function UserProvider({ children }) {
     { id: 26, id_categoria: 1, id_etapa: 6, id_atividade: 21, title: 'Conferir se a arte do tecido no e-mail está batendo com a arte do tecido impresso' },
   ])
 
+  const [equipes, setEquipes] = useState([
+    {
+      id: 1,
+      title: 'M1'
+    },
+    {
+      id: 2,
+      title: 'M2'
+    },
+    {
+      id: 3,
+      title: 'M3'
+    },
+    {
+      id: 4,
+      title: 'M4'
+    },
+  ])
+
+  //etapas de um OP
+  const [etapasOP, setEtapasOP] = useState([])
+  const [atividadesOP, setAtividadesOP] = useState([])
+  const [checklistOP, setChecklistOP] = useState([])
+
   return (
     <UserContext.Provider value={{ 
       usuarioLogado, setUsuarioLogado,
       categorias, setCategorias,
       ordens, setOrdens,
-      checklists, setChecklists,
       etapas, setEtapas,
-      atividades, setAtividades
+      atividades, setAtividades,
+      checklists, setChecklists,
+      equipes, setEquipes,
+
+      etapasOP, setEtapasOP,
+      atividadesOP, setAtividadesOP,
+      checklistOP, setChecklistOP
     }}>
       {children}
     </UserContext.Provider>

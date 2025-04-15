@@ -44,7 +44,7 @@ export default function Pedidos() {
     const rows = [
         createData(
             '#5951', 
-            '0/2',
+            '1/2',
             '01/11/2024',
             'João Felipe',
             <Chip className="stats" size="small" color="primary" label="Em andamento" />,
