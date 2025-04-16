@@ -19,11 +19,11 @@ import AdicionarChecklist from './components/AdicionarChecklist';
 import { useUser } from "../context/UserContext";
 
 export default function Configuracoes() {
-    const { etapas, atividades, categorias, checklists } = useUser();
+    const { etapas, atividades, categorias, checklists, volumes } = useUser();
 
     //dados da tabela
-    const createData = (categorias, etapas, atividades, checklists, acoes) => {
-        return { categorias, etapas, atividades, checklists, acoes};
+    const createData = (categorias, etapas, atividades, checklists, volumes, acoes) => {
+        return { categorias, etapas, atividades, checklists, volumes, acoes};
     }
     const [rows, setRows] = useState(
         categorias?.map((categoria) => {
@@ -32,6 +32,7 @@ export default function Configuracoes() {
                 etapas.filter((etapa) => etapa.id_categoria == categoria.id).length,
                 atividades.filter((atividade) => atividade.id_categoria == categoria.id).length,
                 checklists.filter((checklist) => checklist.id_categoria == categoria.id).length,
+                volumes.filter((volume) => volume.id_categoria == categoria.id).length,
                 <Box className="acoes">
                     <Button component={Link} to={`/configuracoes/${categoria.id}`} variant="outlined" size="small">
                         <EditSquareIcon />
@@ -60,6 +61,11 @@ export default function Configuracoes() {
             id: 'checklists',
             numeric: true,
             label: 'Checklists',
+        },
+        {
+            id: 'volumes',
+            numeric: true,
+            label: 'Volumes',
         },
         {
             id: 'acoes',

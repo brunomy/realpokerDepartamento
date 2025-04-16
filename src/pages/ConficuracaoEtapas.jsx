@@ -24,7 +24,7 @@ import AdicionarString from './components/AdicionarString';
 
 export default function ConficuracaoEtapas() {
     const { id } = useParams();
-    const { etapas, setEtapas, atividades, setAtividades, checklists, setChecklists } = useUser();
+    const { etapas, setEtapas, atividades, setAtividades, checklists, setChecklists, volumes } = useUser();
 
     const [novaEtapa, setNovaEtapa] = useState("");
 
@@ -50,8 +50,8 @@ export default function ConficuracaoEtapas() {
     const [openModal, setOpenModal] = useState(false);
 
     //dados da tabela
-    const createData = (etapa, atividades, checklists, acoes) => {
-        return { etapa, atividades, checklists, acoes };
+    const createData = (etapa, atividades, checklists, volumes, acoes) => {
+        return { etapa, atividades, checklists, volumes, acoes };
     }
     const createDataItens = () => {
         return (etapas.filter((item) => item.id_categoria == id))?.map((etapa) => {
@@ -59,6 +59,7 @@ export default function ConficuracaoEtapas() {
                 etapa.title,
                 atividades.filter((atividade) => atividade.id_etapa == etapa.id).length,
                 checklists.filter((checklist) => checklist.id_etapa == etapa.id).length,
+                volumes.filter((volume) => volume.id_etapa == etapa.id).length,
                 <Box className="acoes">
                     <Button component={Link} to={`/configuracoes/${id}/etapa/${etapa.id}`} variant="outlined" size="small">
                         <EditSquareIcon />
@@ -91,6 +92,11 @@ export default function ConficuracaoEtapas() {
             id: 'checklists',
             numeric: false,
             label: 'Checklists',
+        },
+        {
+            id: 'volumes',
+            numeric: false,
+            label: 'Volumes',
         },
         {
             id: 'acoes',

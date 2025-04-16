@@ -203,7 +203,7 @@ export function UserProvider({ children }) {
     {
       id: 0,
       id_categoria: 1, 
-      id_etapa: 1,
+      id_etapa: 0,
       id_atividade: 0,
       title: 'Conferir medida da borda'
     },
@@ -239,6 +239,30 @@ export function UserProvider({ children }) {
 
     { id: 26, id_categoria: 1, id_etapa: 6, id_atividade: 21, title: 'Conferir se a arte do tecido no e-mail está batendo com a arte do tecido impresso' },
   ])
+  const [volumes, setVolumes] = useState([
+    {
+      id: 0,
+      id_categoria: 1, 
+      id_etapa: 1,
+      id_atividade: 0,
+      title: 'Borda da mesa',
+      comprimento: "200",
+      largura: "10",
+      altura: "5",
+      peso: "20"
+    },
+    {
+      id: 1,
+      id_categoria: 1, 
+      id_etapa: 1,
+      id_atividade: 1,
+      title: 'Tiras de couro',
+      comprimento: "200",
+      largura: "10",
+      altura: "5",
+      peso: "20"
+    },
+  ])
 
   const [equipes, setEquipes] = useState([
     {
@@ -273,6 +297,7 @@ export function UserProvider({ children }) {
       etapas, setEtapas,
       atividades, setAtividades,
       checklists, setChecklists,
+      volumes, setVolumes,
       equipes, setEquipes,
 
       etapasOP, setEtapasOP,

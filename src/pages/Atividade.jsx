@@ -176,6 +176,8 @@ function Informacoes({ setTab, open, openModal, status, setStatus, atividade }) 
 }
 
 function Volumes({ id_atividade }) {
+    const { volumesOP, setVolumesOP } = useUser();
+
     const [open, setOpen] = useState(false);
 
     const createData = (id, descricao, dimensoes, peso, criacao, acoes) => {
@@ -205,6 +207,27 @@ function Volumes({ id_atividade }) {
             </Box>
         ),
     ];
+    // const rows = [];
+
+    // volumesOP?.map((volume) => {
+    //     rows.push(
+    //         createData(
+    //             volume.id,
+    //             volume.id_pedido,
+    //             volume.id_ordem,
+    //             volume.id_atividade,
+    //             volume.id_pedido,
+
+    //             equipes.find(e => e.id == volume.id_equipe).title,
+    //             volume.data,
+    //             atividades.find(a => a.id == volume.id_atividade).title,
+    //             etapas.find(e => e.id == volume.id_etapa).title,
+    //             volume.status,
+    //             <Button component={Link} to={`/atividades/${volume.id}`} variant="outlined" size="small">Detalhes</Button>
+    //         )
+    //     )
+    // })
+
     const headCells = [
         {
             id: 'id',
@@ -243,7 +266,7 @@ function Volumes({ id_atividade }) {
         <>
         <Box className="table_content">
             <DataTable headCells={headCells} rows={rows}/>
-            <Button className="adicionar" variant="contained" onClick={() => openModal(true)}>Adicionar volume</Button>
+            <Button className="adicionar" variant="contained" onClick={() => setOpen(true)}>Adicionar volume</Button>
             <Modal open={open} setOpen={setOpen} title="Adicionar volume">
                 <AdicionarVolume/>
             </Modal>

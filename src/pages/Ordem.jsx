@@ -201,11 +201,7 @@ export default function Ordem() {
             <Box className="show_content">
                 { tab == 0 && <Informacoes 
                     setTab={setTab} 
-                    open={statusModalChange} 
-                    openModal={setStatusModalChange} 
                     status={status} 
-                    setStatus={setStatus} 
-                    usuarioLogado={usuarioLogado}
                 /> }
                 { tab == 1 && <Requisitos step_list={step_list} /> }
                 { tab == 2 && <Etapas etapas={etapas.filter(e => e.id_categoria === 1)} atividades={atividades} equipes={equipes} /> }
@@ -217,7 +213,7 @@ export default function Ordem() {
     )
 }
 
-function Informacoes({ setTab, open, openModal, status, setStatus, usuarioLogado }) {
+function Informacoes({ setTab, status }) {
     return (
         <>
         <Box className="informacoes">
@@ -424,10 +420,9 @@ function Etapas ({ etapas = [], atividades = [], equipes = [] }) {
     )
 }
 function AtividadeItem({ atividade, equipes }) {
-    const { atividadesOP, setAtividadesOP } = useUser();
+    const { atividadesOP, setAtividadesOP, volumes, volumesOP, setVolumesOP } = useUser();
     const { id } = useParams();
     
-
     const formatarArray = () => {
         return equipes.map((equipe) => ({
             id: equipe.id,
@@ -452,6 +447,10 @@ function AtividadeItem({ atividade, equipes }) {
 
     useEffect(() => {
         if(checked && equipeSelecionada && dataSelecionada && dataSelecionada != "Invalid Date" && !find){
+            const novosVolumes = volumes.filter(item => item.id_atividade === atividade.id);
+
+            setVolumesOP((prev) => [...prev, ...novosVolumes]);
+
             setAtividadesOP((prev) => [
                 ...prev,
                 {
@@ -638,11 +637,11 @@ function Checklist({ etapas, etapasOP, checklists, equipes }) {
         
             setChecklistOP(prev => [...prev, novoItem, ...novosItens]);
         
-            // setChecklistOP(prev =>
-            //     prev.map(item =>
-            //         item.id_ativ === atividadeSelecionada.id ? { ...item, status: 0 } : item
-            //     )
-            // );
+            setChecklistOP(prev =>
+                prev.map(item =>
+                    item.id_ativ === atividadeSelecionada.id ? { ...item, status: 0 } : item
+                )
+            );
             atualizarStatusAtividade(atividadeSelecionada, -1);
 
         } else {

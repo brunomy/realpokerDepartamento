@@ -24,7 +24,7 @@ import AdicionarString from './components/AdicionarString';
 
 export default function ConfiguracaoAtividades() {
     const { id, id_etapa } = useParams();
-    const { atividades, setAtividades, checklists, setChecklists } = useUser();
+    const { atividades, setAtividades, checklists, setChecklists, volumes } = useUser();
 
     const [novaAtividade, setNovaAtividade] = useState("");
 
@@ -50,14 +50,15 @@ export default function ConfiguracaoAtividades() {
 
 
     //dados da tabela
-    const createData = (atividade, checklists, acoes) => {
-        return { atividade, checklists, acoes };
+    const createData = (atividade, checklists, volumes, acoes) => {
+        return { atividade, checklists, volumes, acoes };
     }
     const createDataItem = () => {
         return (atividades.filter((item) => item.id_etapa == id_etapa))?.map((atividade) => {
             return createData(
                 atividade.title,
                 checklists.filter((checklist) => checklist.id_atividade == atividade.id).length,
+                volumes.filter((volume) => volume.id_atividade == atividade.id).length,
                 <Box className="acoes">
                     <Button component={Link} to={`/configuracoes/${id}/etapa/${atividade.id}/atividade/${atividade.id}`} variant="outlined" size="small">
                         <EditSquareIcon />
@@ -83,6 +84,11 @@ export default function ConfiguracaoAtividades() {
             id: 'checklists',
             numeric: false,
             label: 'Checklists',
+        },
+        {
+            id: 'volumes',
+            numeric: false,
+            label: 'Volumes',
         },
         {
             id: 'acoes',
