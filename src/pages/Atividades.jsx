@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import { Link } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
-import FactoryIcon from '@mui/icons-material/Factory';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 import dayjs from 'dayjs';
@@ -14,7 +14,16 @@ import Title from "./components/Title";
 import InputAuto from './components/InputAuto';
 import InputCalendarRange from './components/InputCalendarRange';
 
-export default function Ordens() {
+import { useUser } from '../context/UserContext';
+
+export default function Atividades() {
+    const { 
+        atividadesOP,
+        etapas,
+        atividades,
+        equipes
+    } = useUser();
+
     const hoje = dayjs();
 
     const [statusFilter, setStatusFilter] = useState([]);
@@ -42,70 +51,54 @@ export default function Ordens() {
     ]
 
     //dados da tabela
-    const createDataOrdens = (id, Pedido, categoria, descricao, producao, status, link) => {
-        return { id, Pedido, categoria, descricao, producao, status, link };
+    const createData = (id, equipe, producao, titulo, etapa, status, link) => {
+        var elementStatus;
+        if(status == -1){
+            elementStatus = <Chip className="stats" color="error" label="Falha" />
+        }
+        if(status == 0){
+            elementStatus = <Chip className="stats" label="Pendente" />
+        }
+        else if(status == 1){
+            elementStatus = <Chip className="stats" color="primary" label="Em andamento" />
+        }
+        else if(status == 2){
+            elementStatus = <Chip className="stats" color="warning" label="Parado" />
+        }
+        else if(status == 3){
+            elementStatus = <Chip className="stats" color="success" label="Finalizado" />
+        }
+
+        return { id, equipe, producao, titulo, etapa, elementStatus, link };
     }
-    const rowsOrdens = [
-        createDataOrdens(
-            '#3568',
-            <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">5951</Button>,
-            <Chip className="stats" size="small" label="Mesa de poker" />,
-            'Mesa de poker profissional',
-            '11/042025',
-            <Chip className="stats" size="small" color="primary" label="Em andamento" />,
-            <Button component={Link} to="/ordens/3568" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createDataOrdens(
-            '#3569',
-            <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">5951</Button>,
-            <Chip className="stats" size="small" label="Mesa de poker" />,
-            'Mesa de poker redonda',
-            '11/042025',
-            <Chip className="stats" size="small" color="success" label="Finalizado" />,
-            <Button component={Link} to="/ordens/3569" variant="outlined" size="small">Detalhes</Button>
-        ),
+    const headCells = [
+        {id: 'id', label: 'Id'},
+        {id: 'equipe', label: 'Equipe'},
+        {id: 'producao', label: 'Produção'},
+        {id: 'titulo', label: 'Título'},
+        {id: 'etapa', label: 'Etapa'},
+        {id: 'status', label: 'Status'},
+        {id: 'link', label: 'Link'},
     ];
-    const headCellsOrdens = [
-        {
-            id: 'id',
-            numeric: false,
-            label: 'Id',
-        },
-        {
-            id: 'pedido',
-            numeric: false,
-            label: 'Pedido',
-        },
-        {
-            id: 'categoria',
-            numeric: false,
-            label: 'Categoria',
-        },
-        {
-            id: 'descricao',
-            numeric: false,
-            label: 'Descrição',
-        },
-        {
-            id: 'producao',
-            numeric: true,
-            label: 'Produção',
-        },
-        {
-            id: 'status',
-            numeric: true,
-            label: 'Status',
-        },
-        {
-            id: 'link',
-            numeric: false,
-            label: 'Link',
-        },
-    ];
+    const rows = [];
+
+    atividadesOP.map((item) => {
+        rows.push(
+            createData(
+                item.id,
+                equipes.find(e => e.id == item.id_equipe).title,
+                item.data,
+                atividades.find(a => a.id == item.id_atividade).title,
+                etapas.find(e => e.id == item.id_etapa).title,
+                item.status,
+                <Button component={Link} to={`/atividades/${item.id}`} variant="outlined" size="small">Detalhes</Button>
+            )
+        )
+    })
 
     return (
         <Layout>
-            <Title title="Lista de ordens" icon={<FactoryIcon/>} />
+            <Title title="Lista de atividades" icon={<AssignmentIcon/>} />
             <Box className="index_content atividades_list">
                 <Box className="filtros">
                     <h2>Filtros:</h2>
@@ -125,7 +118,7 @@ export default function Ordens() {
                     </Box>
                 </Box>
                 <Box className="table_content">
-                    <DataTable headCells={headCellsOrdens} rows={rowsOrdens}/>
+                    <DataTable headCells={headCells} rows={rows}/>
                     <Button className="relatorio" variant="contained"><PictureAsPdfIcon/> Gerar relatório</Button>
                 </Box>
             </Box>

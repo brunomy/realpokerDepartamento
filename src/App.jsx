@@ -7,6 +7,8 @@ import Pedidos from './pages/Pedidos';
 import Pedido from './pages/Pedido';
 import Ordens from './pages/Ordens';
 import Ordem from './pages/Ordem';
+import Atividades from './pages/Atividades';
+import Atividade from './pages/Atividade';
 import Checklists from './pages/Checklists';
 import Checklist from './pages/Checklist';
 import Equipes from './pages/Equipes';
@@ -32,6 +34,9 @@ function App() {
 
           <Route path="/ordens" element={<Ordens />} />
           <Route path="/ordens/:id" element={<Ordem />} />
+
+          <Route path="/atividades" element={<Atividades />} />
+          <Route path="/atividades/:id" element={<Atividade />} />
 
           <Route path="/configuracoes" element={<Configuracoes />} />
           <Route path="/configuracoes/:id" element={<ConficuracaoEtapas />} />

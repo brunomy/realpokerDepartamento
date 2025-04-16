@@ -2,7 +2,7 @@ import '~/assets/scss/Index.scss';
 import { useState } from 'react';
 
 import { Link } from 'react-router-dom';
-import { Box, Autocomplete, Typography, TextField, Button, Chip, Tabs, Tab } from '@mui/material';
+import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
@@ -18,7 +18,6 @@ import InputCalendarRange from './components/InputCalendarRange';
 export default function Pedidos() {
     const hoje = dayjs();
 
-    const [tab, setTab] = useState(0);
     const [statusFilter, setStatusFilter] = useState([]);
     const [idFilter, setIdFilter] = useState([]);
     const [dateFilterDe, setDateFilterDe] = useState(hoje.format('YYYY-MM-DD'));
@@ -164,27 +163,10 @@ export default function Pedidos() {
         },
     ];
 
-    const handleChange = (event, newTab) => {
-        setTab(newTab);
-    };
-  
-
     return (
         <Layout>
             <Title title="Lista de pedidos" icon={<ShoppingCartIcon/>} />
-            <Box className="tabs_content">
-                <Tabs
-                    value={tab}
-                    onChange={handleChange}
-                    variant="scrollable"
-                    scrollButtons
-                    allowScrollButtonsMobile
-                >
-                    <Tab label="Fábrica" />
-                    <Tab label="Fichas" />
-                    <Tab label="Comunicação" />
-                </Tabs>
-            </Box>
+      
             <Box className="index_content">
                 <Box className="filtros">
                     <h2>Filtros:</h2>

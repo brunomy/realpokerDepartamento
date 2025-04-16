@@ -263,6 +263,7 @@ export function UserProvider({ children }) {
   const [etapasOP, setEtapasOP] = useState([])
   const [atividadesOP, setAtividadesOP] = useState([])
   const [checklistOP, setChecklistOP] = useState([])
+  const [volumesOP, setVolumesOP] = useState([])
 
   return (
     <UserContext.Provider value={{ 
@@ -276,7 +277,8 @@ export function UserProvider({ children }) {
 
       etapasOP, setEtapasOP,
       atividadesOP, setAtividadesOP,
-      checklistOP, setChecklistOP
+      checklistOP, setChecklistOP,
+      volumesOP, setVolumesOP,
     }}>
       {children}
     </UserContext.Provider>

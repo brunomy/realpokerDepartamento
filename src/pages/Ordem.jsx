@@ -43,9 +43,8 @@ import VistoriaChecklist from './components/VistoriaChecklist';
 import dayjs from 'dayjs';
 
 export default function Ordem() {
-    const { atividadesOP, etapasOP } = useUser();
-
     const { 
+        atividadesOP, etapasOP,
         usuarioLogado,
         etapas,
         atividades,
@@ -211,7 +210,7 @@ export default function Ordem() {
                 { tab == 1 && <Requisitos step_list={step_list} /> }
                 { tab == 2 && <Etapas etapas={etapas.filter(e => e.id_categoria === 1)} atividades={atividades} equipes={equipes} /> }
                 { tab == 3 && <Atividades atividadesOP={atividadesOP.filter((a) => a.ativo == 1)} atividades={atividades} etapas={etapas} equipes={equipes} /> }
-                { tab == 4 && <Checklist atividadesOP={atividadesOP} etapas={etapas} etapasOP={etapasOP} checklists={checklists} equipes={equipes} /> }
+                { tab == 4 && <Checklist etapas={etapas} etapasOP={etapasOP} checklists={checklists} equipes={equipes} /> }
                 { tab == 5 && <Volumes openModal={setAddVolumeModal} open={addVolumeModal} headCells={headCells} rows={rows} /> }
             </Box>
         </Layout>
@@ -265,10 +264,6 @@ function Informacoes({ setTab, open, openModal, status, setStatus, usuarioLogado
                         <span className="icon"><InfoTwoToneIcon/></span>
                         <b>DESCRIÇÃO: </b>Mesa de poker profissional
                     </p>
-                    {
-                        usuarioLogado.permission == "admin" && 
-                        <Button variant="contained" onClick={() => openModal(true)}>Alterar status</Button>
-                    }
                 </Box>
             </Box>
 
@@ -345,9 +340,6 @@ function Informacoes({ setTab, open, openModal, status, setStatus, usuarioLogado
                 </Box>
             </Box>
         </Box>
-        <Modal open={open} setOpen={openModal} title="Alterar status">
-            <ChangeStatus status={status} setStatus={setStatus} />
-        </Modal>
         </>
     )
 }
@@ -523,6 +515,9 @@ function AtividadeItem({ atividade, equipes }) {
 function Atividades({ atividadesOP, atividades, etapas, equipes }) {
     const createData = (id, equipe, producao, titulo, etapa, status, link) => {
         var elementStatus;
+        if(status == -1){
+            elementStatus = <Chip className="stats" color="error" label="Falha" />
+        }
         if(status == 0){
             elementStatus = <Chip className="stats" label="Pendente" />
         }
@@ -530,7 +525,7 @@ function Atividades({ atividadesOP, atividades, etapas, equipes }) {
             elementStatus = <Chip className="stats" color="primary" label="Em andamento" />
         }
         else if(status == 2){
-            elementStatus = <Chip className="stats" color="error" label="Parado" />
+            elementStatus = <Chip className="stats" color="warning" label="Parado" />
         }
         else if(status == 3){
             elementStatus = <Chip className="stats" color="success" label="Finalizado" />
@@ -569,8 +564,8 @@ function Atividades({ atividadesOP, atividades, etapas, equipes }) {
         </Box>
     );
 }
-function Checklist({ atividadesOP, etapas, etapasOP, checklists, equipes }) {
-    const { checklistOP, setChecklistOP } = useUser();
+function Checklist({ etapas, etapasOP, checklists, equipes }) {
+    const { checklistOP, setChecklistOP, atividadesOP, setAtividadesOP } = useUser();
     
     const [openModal, setOpenModal] = useState(false);
     const [checklistSelecionado, setChecklistSelecionado] = useState(null);
@@ -580,13 +575,27 @@ function Checklist({ atividadesOP, etapas, etapasOP, checklists, equipes }) {
     const [falha, setFalha] = useState(0);
 
 
+    const atualizarStatusAtividade = (atividade, novoStatus) => {
+        const prevAtividades = atividadesOP.map(item =>
+            item.id === atividade.id ? { ...item, status: novoStatus } : item
+        )
+        setAtividadesOP([...prevAtividades, {
+            id: atividadesOP.length + 1,
+            id_ordem: atividade.id_ordem,
+            id_etapa: atividade.id_etapa,
+            id_atividade: atividade.id_atividade,
+            id_equipe: atividade.id_equipe,
+            ativo: 1,
+            data: atividade.data,
+            status: 0
+        }])
+    };
     const abrirModalVistoria = (checklist , atividade) => {
         setChecklistSelecionado(checklist)
         setAtividadeSelecionada(atividade)
         setFalha(0)
         setObservacao('')
-        console.log(checklistOP);
-        
+
         setOpenModal(true)
     }
     const fazerVistoria = () => {
@@ -595,45 +604,46 @@ function Checklist({ atividadesOP, etapas, etapasOP, checklists, equipes }) {
             .filter(item => item.id_ativ == atividadeSelecionada.id && item.id_atividade == checklistSelecionado.id_atividade)
             .map(item => item.id_checklist);
     
-        const todosCheckAtv = checklists.filter(item => item.id_atividade == checklistSelecionado.id_atividade);
-    
-        const naoCadastrados = todosCheckAtv.filter(item2 =>
-            !cadastrados.includes(item2.id) && item2.id !== checklistSelecionado.id
-        );
-    
-        const novoItem = {
-            id: checklistOP.length + 1,
-            id_ordem: atividadeSelecionada.id_ordem,
-            id_ativ: atividadeSelecionada.id,
-            id_checklist: checklistSelecionado.id,
-            id_atividade: checklistSelecionado.id_atividade,
-            id_etapa: checklistSelecionado.id_etapa,
-            id_equipe: atividadeSelecionada.id_equipe,
-            observacao: observacao,
-            data: dayjs().format('DD/MM/YYYY HH:mm:ss'),
-            stats: 0
-        };
-    
-        const novosItens = naoCadastrados.map((item, i) => ({
-            id: checklistOP.length + 2 + i, // evita conflito de ID
-            id_ordem: atividadeSelecionada.id_ordem,
-            id_ativ: atividadeSelecionada.id,
-            id_checklist: item.id,
-            id_atividade: checklistSelecionado.id_atividade,
-            id_etapa: checklistSelecionado.id_etapa,
-            id_equipe: atividadeSelecionada.id_equipe,
-            observacao: 'Falha no checklist: ' + checklistSelecionado.title,
-            data: dayjs().format('DD/MM/YYYY HH:mm:ss'),
-            stats: 0
-        }));
-    
-        setChecklistOP(prev => [...prev, novoItem, ...novosItens]);
-    
-        setChecklistOP(prev =>
-            prev.map(item =>
-                item.id_ativ === atividadeSelecionada.id ? { ...item, status: 0 } : item
-            )
-        );
+            const todosCheckAtv = checklists.filter(item => item.id_atividade == checklistSelecionado.id_atividade);
+        
+            const naoCadastrados = todosCheckAtv.filter(item2 =>
+                !cadastrados.includes(item2.id) && item2.id !== checklistSelecionado.id
+            );
+        
+            const novoItem = {
+                id: checklistOP.length + 1,
+                id_ordem: atividadeSelecionada.id_ordem,
+                id_ativ: atividadeSelecionada.id,
+                id_checklist: checklistSelecionado.id,
+                id_atividade: checklistSelecionado.id_atividade,
+                id_etapa: checklistSelecionado.id_etapa,
+                id_equipe: atividadeSelecionada.id_equipe,
+                observacao: observacao,
+                data: dayjs().format('DD/MM/YYYY HH:mm:ss'),
+                status: 0
+            };
+        
+            const novosItens = naoCadastrados.map((item, i) => ({
+                id: checklistOP.length + 2 + i, // evita conflito de ID
+                id_ordem: atividadeSelecionada.id_ordem,
+                id_ativ: atividadeSelecionada.id,
+                id_checklist: item.id,
+                id_atividade: checklistSelecionado.id_atividade,
+                id_etapa: checklistSelecionado.id_etapa,
+                id_equipe: atividadeSelecionada.id_equipe,
+                observacao: 'Falha no checklist: ' + checklistSelecionado.title,
+                data: dayjs().format('DD/MM/YYYY HH:mm:ss'),
+                status: 0
+            }));
+        
+            setChecklistOP(prev => [...prev, novoItem, ...novosItens]);
+        
+            // setChecklistOP(prev =>
+            //     prev.map(item =>
+            //         item.id_ativ === atividadeSelecionada.id ? { ...item, status: 0 } : item
+            //     )
+            // );
+            atualizarStatusAtividade(atividadeSelecionada, -1);
 
         } else {
             setChecklistOP([...checklistOP, {
@@ -646,7 +656,7 @@ function Checklist({ atividadesOP, etapas, etapasOP, checklists, equipes }) {
                 id_equipe: atividadeSelecionada.id_equipe,
                 observacao: observacao,
                 data: dayjs().format('DD/MM/YYYY HH:mm:ss'),
-                stats: 1
+                status: 1
             }])
         }
     }
@@ -656,7 +666,7 @@ function Checklist({ atividadesOP, etapas, etapasOP, checklists, equipes }) {
             {etapasOP.map((item, index) => (
                 <ChecklistEtapa 
                     key={index}
-                    atividades={atividadesOP.filter((a) => a.id_etapa == item && a.ativo == 1)} 
+                    atividadesOP={atividadesOP.filter((a) => a.id_etapa == item && a.ativo == 1)} 
                     checklists={checklists} 
                     etapa={etapas.find((e) => e.id == item)} 
                     equipes={equipes}
@@ -668,48 +678,68 @@ function Checklist({ atividadesOP, etapas, etapasOP, checklists, equipes }) {
         </Box>
     )
 }
+function ChecklistEtapa({ etapa, atividadesOP, checklists, equipes, openModal }) {
+    const { atividades } = useUser();
 
-function ChecklistEtapa({ etapa, atividades, checklists, equipes, openModal }) {
     return (
         <>
-            {atividades.length > 0 &&
+            {atividadesOP.length > 0 && 
                 <Box className="checklist_etapa">
                     <h3>{etapa.title}</h3>
                     <div className="checklist_itens">
-                        {atividades.map((atividade, index) => (
-                            <ChecklistAtividade 
-                                key={index} 
-                                checklists={checklists.filter((c) => c.id_atividade == atividade.id_atividade)} 
-                                atividade={atividade} 
-                                equipes={equipes} 
-                                openModal={openModal}/>
-                        ))}
+                        {atividadesOP.map((atividade, index) => {
+                            const equipe = equipes.find(e => e.id == atividade.id_equipe);
+
+                            const atividadeData = atividades.find(item => item.id == atividade.id_atividade);
+
+                            return (
+                                <>
+                                <h4><span>{equipe.title}</span> {atividadeData.title}</h4>
+                                <ChecklistAtividade 
+                                    key={index} 
+                                    checklists={checklists.filter((c) => c.id_atividade == atividade.id_atividade)} 
+                                    atividade={atividade} 
+                                    openModal={openModal}/>
+                                </>
+                            )
+                        })}
                     </div>
                 </Box>
             }
         </>
     )
 }
-function ChecklistAtividade({ checklists, atividade, equipes, openModal }) {
+function ChecklistAtividade({ checklists, atividade, openModal }) {
+    const { checklistOP } = useUser();
+    
     return (
         <>
-        {
-            checklists.map((checklist, index) => (
-                <Box className="item" key={index}>
-                    <div className="text">
-                        <h3>{checklist.title}</h3>
-                        <p>Equipe: {equipes.find((e) => e.id == atividade.id_equipe).title}</p>
-                        <p className="observacoes">Observações:</p>
+        {checklists.map((checklist, index) => {
+            const checklistData = checklistOP.find(item => item.id_ativ === atividade.id && item.id_checklist === checklist.id);
+            console.log(checklist);
 
-                        {atividade.status != 3 &&
+            return (
+                <Box className={"item "+
+                    (checklistData?.status == 1 ? 'success' : '')+
+                    (checklistData?.status == 0 ? 'error' : '')
+                } key={index}>
+                    <div className="text">
+                        <h5>{checklist.title}</h5>
+                        {checklistData?.observacao && 
+                            <p className="observacoes">Observações: {checklistData?.observacao || 'Nenhuma'}</p>
+                        }
+                        {(atividade.status < 3 && atividade.status !== -1) &&
                             <p className="observacoes">Aguardando a atividade ser finalizada!</p>
                         }
-                        
                     </div>
-                    <Button variant="outlined" size="small" onClick={() => openModal(checklist, atividade)}>Vistoria</Button>
+                    {(atividade.status === 3 && !checklistData) &&
+                        <Button variant="outlined" size="small" onClick={() => openModal(checklist, atividade)}>
+                            Fazer vistoria
+                        </Button>
+                    }
                 </Box>
-            ))
-        }
+            );
+        })}
         </>
-    )
+    );
 }

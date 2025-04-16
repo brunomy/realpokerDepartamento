@@ -250,6 +250,92 @@
             }
         }
     }
+
+    .checklist{
+        .checklist_etapa{
+            border: 2px solid $color1;
+            border-radius: 3px;
+            margin: 0 0 15px;
+
+            h3{
+                background: $color1;
+                color: #fff;
+                font-weight: bold;
+                text-transform: uppercase;
+                font-size: 1em;
+                padding: 9px 15px 7px;
+            }
+            .checklist_itens{
+                display: flex;
+                flex-wrap: wrap;
+
+                h4{
+                    width: 100%;
+                    background: rgba($color1, .23);
+                    padding: 9px 15px 7px;
+                    text-transform: uppercase;
+                    font-size: .8em;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+
+                    span{
+                        background: $color1;
+                        color: #fff;
+                        font-weight: bold;
+                        padding: 4px 7px 3px;
+                        font-size: 0.8em;
+                        display: block;
+                        border-radius: 2px;
+                    }
+                }
+
+                .item{
+                    width: 100%;
+                    padding: 20px 15px 20px;
+                    background: $grey;
+
+                    &:nth-child(2n){
+                        border-right: none;
+                    }
+
+                    &.error{
+                        background: #d32f2f12;
+
+                        .text{
+                            h5{
+                                color: #d32f2f;
+                            }
+                        }
+                    }
+                    &.success{
+                        background: #2e7d3212;
+
+                        .text{
+                            h5{
+                                color: #2e7d32;
+                            }
+                        }
+                    }
+
+                    .text{
+                        h5{
+                            margin: 0 0 5px;
+                        }
+                        p{
+                            font-size: .8em;
+                            &.observacoes{
+                                color: #898989;
+                            }
+                        }
+                    }
+                    button{
+                        margin: 5px 0 0;
+                    }
+                }
+            }
+        }
+    }
     
     .requisito_item{
         width: calc((100% - 10px * 2)/3);

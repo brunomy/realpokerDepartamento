@@ -22,6 +22,7 @@ export default function Footer() {
     const currentTab = () => {
         if (path.includes('/pedidos')) return 'pedidos';
         if (path.includes('/ordens')) return 'ordens';
+        if (path.includes('/atividades')) return 'atividades';
         if (path.includes('/configuracoes')) return 'configuracoes';
         if (path.includes('/checklists')) return 'checklists';
         if (path.includes('/remessas')) return 'remessas';
@@ -52,14 +53,14 @@ export default function Footer() {
                 to="/ordens"
                 showLabel
             />
-            {/* <BottomNavigationAction
+            <BottomNavigationAction
                 label="Atividades"
                 value="atividades"
                 icon={<AssignmentTwoToneIcon />}
                 component={Link}
                 to="/atividades"
                 showLabel
-            /> */}
+            />
             <BottomNavigationAction
                 label="Equipes"
                 value="equipes"
