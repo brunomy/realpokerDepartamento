@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Container, Box, TextField, Button } from '@mui/material';
 import '~/assets/scss/Login.scss';
 
-import { useUser } from '../context/UserContext';
+import { useUser } from '~/context/UserContext';
 
 export default function Login() {
     const { usuarioLogado, setUsuarioLogado } = useUser();

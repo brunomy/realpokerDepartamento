@@ -26,22 +26,23 @@ import AccordionActions from "@mui/material/AccordionActions";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 
-import Layout from "./components/Layout";
-import Title from "./components/Title";
-import Modal from './components/Modal';
-import ChangeStatus from './components/ChangeStatus';
-import Stepper from "./components/Stepper";
-import InputCalendar from './components/InputCalendar';
-import InputAuto from './components/InputAuto';
-import DataTable from './components/DataTable';
+import Layout from "~/components/Layout";
+import Title from "~/components/Title";
+import Modal from '~/components/Modal';
+import ChangeStatus from '~/components/ChangeStatus';
+import Stepper from "~/components/Stepper";
+import InputCalendar from '~/components/InputCalendar';
+import InputAuto from '~/components/InputAuto';
+import DataTable from '~/components/DataTable';
 
-import { useUser } from '../context/UserContext';
-import SelecionarEtapa from './components/SelecionarEtapa';
-import VistoriaChecklist from './components/VistoriaChecklist';
-import AdicionarVolume from './components/AdicionarVolume';
+import { useUser } from '~/context/UserContext';
+import SelecionarEtapa from '~/components/SelecionarEtapa';
+import VistoriaChecklist from '~/components/VistoriaChecklist';
+import AdicionarVolume from '~/components/AdicionarVolume';
 
 
 import dayjs from 'dayjs';
+import DataTableSelect from '~/components/DataTableSelect';
 
 export default function Atividade() {
     const { 
@@ -99,7 +100,7 @@ export default function Atividade() {
                     setStatus={setStatus} 
                     usuarioLogado={usuarioLogado}
                 /> }
-                { tab == 1 && <Volumes id_atividade={id} /> }
+                { tab == 1 && <Volumes id={id} atividade={atividade} /> }
             </Box>
         </Layout>
     )
@@ -175,101 +176,65 @@ function Informacoes({ setTab, open, openModal, status, setStatus, atividade }) 
     )
 }
 
-function Volumes({ id_atividade }) {
-    const { volumesOP, setVolumesOP } = useUser();
+function Volumes({ id, atividade }) {
+    const { volumesOP, setVolumesOP, volumes } = useUser();
+    var selecionados = volumesOP.map(v => v.id_volume)
+    const [ids, setIds] = useState(selecionados);
+    
+    const selectListener = (idsSelecionados) => {
+        setIds(idsSelecionados);
+      
+        setVolumesOP(prevVolumes => {
+          const volumesFiltrados = prevVolumes.filter(
+            item => item.id_ativ !== id && !idsSelecionados.includes(item.id_ativ)
+          );
+      
+          const novos = idsSelecionados.map((id_volume, index) => ({
+            id: volumesFiltrados.length + index + 1,
+            id_ativ: id,
+            id_atividade: atividade.id_atividade,
+            id_volume: id_volume,
+            id_embalagem: null,
+          }));
+      
+          const resultado = [...volumesFiltrados, ...novos];
+          return resultado;
+        });
+      };
 
-    const [open, setOpen] = useState(false);
-
-    const createData = (id, descricao, dimensoes, peso, criacao, acoes) => {
-        return { id, descricao, dimensoes, peso, criacao, acoes };
+    const createData = (id, volume, comprimento, largura, altura, peso) => {
+        return { id, volume, comprimento, largura, altura, peso };
     }
-    const rows = [
-        createData(
-            '#3489787', 
-            'Tampa da mesa',
-            '200 x 400 x 50',
-            '20',
-            '01/11/2024',
-            <Box className="acoes">
-                <Button variant="outlined" size="small"><EditSquareIcon /></Button>
-                <Button variant="outlined" size="small"><DeleteIcon /></Button>
-            </Box>
-        ),
-        createData(
-            '#3489788', 
-            'Peças de montagem da mesa',
-            '50 x 50 x 50',
-            '10',
-            '01/11/2024',
-            <Box className="acoes">
-                <Button variant="outlined" size="small"><EditSquareIcon /></Button>
-                <Button variant="outlined" size="small"><DeleteIcon /></Button>
-            </Box>
-        ),
+    const createDataItem = () => {
+        return (volumes.filter((item) => item.id_atividade == atividade.id_atividade))?.map((volume) => {
+            return createData(
+                volume.id,
+                volume.title,
+                volume.comprimento,
+                volume.largura,
+                volume.altura,
+                volume.peso
+            );
+        }) || []
+    }
+    useEffect(() => {
+        setRows(createDataItem())
+    },[volumes])
+
+    const [rows, setRows] = useState(createDataItem());
+
+    const columns = [
+        { field: 'volume', headerName: 'Volume', width: 400 },
+        { field: 'comprimento', headerName: 'Comprimento', width: 110 },
+        { field: 'largura', headerName: 'Largura', width: 110 },
+        { field: 'altura', headerName: 'Altura', width: 110 },
+        { field: 'peso', headerName: 'Peso', width: 110 },
     ];
-    // const rows = [];
-
-    // volumesOP?.map((volume) => {
-    //     rows.push(
-    //         createData(
-    //             volume.id,
-    //             volume.id_pedido,
-    //             volume.id_ordem,
-    //             volume.id_atividade,
-    //             volume.id_pedido,
-
-    //             equipes.find(e => e.id == volume.id_equipe).title,
-    //             volume.data,
-    //             atividades.find(a => a.id == volume.id_atividade).title,
-    //             etapas.find(e => e.id == volume.id_etapa).title,
-    //             volume.status,
-    //             <Button component={Link} to={`/atividades/${volume.id}`} variant="outlined" size="small">Detalhes</Button>
-    //         )
-    //     )
-    // })
-
-    const headCells = [
-        {
-            id: 'id',
-            numeric: false,
-            label: 'Id',
-        },
-        {
-            id: 'descricao',
-            numeric: false,
-            label: 'Descrição',
-        },
-        {
-            id: 'dimensoes',
-            numeric: false,
-            label: 'Dimensões (cm)',
-        },
-        {
-            id: 'peso',
-            numeric: true,
-            label: 'Peso (kg)',
-        },
-        {
-            id: 'criacao',
-            numeric: true,
-            label: 'Criação',
-        },
-        {
-            id: 'acoes',
-            numeric: false,
-            align: "right",
-            label: 'Ações',
-        },
-    ];
-
+      
     return (
         <>
         <Box className="table_content">
-            <DataTable headCells={headCells} rows={rows}/>
-            <Button className="adicionar" variant="contained" onClick={() => setOpen(true)}>Adicionar volume</Button>
-            <Modal open={open} setOpen={setOpen} title="Adicionar volume">
-                <AdicionarVolume/>
-            </Modal>
+            <DataTableSelect ids={ids} setIds={selectListener} rows={rows} columns={columns}/>
         </Box>
         </>
     )

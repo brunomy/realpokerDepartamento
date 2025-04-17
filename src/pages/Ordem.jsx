@@ -25,27 +25,25 @@ import AccordionActions from "@mui/material/AccordionActions";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 
-import Layout from "./components/Layout";
-import Title from "./components/Title";
-import Modal from './components/Modal';
-import ChangeStatus from './components/ChangeStatus';
-import Stepper from "./components/Stepper";
-import InputCalendar from './components/InputCalendar';
-import InputAuto from './components/InputAuto';
-import DataTable from './components/DataTable';
+import Layout from "~/components/Layout";
+import Title from "~/components/Title";
+import Modal from '~/components/Modal';
+import ChangeStatus from '~/components/ChangeStatus';
+import Stepper from "~/components/Stepper";
+import InputCalendar from '~/components/InputCalendar';
+import InputAuto from '~/components/InputAuto';
+import DataTable from '~/components/DataTable';
 
-import { Volumes } from './Pedido';
 
-import { useUser } from '../context/UserContext';
-import SelecionarEtapa from './components/SelecionarEtapa';
-import VistoriaChecklist from './components/VistoriaChecklist';
+import { useUser } from '~/context/UserContext';
+import SelecionarEtapa from '~/components/SelecionarEtapa';
+import VistoriaChecklist from '~/components/VistoriaChecklist';
 
 import dayjs from 'dayjs';
 
 export default function Ordem() {
     const { 
-        atividadesOP, etapasOP,
-        usuarioLogado,
+        atividadesOP, etapasOP, volumesOP,
         etapas,
         atividades,
         checklists,
@@ -56,8 +54,6 @@ export default function Ordem() {
 
     const [tab, setTab] = useState(0);
 
-    const [statusModalChange, setStatusModalChange] = useState(false);
-    const [addVolumeModal, setAddVolumeModal] = useState(false);
     const [status, setStatus] = useState(1);
 
     const handleChange = (event, newTab) => {
@@ -118,67 +114,6 @@ export default function Ordem() {
         },
     ];
 
-    const createData = (id, descricao, dimensoes, peso, criacao, acoes) => {
-        return { id, descricao, dimensoes, peso, criacao, acoes };
-    }
-    const rows = [
-        createData(
-            '#3489787', 
-            'Tampa da mesa',
-            '200 x 400 x 50',
-            '20',
-            '01/11/2024',
-            <Box className="acoes">
-                <Button variant="outlined" size="small"><EditSquareIcon /></Button>
-                <Button variant="outlined" size="small"><DeleteIcon /></Button>
-            </Box>
-        ),
-        createData(
-            '#3489788', 
-            'Peças de montagem da mesa',
-            '50 x 50 x 50',
-            '10',
-            '01/11/2024',
-            <Box className="acoes">
-                <Button variant="outlined" size="small"><EditSquareIcon /></Button>
-                <Button variant="outlined" size="small"><DeleteIcon /></Button>
-            </Box>
-        ),
-    ];
-    const headCells = [
-        {
-            id: 'id',
-            numeric: false,
-            label: 'Id',
-        },
-        {
-            id: 'descricao',
-            numeric: false,
-            label: 'Descrição',
-        },
-        {
-            id: 'dimensoes',
-            numeric: false,
-            label: 'Dimensões (cm)',
-        },
-        {
-            id: 'peso',
-            numeric: true,
-            label: 'Peso (kg)',
-        },
-        {
-            id: 'criacao',
-            numeric: true,
-            label: 'Criação',
-        },
-        {
-            id: 'acoes',
-            numeric: false,
-            align: "right",
-            label: 'Ações',
-        },
-    ];
-
     return (
         <Layout>
             <Title title={"Ordem Nº #"+id} icon={<FactoryIcon/>} />
@@ -195,7 +130,7 @@ export default function Ordem() {
                     <Tab label="Etapas " />
                     <Tab label="Atividades" disabled={!atividadesOP.find(item => item.ativo === 1)} />
                     <Tab label="Checklist" disabled={!atividadesOP.find(item => item.ativo === 1)} />
-                    <Tab label="Volumes" disabled={!atividadesOP.find(item => item.ativo === 1)} />
+                    <Tab label="Volumes" disabled={!atividadesOP.find(item => item.ativo === 1) || volumesOP.length == 0} />
                 </Tabs>
             </Box>
             <Box className="show_content">
@@ -207,7 +142,7 @@ export default function Ordem() {
                 { tab == 2 && <Etapas etapas={etapas.filter(e => e.id_categoria === 1)} atividades={atividades} equipes={equipes} /> }
                 { tab == 3 && <Atividades atividadesOP={atividadesOP.filter((a) => a.ativo == 1)} atividades={atividades} etapas={etapas} equipes={equipes} /> }
                 { tab == 4 && <Checklist etapas={etapas} etapasOP={etapasOP} checklists={checklists} equipes={equipes} /> }
-                { tab == 5 && <Volumes openModal={setAddVolumeModal} open={addVolumeModal} headCells={headCells} rows={rows} /> }
+                { tab == 5 && <Volumes /> }
             </Box>
         </Layout>
     )
@@ -397,7 +332,7 @@ function Etapas ({ etapas = [], atividades = [], equipes = [] }) {
             {etapas
                 .filter(etapa => etapasOP.includes(etapa.id))
                 .map((item, index) => (
-                <Accordion className="accordion_item" key={index}>
+                <Accordion className="accordion_item" key={index} >
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                     <Typography className="titulo" component="span" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <span>{item.title}</span>
@@ -415,7 +350,6 @@ function Etapas ({ etapas = [], atividades = [], equipes = [] }) {
                 </Accordion>
             ))}
             </Box>
-
         </Box>
     )
 }
@@ -439,7 +373,7 @@ function AtividadeItem({ atividade, equipes }) {
         );
     };
 
-    var find = atividadesOP.find(item => item.id_atividade == atividade.id);
+    var find = atividadesOP.find(item => item.id_atividade == atividade.id && item.status != -1);
 
     const [checked, setChecked] = useState(find?.ativo);
     const [equipeSelecionada, setEquipeSelecionada] = useState(formatarArray().find(item => item.id === find?.id_equipe) || null);
@@ -447,9 +381,6 @@ function AtividadeItem({ atividade, equipes }) {
 
     useEffect(() => {
         if(checked && equipeSelecionada && dataSelecionada && dataSelecionada != "Invalid Date" && !find){
-            const novosVolumes = volumes.filter(item => item.id_atividade === atividade.id);
-
-            setVolumesOP((prev) => [...prev, ...novosVolumes]);
 
             setAtividadesOP((prev) => [
                 ...prev,
@@ -464,7 +395,7 @@ function AtividadeItem({ atividade, equipes }) {
                     status: 0,
                 },
             ]);
-            find = atividadesOP.find(item => item.id_atividade == atividade.id)
+            find = atividadesOP.find(item => item.id_atividade == atividade.id && item.status != -1);
         }
         else if(find?.status == 0 && dataSelecionada && dataSelecionada != "Invalid Date" && equipeSelecionada){
             atualizarAtividade(find.id, {
@@ -741,4 +672,80 @@ function ChecklistAtividade({ checklists, atividade, openModal }) {
         })}
         </>
     );
+}
+
+function Volumes() {
+    const createData = (id, descricao, dimensoes, peso, criacao, acoes) => {
+        return { id, descricao, dimensoes, peso, criacao, acoes };
+    }
+    const rows = [
+        createData(
+            '#3489787', 
+            'Tampa da mesa',
+            '200 x 400 x 50',
+            '20',
+            '01/11/2024',
+            <Box className="acoes">
+                <Button variant="outlined" size="small"><EditSquareIcon /></Button>
+                <Button variant="outlined" size="small"><DeleteIcon /></Button>
+            </Box>
+        ),
+        createData(
+            '#3489788', 
+            'Peças de montagem da mesa',
+            '50 x 50 x 50',
+            '10',
+            '01/11/2024',
+            <Box className="acoes">
+                <Button variant="outlined" size="small"><EditSquareIcon /></Button>
+                <Button variant="outlined" size="small"><DeleteIcon /></Button>
+            </Box>
+        ),
+    ];
+    const headCells = [
+        {
+            id: 'id',
+            numeric: false,
+            label: 'Id',
+        },
+        {
+            id: 'descricao',
+            numeric: false,
+            label: 'Descrição',
+        },
+        {
+            id: 'dimensoes',
+            numeric: false,
+            label: 'Dimensões (cm)',
+        },
+        {
+            id: 'peso',
+            numeric: true,
+            label: 'Peso (kg)',
+        },
+        {
+            id: 'criacao',
+            numeric: true,
+            label: 'Criação',
+        },
+        {
+            id: 'acoes',
+            numeric: false,
+            align: "right",
+            label: 'Ações',
+        },
+    ];
+
+    return (
+        <Box className="volumes">
+            <div className="volume_content">
+                <h3>Não embalados</h3>
+                <DataTable headCells={headCells} rows={rows}/>
+            </div>
+            <div className="volume_content">
+                <h3>Embalados</h3>
+                <DataTable headCells={headCells} rows={rows}/>
+            </div>
+        </Box>
+    )
 }

@@ -245,23 +245,16 @@ export function UserProvider({ children }) {
       id_categoria: 1, 
       id_etapa: 1,
       id_atividade: 0,
-      title: 'Borda da mesa',
+      title: 'Borda da mesa (Modelo 1)',
       comprimento: "200",
       largura: "10",
       altura: "5",
       peso: "20"
     },
-    {
-      id: 1,
-      id_categoria: 1, 
-      id_etapa: 1,
-      id_atividade: 1,
-      title: 'Tiras de couro',
-      comprimento: "200",
-      largura: "10",
-      altura: "5",
-      peso: "20"
-    },
+    { id: 1, id_categoria: 1,  id_etapa: 1, id_atividade: 0, title: 'Borda da mesa (Modelo 2)', comprimento: "150", largura: "8", altura: "6", peso: "15" },
+    { id: 2, id_categoria: 1,  id_etapa: 1, id_atividade: 0, title: 'Borda da mesa (Modelo 3)', comprimento: "160", largura: "12", altura: "4", peso: "20" },
+    { id: 3, id_categoria: 1,  id_etapa: 1, id_atividade: 1, title: 'Tiras de couro (Modelo 1)', comprimento: "200", largura: "10", altura: "5", peso: "20" },
+    { id: 4, id_categoria: 1,  id_etapa: 1, id_atividade: 1, title: 'Tiras de couro (Modelo 2)', comprimento: "220", largura: "12", altura: "7", peso: "25" },
   ])
 
   const [equipes, setEquipes] = useState([

@@ -7,13 +7,13 @@ import GroupsIcon from '@mui/icons-material/Groups';
 
 import dayjs from 'dayjs';
 
-import DataTable from './components/DataTable';
-import Layout from "./components/Layout";
-import Title from "./components/Title";
-import InputAuto from './components/InputAuto';
-import InputCalendarRange from './components/InputCalendarRange';
-import Modal from './components/Modal';
-import AdicionarEquipe from './components/AdicionarEquipe';
+import DataTable from '~/components/DataTable';
+import Layout from "~/components/Layout";
+import Title from "~/components/Title";
+import InputAuto from '~/components/InputAuto';
+import InputCalendarRange from '~/components/InputCalendarRange';
+import Modal from '~/components/Modal';
+import AdicionarEquipe from '~/components/AdicionarEquipe';
 
 export default function Equipes() {
     const [openModal, setOpenModal] = useState(false);

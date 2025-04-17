@@ -4,7 +4,7 @@ import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 
 import '@mui/material/BottomNavigationAction';
 
-import { useUser } from '../../context/UserContext';
+import { useUser } from '~/context/UserContext';
 
 import ShoppingCartTwoToneIcon from '@mui/icons-material/ShoppingCartTwoTone';
 import AssignmentTwoToneIcon from '@mui/icons-material/AssignmentTwoTone';

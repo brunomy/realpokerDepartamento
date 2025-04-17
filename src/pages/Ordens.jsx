@@ -8,11 +8,11 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 import dayjs from 'dayjs';
 
-import DataTable from './components/DataTable';
-import Layout from "./components/Layout";
-import Title from "./components/Title";
-import InputAuto from './components/InputAuto';
-import InputCalendarRange from './components/InputCalendarRange';
+import DataTable from '~/components/DataTable';
+import Layout from "~/components/Layout";
+import Title from "~/components/Title";
+import InputAuto from '~/components/InputAuto';
+import InputCalendarRange from '~/components/InputCalendarRange';
 
 export default function Ordens() {
     const hoje = dayjs();
@@ -51,7 +51,7 @@ export default function Ordens() {
             <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">5951</Button>,
             <Chip className="stats" size="small" label="Mesa de poker" />,
             'Mesa de poker profissional',
-            '11/042025',
+            '11/04/2025',
             <Chip className="stats" size="small" color="primary" label="Em andamento" />,
             <Button component={Link} to="/ordens/3568" variant="outlined" size="small">Detalhes</Button>
         ),
@@ -60,7 +60,7 @@ export default function Ordens() {
             <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">5951</Button>,
             <Chip className="stats" size="small" label="Mesa de poker" />,
             'Mesa de poker redonda',
-            '11/042025',
+            '11/04/2025',
             <Chip className="stats" size="small" color="success" label="Finalizado" />,
             <Button component={Link} to="/ordens/3569" variant="outlined" size="small">Detalhes</Button>
         ),

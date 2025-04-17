@@ -7,14 +7,14 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import DataTable from './components/DataTable';
-import Layout from "./components/Layout";
-import Title from "./components/Title";
-import InputAuto from './components/InputAuto';
-import InputCalendarRange from './components/InputCalendarRange';
+import DataTable from '~/components/DataTable';
+import Layout from "~/components/Layout";
+import Title from "~/components/Title";
+import InputAuto from '~/components/InputAuto';
+import InputCalendarRange from '~/components/InputCalendarRange';
 
-import Modal from './components/Modal';
-import AdicionarChecklist from './components/AdicionarChecklist';
+import Modal from '~/components/Modal';
+import AdicionarChecklist from '~/components/AdicionarChecklist';
 
 export default function Checklists() {
     const [tab, setTab] = useState(0);

@@ -5,8 +5,8 @@ import { Box, Button, TextField, Typography, IconButton, Tabs, Tab } from "@mui/
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import EditSquareIcon from '@mui/icons-material/EditSquare';
-import InputAuto from './components/InputAuto';
-import DataTable from './components/DataTable';
+import InputAuto from '~/components/InputAuto';
+import DataTable from '~/components/DataTable';
 
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -15,13 +15,13 @@ import AccordionActions from "@mui/material/AccordionActions";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 
-import Layout from "./components/Layout";
-import Title from "./components/Title";
-import { useUser } from "../context/UserContext";
+import Layout from "~/components/Layout";
+import Title from "~/components/Title";
+import { useUser } from "~/context/UserContext";
 
-import Modal from './components/Modal';
-import AdicionarString from './components/AdicionarString';
-import AdicionarVolume from './components/AdicionarVolume';
+import Modal from '~/components/Modal';
+import AdicionarString from '~/components/AdicionarString';
+import AdicionarVolume from '~/components/AdicionarVolume';
 
 export default function ConfiguracaoCheckVol() {
     const { id, id_etapa, id_atividade } = useParams();

@@ -8,13 +8,13 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 import dayjs from 'dayjs';
 
-import DataTable from './components/DataTable';
-import Layout from "./components/Layout";
-import Title from "./components/Title";
-import InputAuto from './components/InputAuto';
-import InputCalendarRange from './components/InputCalendarRange';
+import DataTable from '~/components/DataTable';
+import Layout from "~/components/Layout";
+import Title from "~/components/Title";
+import InputAuto from '~/components/InputAuto';
+import InputCalendarRange from '~/components/InputCalendarRange';
 
-import { useUser } from '../context/UserContext';
+import { useUser } from '~/context/UserContext';
 
 export default function Atividades() {
     const { 

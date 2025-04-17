@@ -16,13 +16,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AssignmentTwoToneIcon from '@mui/icons-material/AssignmentTwoTone';
 import CalendarMonthTwoToneIcon from '@mui/icons-material/CalendarMonthTwoTone';
 
-import Layout from "./components/Layout";
-import Title from "./components/Title";
-import DataTable from './components/DataTable';
-import Modal from './components/Modal';
-import AdicionarAtividade from './components/AdicionarAtividade';
-import ChangeStatus from './components/ChangeStatus';
-import AdicionarVolume from './components/AdicionarVolume';
+import Layout from "~/components/Layout";
+import Title from "~/components/Title";
+import DataTable from '~/components/DataTable';
+import Modal from '~/components/Modal';
+import AdicionarAtividade from '~/components/AdicionarAtividade';
+import ChangeStatus from '~/components/ChangeStatus';
+import AdicionarVolume from '~/components/AdicionarVolume';
 
 import { useUser } from '~/context/UserContext';
 

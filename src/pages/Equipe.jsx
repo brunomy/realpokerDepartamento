@@ -3,7 +3,7 @@ import '~/assets/scss/Show.scss';
 import { useParams, Link } from 'react-router-dom';
 import { useState } from 'react';
 
-import DataTable from './components/DataTable';
+import DataTable from '~/components/DataTable';
 import { Box, Button, Chip, Tabs, Tab } from '@mui/material';
 import GroupsIcon from '@mui/icons-material/Groups';
 import GroupsTwoToneIcon from '@mui/icons-material/GroupsTwoTone';
@@ -14,13 +14,13 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
 import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
 
-import Layout from "./components/Layout";
-import Title from "./components/Title";
-import Modal from './components/Modal';
+import Layout from "~/components/Layout";
+import Title from "~/components/Title";
+import Modal from '~/components/Modal';
 
 import { Volumes, Ordens } from './Pedido';
-import TransferList from './components/TransferList';
-import AdicionarFuncionario from './components/AdicionarFuncionario';
+import TransferList from '~/components/TransferList';
+import AdicionarFuncionario from '~/components/AdicionarFuncionario';
 
 export default function Equipe() {
     const { id } = useParams();

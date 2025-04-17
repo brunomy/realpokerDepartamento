@@ -22,14 +22,14 @@ import MonetizationOnTwoToneIcon from '@mui/icons-material/MonetizationOnTwoTone
 import LocalAtmTwoToneIcon from '@mui/icons-material/LocalAtmTwoTone';
 import ScaleTwoToneIcon from '@mui/icons-material/ScaleTwoTone';
 
-import Layout from "./components/Layout";
-import Title from "./components/Title";
-import Modal from './components/Modal';
-import ChangeStatus from './components/ChangeStatus';
+import Layout from "~/components/Layout";
+import Title from "~/components/Title";
+import Modal from '~/components/Modal';
+import ChangeStatus from '~/components/ChangeStatus';
 
 import { Volumes } from './Pedido';
 
-import TransferList from './components/TransferList';
+import TransferList from '~/components/TransferList';
 
 export default function Remessa() {
     const { id } = useParams();
