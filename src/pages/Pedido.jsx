@@ -25,6 +25,7 @@ import ChangeStatus from '~/components/ChangeStatus';
 import AdicionarVolume from '~/components/AdicionarVolume';
 
 import { useUser } from '~/context/UserContext';
+import Status from '../components/Status';
 
 export default function Pedidos() {
     const { ordens, setOrdens } = useUser();
@@ -47,7 +48,7 @@ export default function Pedidos() {
             <Chip className="stats" size="small" label="Mesa de poker" />,
             'Mesa de poker profissional',
             '11/042025',
-            <Chip className="stats" size="small" color="primary" label="Em andamento" />,
+            <Status status={1} size={'small'} />,
             <Button component={Link} to="/ordens/3568" variant="outlined" size="small">Detalhes</Button>
         ),
         createDataOrdens(
@@ -55,7 +56,7 @@ export default function Pedidos() {
             <Chip className="stats" size="small" label="Mesa de poker" />,
             'Mesa de poker redonda',
             '11/042025',
-            <Chip className="stats" size="small" color="success" label="Finalizado" />,
+            <Status status={3} size={'small'} />,
             <Button component={Link} to="/ordens/3569" variant="outlined" size="small">Detalhes</Button>
         ),
     ];
@@ -202,10 +203,7 @@ function Informacoes({ status, setTab}) {
         <>
         <Box className="informacoes">
             <Box className="info_pedido">
-                { status == 0 && <Chip className="stats" label="Pendente" /> }
-                { status == 1 && <Chip className="stats" color="primary" label="Em andamento" /> }
-                { status == 2 && <Chip className="stats" color="error" label="Parado" /> }
-                { status == 3 && <Chip className="stats" color="success" label="Finalizado" /> }
+                <Status status={status} />
                 <Box className="info">
                     <p>
                         <span className="icon"><ArchiveTwoToneIcon/></span>
@@ -239,7 +237,6 @@ function Informacoes({ status, setTab}) {
         </>
     )
 }
-
 
 export function Ordens({ headCells, rows }) {
     return (

@@ -43,6 +43,7 @@ import AdicionarVolume from '~/components/AdicionarVolume';
 
 import dayjs from 'dayjs';
 import DataTableSelect from '~/components/DataTableSelect';
+import Status from '../components/Status';
 
 export default function Atividade() {
     const { 
@@ -121,11 +122,7 @@ function Informacoes({ setTab, open, openModal, status, setStatus, atividade }) 
         <>
         <Box className="informacoes">
             <Box className="info_pedido">
-                { status == -1 && <Chip className="stats" color="error" label="Falha" /> }
-                { status == 0 && <Chip className="stats" label="Pendente" /> }
-                { status == 1 && <Chip className="stats" color="primary" label="Em andamento" /> }
-                { status == 2 && <Chip className="stats" color="warning" label="Parado" /> }
-                { status == 3 && <Chip className="stats" color="success" label="Finalizado" /> }
+                <Status status={status} />
 
                 <Box className="info">
                     <p>

@@ -40,6 +40,7 @@ import SelecionarEtapa from '~/components/SelecionarEtapa';
 import VistoriaChecklist from '~/components/VistoriaChecklist';
 
 import dayjs from 'dayjs';
+import Status from '../components/Status';
 
 export default function Ordem() {
     const { 
@@ -153,10 +154,7 @@ function Informacoes({ setTab, status }) {
         <>
         <Box className="informacoes">
             <Box className="info_pedido">
-                { status == 0 && <Chip className="stats" label="Pendente" /> }
-                { status == 1 && <Chip className="stats" color="primary" label="Em andamento" /> }
-                { status == 2 && <Chip className="stats" color="error" label="Parado" /> }
-                { status == 3 && <Chip className="stats" color="success" label="Finalizado" /> }
+                <Status status={status} />
 
                 <Box className="info">
                     <p>
@@ -414,10 +412,7 @@ function AtividadeItem({ atividade, equipes }) {
                 <Box className='running'>
                     <Button component={Link} to={`/atividades/${find?.id}`} variant="outlined" size="small">Detalhes</Button>
                     <span className="stats">
-                        { find?.status == 0 && <Chip className="stats" label="Pendente" /> }
-                        { find?.status == 1 && <Chip className="stats" color="primary" label="Em andamento" /> }
-                        { find?.status == 2 && <Chip className="stats" color="error" label="Parado" /> }
-                        { find?.status == 3 && <Chip className="stats" color="success" label="Finalizado" /> }
+                        <Status status={find?.status} />
                     </span>
                 </Box>
             }
@@ -444,22 +439,7 @@ function AtividadeItem({ atividade, equipes }) {
 }
 function Atividades({ atividadesOP, atividades, etapas, equipes }) {
     const createData = (id, equipe, producao, titulo, etapa, status, link) => {
-        var elementStatus;
-        if(status == -1){
-            elementStatus = <Chip className="stats" color="error" label="Falha" />
-        }
-        if(status == 0){
-            elementStatus = <Chip className="stats" label="Pendente" />
-        }
-        else if(status == 1){
-            elementStatus = <Chip className="stats" color="primary" label="Em andamento" />
-        }
-        else if(status == 2){
-            elementStatus = <Chip className="stats" color="warning" label="Parado" />
-        }
-        else if(status == 3){
-            elementStatus = <Chip className="stats" color="success" label="Finalizado" />
-        }
+        const elementStatus = <Status status={status} size='small' />;
 
         return { id, equipe, producao, titulo, etapa, elementStatus, link };
     }
@@ -673,10 +653,11 @@ function ChecklistAtividade({ checklists, atividade, openModal }) {
         </>
     );
 }
-
 function Volumes() {
-    const createData = (id, descricao, dimensoes, peso, criacao, acoes) => {
-        return { id, descricao, dimensoes, peso, criacao, acoes };
+    const { atividades, volumes, volumesOP } = useUser();
+
+    const createData = (volume, dimensoes, peso, atividade, status ) => {
+        return { volume, dimensoes, peso, atividade, status  };
     }
     const rows = [
         createData(
@@ -704,14 +685,8 @@ function Volumes() {
     ];
     const headCells = [
         {
-            id: 'id',
-            numeric: false,
-            label: 'Id',
-        },
-        {
-            id: 'descricao',
-            numeric: false,
-            label: 'Descrição',
+            id: 'volume',
+            label: 'Volume',
         },
         {
             id: 'dimensoes',
@@ -724,15 +699,14 @@ function Volumes() {
             label: 'Peso (kg)',
         },
         {
-            id: 'criacao',
+            id: 'atividade',
             numeric: true,
-            label: 'Criação',
+            label: 'Atividade',
         },
         {
-            id: 'acoes',
-            numeric: false,
-            align: "right",
-            label: 'Ações',
+            id: 'status',
+            numeric: true,
+            label: 'Status',
         },
     ];
 

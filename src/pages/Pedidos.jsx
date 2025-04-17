@@ -14,6 +14,7 @@ import Layout from "~/components/Layout";
 import Title from "~/components/Title";
 import InputAuto from '~/components/InputAuto';
 import InputCalendarRange from '~/components/InputCalendarRange';
+import Status from '../components/Status';
 
 export default function Pedidos() {
     const hoje = dayjs();
@@ -46,7 +47,7 @@ export default function Pedidos() {
             '1/2',
             '01/11/2024',
             'João Felipe',
-            <Chip className="stats" size="small" color="primary" label="Em andamento" />,
+            <Status status={1} size={'small'} />,
             <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
@@ -54,7 +55,7 @@ export default function Pedidos() {
             '0/2',
             '02/11/2024',
             'João Felipe',
-            <Chip className="stats" size="small" label="Pendente" />,
+            <Status status={0} size={'small'} />,
             <Button component={Link} to="/pedidos/5952" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
@@ -62,7 +63,7 @@ export default function Pedidos() {
             '1/2',
             '03/11/2024',
             'João Felipe',
-            <Chip className="stats" size="small" color="error" label="Parado" />,
+            <Status status={2} size={'small'} />,
             <Button component={Link} to="/pedidos/5953" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
@@ -70,7 +71,7 @@ export default function Pedidos() {
             '2/2',
             '04/11/2024',
             'João Felipe',
-            <Chip className="stats" size="small" color="success" label="Finalizado" />,
+            <Status status={3} size={'small'} />,
             <Button component={Link} to="/pedidos/5955" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
@@ -78,7 +79,7 @@ export default function Pedidos() {
             '2/2',
             '04/11/2024',
             'João Felipe',
-            <Chip className="stats" size="small" color="success" label="Finalizado" />,
+            <Status status={3} size={'small'} />,
             <Button component={Link} to="/pedidos/5956" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
@@ -86,7 +87,7 @@ export default function Pedidos() {
             '2/2',
             '04/11/2024',
             'João Felipe',
-            <Chip className="stats" size="small" color="success" label="Finalizado" />,
+            <Status status={3} size={'small'} />,
             <Button component={Link} to="/pedidos/5957" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
@@ -94,7 +95,7 @@ export default function Pedidos() {
             '4/4',
             '04/11/2024',
             'João Felipe',
-            <Chip className="stats" size="small" color="success" label="Finalizado" />,
+            <Status status={3} size={'small'} />,
             <Button component={Link} to="/pedidos/5958" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
@@ -102,7 +103,7 @@ export default function Pedidos() {
             '1/1',
             '04/11/2024',
             'João Felipe',
-            <Chip className="stats" size="small" color="success" label="Finalizado" />,
+            <Status status={3} size={'small'} />,
             <Button component={Link} to="/pedidos/5959" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
@@ -110,7 +111,7 @@ export default function Pedidos() {
             '2/2',
             '04/11/2024',
             'João Felipe',
-            <Chip className="stats" size="small" color="success" label="Finalizado" />,
+            <Status status={3} size={'small'} />,
             <Button component={Link} to="/pedidos/5960" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
@@ -118,7 +119,7 @@ export default function Pedidos() {
             '2/2',
             '04/11/2024',
             'João Felipe',
-            <Chip className="stats" size="small" color="success" label="Finalizado" />,
+            <Status status={3} size={'small'} />,
             <Button component={Link} to="/pedidos/5961" variant="outlined" size="small">Detalhes</Button>
         ),
         createData(
@@ -126,7 +127,7 @@ export default function Pedidos() {
             '2/2',
             '04/11/2024',
             'João Felipe',
-            <Chip className="stats" size="small" color="success" label="Finalizado" />,
+            <Status status={3} size={'small'} />,
             <Button component={Link} to="/pedidos/5962" variant="outlined" size="small">Detalhes</Button>
         ),
     ];

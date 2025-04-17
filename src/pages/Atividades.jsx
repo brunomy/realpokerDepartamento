@@ -15,6 +15,7 @@ import InputAuto from '~/components/InputAuto';
 import InputCalendarRange from '~/components/InputCalendarRange';
 
 import { useUser } from '~/context/UserContext';
+import Status from '../components/Status';
 
 export default function Atividades() {
     const { 
@@ -52,22 +53,7 @@ export default function Atividades() {
 
     //dados da tabela
     const createData = (id, equipe, producao, titulo, etapa, status, link) => {
-        var elementStatus;
-        if(status == -1){
-            elementStatus = <Chip className="stats" color="error" label="Falha" />
-        }
-        if(status == 0){
-            elementStatus = <Chip className="stats" label="Pendente" />
-        }
-        else if(status == 1){
-            elementStatus = <Chip className="stats" color="primary" label="Em andamento" />
-        }
-        else if(status == 2){
-            elementStatus = <Chip className="stats" color="warning" label="Parado" />
-        }
-        else if(status == 3){
-            elementStatus = <Chip className="stats" color="success" label="Finalizado" />
-        }
+        const elementStatus = <Status status={status} size={'small'} />;
 
         return { id, equipe, producao, titulo, etapa, elementStatus, link };
     }
