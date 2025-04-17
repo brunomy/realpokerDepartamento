@@ -200,7 +200,7 @@ function Volumes({ id, id_atividade, id_etapa }){
         <>
         <DataTable headCells={headCells} rows={rows}/>
         <Button className="adicionar" variant="contained" onClick={() => setOpenModal(true)}>Adicionar volume</Button>
-        <Modal open={openModal} setOpen={setOpenModal} title="Adicionar checklist" confirm={adicionarVolume}>
+        <Modal open={openModal} setOpen={setOpenModal} title="Adicionar volume" confirm={adicionarVolume}>
             <AdicionarVolume value={novoVolume} setValue={setNovoVolume} />
         </Modal>
         </>

@@ -350,6 +350,13 @@
                 text-transform: uppercase;
                 font-size: 1em;
                 padding: 9px 15px 7px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+
+                button{
+                    background: #fff;
+                }
             }
 
             .dataTable_style .MuiPaper-root{

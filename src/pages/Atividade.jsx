@@ -116,7 +116,6 @@ function Informacoes({ setTab, open, openModal, status, setStatus, atividade }) 
     const etapa = etapas.find((etapa) => etapa.id == atividade?.id_etapa);
     const categoria = categorias.find((categoria) => categoria.id == etapa?.id_categoria);
     const atividadeDescricao = atividades.find((item) => item.id == atividade?.id_atividade);
-    
 
     return (
         <>

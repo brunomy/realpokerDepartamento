@@ -475,7 +475,7 @@ function Atividades({ atividadesOP, atividades, etapas, equipes }) {
     );
 }
 function Checklist({ etapas, etapasOP, checklists, equipes }) {
-    const { checklistOP, setChecklistOP, atividadesOP, setAtividadesOP } = useUser();
+    const { checklistOP, setChecklistOP, atividadesOP, setAtividadesOP, setVolumesOP, volumesOP } = useUser();
     
     const [openModal, setOpenModal] = useState(false);
     const [checklistSelecionado, setChecklistSelecionado] = useState(null);
@@ -553,7 +553,14 @@ function Checklist({ etapas, etapasOP, checklists, equipes }) {
                     item.id_ativ === atividadeSelecionada.id ? { ...item, status: 0 } : item
                 )
             );
+
+            console.log(volumesOP);
+            
+            setVolumesOP(prev => prev.filter(item => item.id_ativ != atividadeSelecionada.id));
             atualizarStatusAtividade(atividadeSelecionada, -1);
+            console.log(atividadeSelecionada);
+
+
 
         } else {
             setChecklistOP([...checklistOP, {
@@ -654,35 +661,47 @@ function ChecklistAtividade({ checklists, atividade, openModal }) {
     );
 }
 function Volumes() {
-    const { atividades, volumes, volumesOP } = useUser();
+    const { atividadesOP, volumes, volumesOP, checklists, checklistOP } = useUser();
 
-    const createData = (volume, dimensoes, peso, atividade, status ) => {
-        return { volume, dimensoes, peso, atividade, status  };
+    const naoEmbalados = volumesOP.filter(item => item.id_embalagem == null);
+    const embalados = volumesOP.filter(item => item.id_embalagem != null);
+
+    const createData = (volume) => {
+        const volumeConf = volumes.find(item => item.id == volume.id_volume);
+        const title = volumeConf.title;
+        const dimensoes = volumeConf.comprimento + ' x ' + volumeConf.largura + ' x ' + volumeConf.altura;
+        const peso = volumeConf.peso;
+
+        const atividadeConf = atividadesOP.find(item => (item.id == volume.id_ativ && item.status != -1));
+        const atividadeLink = <Button variant="outlined" size="small" component={Link} to={`/atividades/${atividadeConf.id}`}>#{atividadeConf.id}</Button>;
+
+        const elementStatus = <Status status={atividadeConf.status} size='small' />;
+
+        console.log(atividadesOP);
+        
+        const checklistAtv = checklists?.filter(item => item.id_atividade == volume.id_atividade);
+        const checklistFinalizado = checklistOP.filter(item => item.id_ativ == volume.id_ativ && item.status == 1);
+
+        const statusCheck = `${checklistFinalizado.length}/${checklistAtv.length}`;
+        console.log(statusCheck);
+
+        return { title, dimensoes, peso, statusCheck, elementStatus, atividadeLink };
     }
-    const rows = [
-        createData(
-            '#3489787', 
-            'Tampa da mesa',
-            '200 x 400 x 50',
-            '20',
-            '01/11/2024',
-            <Box className="acoes">
-                <Button variant="outlined" size="small"><EditSquareIcon /></Button>
-                <Button variant="outlined" size="small"><DeleteIcon /></Button>
-            </Box>
-        ),
-        createData(
-            '#3489788', 
-            'Peças de montagem da mesa',
-            '50 x 50 x 50',
-            '10',
-            '01/11/2024',
-            <Box className="acoes">
-                <Button variant="outlined" size="small"><EditSquareIcon /></Button>
-                <Button variant="outlined" size="small"><DeleteIcon /></Button>
-            </Box>
-        ),
-    ];
+ 
+    const rowsNaoEmbalados = [];
+    naoEmbalados.map((item) => {
+        rowsNaoEmbalados.push(
+            createData(item)
+        )
+    })
+
+    const rowEmbalados = [];
+
+    embalados.map((item) => {
+        rowEmbalados.push(
+            createData(item)
+        )
+    })
     const headCells = [
         {
             id: 'volume',
@@ -695,30 +714,36 @@ function Volumes() {
         },
         {
             id: 'peso',
-            numeric: true,
             label: 'Peso (kg)',
         },
         {
-            id: 'atividade',
-            numeric: true,
-            label: 'Atividade',
+            id: 'statusCheck',
+            label: 'Checklist',
         },
         {
             id: 'status',
-            numeric: true,
-            label: 'Status',
+            label: 'Status Ativ.',
+        },
+        {
+            id: 'atividade',
+            label: 'Atividade',
         },
     ];
 
     return (
         <Box className="volumes">
             <div className="volume_content">
-                <h3>Não embalados</h3>
-                <DataTable headCells={headCells} rows={rows}/>
+                <h3>
+                    Não embalados
+                    <Button variant="outlined" size="small" onClick={() => {}}>
+                        Embalar
+                    </Button>
+                </h3>
+                <DataTable headCells={headCells} rows={rowsNaoEmbalados}/>
             </div>
             <div className="volume_content">
-                <h3>Embalados</h3>
-                <DataTable headCells={headCells} rows={rows}/>
+                <h3>Embalagens</h3>
+                <DataTable headCells={headCells} rows={rowEmbalados}/>
             </div>
         </Box>
     )
