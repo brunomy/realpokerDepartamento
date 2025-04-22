@@ -245,12 +245,9 @@ export function UserProvider({ children }) {
       id_categoria: 1, 
       id_etapa: 1,
       id_atividade: 0,
-      title: 'Borda da mesa (Modelo 1)',
+      title: 'Borda da mesa',
     },
-    { id: 1, id_categoria: 1,  id_etapa: 1, id_atividade: 0, title: 'Borda da mesa (Modelo 2)' },
-    { id: 2, id_categoria: 1,  id_etapa: 1, id_atividade: 0, title: 'Borda da mesa (Modelo 3)' },
-    { id: 3, id_categoria: 1,  id_etapa: 1, id_atividade: 1, title: 'Tiras de couro (Modelo 1)' },
-    { id: 4, id_categoria: 1,  id_etapa: 1, id_atividade: 1, title: 'Tiras de couro (Modelo 2)' },
+    { id: 1, id_categoria: 1,  id_etapa: 1, id_atividade: 1, title: 'Tiras de couro' },
   ])
 
   const [equipes, setEquipes] = useState([
