@@ -44,8 +44,8 @@ export default function Remessas() {
     ]
 
     //dados da tabela
-    const createData = (pedidos, ordens, valor, destino, entrega, status, link) => {
-        return { pedidos, ordens, valor, destino, entrega, status, link };
+    const createData = (pedidos, ordens, destino, entrega, status, link) => {
+        return { pedidos, ordens, destino, entrega, status, link };
     }
     const rows = [
         createData(
@@ -55,7 +55,6 @@ export default function Remessas() {
             <Box className="pedidos">
                 <Button component={Link} to="/ordens/3568" variant="outlined" size="small">#3568</Button>
             </Box>,
-            'R$500,00',
             'Goiânia/GO',
             '10/05/2025',
             <Chip className="stats" size="small" label="Pendente" />,
@@ -72,11 +71,6 @@ export default function Remessas() {
             id: 'ordens',
             numeric: false,
             label: 'Ordens',
-        },
-        {
-            id: 'valor',
-            numeric: false,
-            label: 'Valor',
         },
         {
             id: 'destino',

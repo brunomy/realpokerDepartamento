@@ -43,11 +43,12 @@ export default function Pedidos() {
         const id = '#5951'
         const ordens = '0/1'
         const criacao = '01/11/2024'
+        const entrega = '25/11/2024'
         const comprador = 'João Felipe'
         const status = <Status status={calculoStatusPedido()} size={'small'} />
         const link = <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">Detalhes</Button>
 
-        return { id, ordens, criacao, comprador, status, link };
+        return { id, ordens, criacao, entrega, comprador, status, link };
     }
     const rows = [
         createData(),
@@ -67,6 +68,11 @@ export default function Pedidos() {
             id: 'criacao',
             numeric: false,
             label: 'Criação',
+        },
+        {
+            id: 'entrega',
+            numeric: false,
+            label: 'Entrega',
         },
         {
             id: 'comprador',
