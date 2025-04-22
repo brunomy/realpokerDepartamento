@@ -74,9 +74,24 @@ export default function Atividade() {
       setTab(newTab);
     };
 
+    const breadcrumbs = [
+        {
+            label: 'Pedido #5951',
+            url: '/pedidos/5951'
+        },
+        {
+            label: `Ordem #${atividade.id_ordem}`,
+            url: `/ordens/${atividade.id_ordem}`
+        },
+        {
+            label: `Atividade #${id}`,
+            url: `/atividades/${id}`
+        },
+    ]
+
     return (
         <Layout>
-            <Title title={"Atividade Nº #"+id} icon={<AssignmentIcon/>} />
+            <Title title={"Atividade Nº #"+id} icon={<AssignmentIcon/>} breadcrumbs={breadcrumbs} />
             <Box className="tabs_content">
                 <Tabs
                     value={tab}

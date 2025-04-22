@@ -243,7 +243,7 @@ export function Ordens({ headCells, rows }) {
     )
 }
 
-function Volumes() {
+export function Volumes() {
     const { atividadesOP, volumes, volumesOP, checklists, checklistOP } = useUser();
 
     const naoEmbalados = volumesOP.filter(item => item.id_embalagem == null);

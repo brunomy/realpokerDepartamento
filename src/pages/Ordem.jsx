@@ -115,9 +115,20 @@ export default function Ordem() {
         },
     ];
 
+    const breadcrumbs = [
+        {
+            label: 'Pedido #5951',
+            url: '/pedidos/5951'
+        },
+        {
+            label: `Ordem #${id}`,
+            url: `/ordens/${id}`
+        },
+    ]
+
     return (
         <Layout>
-            <Title title={"Ordem Nº #"+id} icon={<FactoryIcon/>} />
+            <Title title={"Ordem Nº #"+id} icon={<FactoryIcon/>} breadcrumbs={breadcrumbs} />
             <Box className="tabs_content">
                 <Tabs
                     value={tab}

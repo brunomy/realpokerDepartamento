@@ -24,7 +24,7 @@ import AdicionarString from '~/components/AdicionarString';
 
 export default function ConficuracaoEtapas() {
     const { id } = useParams();
-    const { etapas, setEtapas, atividades, setAtividades, checklists, setChecklists, volumes } = useUser();
+    const { etapas, setEtapas, atividades, setAtividades, checklists, setChecklists, volumes, categorias } = useUser();
 
     const [novaEtapa, setNovaEtapa] = useState("");
 
@@ -71,7 +71,7 @@ export default function ConficuracaoEtapas() {
     }
     useEffect(() => {
         setRows(createDataItens())
-    },[etapas])
+    },[etapas, id])
 
     const [rows, setRows] = useState(
         createDataItens()
@@ -106,9 +106,21 @@ export default function ConficuracaoEtapas() {
         },
     ];
 
+    const categoria = categorias.find((item) => item.id == id)
+    const breadcrumbs = [
+        {
+            label: 'Configurações',
+            url: '/configuracoes'
+        },
+        {
+            label: categoria.title,
+            url: `/configuracoes/${id}`
+        }
+    ]
+
     return (
         <Layout>
-            <Title title={`Configuração de etapas`} icon={<SettingsApplicationsIcon />} />
+            <Title title={`Configuração de etapas`} icon={<SettingsApplicationsIcon />} breadcrumbs={breadcrumbs} />
             <Box className="show_content">
                 <Box className="table_content" sx={{ paddingLeft: '0 !important', paddingRight: '0 !important' }}>
                     <DataTable headCells={headCells} rows={rows}/>

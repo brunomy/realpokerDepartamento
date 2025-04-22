@@ -22,9 +22,11 @@ import { useUser } from "~/context/UserContext";
 import Modal from '~/components/Modal';
 import AdicionarString from '~/components/AdicionarString';
 import AdicionarVolume from '~/components/AdicionarVolume';
+import Breadcrumbs from "~/components/Breadcrumbs";
 
 export default function ConfiguracaoCheckVol() {
     const { id, id_etapa, id_atividade } = useParams();
+    const { categorias, etapas, atividades } = useUser();
 
     const [tab, setTab] = useState(0);
 
@@ -32,9 +34,32 @@ export default function ConfiguracaoCheckVol() {
         setTab(newTab);
     };
 
+    const categoria = categorias.find((item) => item.id == id)
+    const etapa = etapas.find((item) => item.id == id_etapa)
+    const atividade = atividades.find((item) => item.id == id_atividade)
+    const breadcrumbs = [
+        {
+            label: 'Configurações',
+            url: '/configuracoes'
+        },
+        {
+            label: categoria.title,
+            url: `/configuracoes/${id}`
+        },
+        {
+            label: etapa.title,
+            url: `/configuracoes/${id}/etapa/${id_etapa}`
+        },
+        {
+            label: atividade.title,
+            url: `/configuracoes/${id}/etapa/${id_etapa}/atividade/${id_atividade}`
+        }
+    ]
+
     return (
         <Layout>
-            <Title title={`Configuração de Checklists e Volumes`} icon={<SettingsApplicationsIcon />} />
+            <Title title={`Configuração de Checklists e Volumes`} icon={<SettingsApplicationsIcon />} breadcrumbs={breadcrumbs} />
+
             <Box className="tabs_content">
                 <Tabs
                     value={tab}
@@ -47,6 +72,7 @@ export default function ConfiguracaoCheckVol() {
                     <Tab label="Volumes" />
                 </Tabs>
             </Box>
+
             <Box className="show_content">
                 <Box className="table_content" sx={{ paddingLeft: '0 !important', paddingRight: '0 !important' }}>
                 {tab == 0 && <Checklists id={id} id_atividade={id_atividade} id_etapa={id_etapa} />}

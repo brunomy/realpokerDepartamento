@@ -24,7 +24,7 @@ import AdicionarString from '~/components/AdicionarString';
 
 export default function ConfiguracaoAtividades() {
     const { id, id_etapa } = useParams();
-    const { atividades, setAtividades, checklists, setChecklists, volumes } = useUser();
+    const { atividades, setAtividades, checklists, setChecklists, volumes, categorias, etapas } = useUser();
 
     const [novaAtividade, setNovaAtividade] = useState("");
 
@@ -98,9 +98,26 @@ export default function ConfiguracaoAtividades() {
         },
     ];
 
+    const categoria = categorias.find((item) => item.id == id)
+    const etapa = etapas.find((item) => item.id == id_etapa)
+    const breadcrumbs = [
+        {
+            label: 'Configurações',
+            url: '/configuracoes'
+        },
+        {
+            label: categoria.title,
+            url: `/configuracoes/${id}`
+        },
+        {
+            label: etapa.title,
+            url: `/configuracoes/${id}/etapa/${id_etapa}`
+        }
+    ]
+
     return (
         <Layout>
-            <Title title={`Configuração de Atividade`} icon={<SettingsApplicationsIcon />} />
+            <Title title={`Configuração de Atividade`} icon={<SettingsApplicationsIcon />} breadcrumbs={breadcrumbs} />
             <Box className="show_content">
                 <Box className="table_content" sx={{ paddingLeft: '0 !important', paddingRight: '0 !important' }}>
                     <DataTable headCells={headCells} rows={rows}/>

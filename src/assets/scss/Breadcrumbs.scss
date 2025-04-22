@@ -1,0 +1,36 @@
+@use '~/assets/scss/Variables.scss' as *;
+
+.breadcrumbs{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 0 0 5px 45px;
+
+    .item{
+        display: flex;
+        align-items: center;
+        gap: 5px;
+
+        &:last-child span{ display: none; }
+
+        a{
+            color: #fff;
+            padding: 0;
+            font-size: 0.7em;
+            font-weight: 500;
+            min-width: 0;
+        }
+        span{
+            color: #fff;
+
+            display: block;
+
+            svg{
+                height: auto;
+                width: 15px;
+            }
+        }
+    }
+}
