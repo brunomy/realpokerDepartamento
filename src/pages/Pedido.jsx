@@ -26,9 +26,10 @@ import AdicionarVolume from '~/components/AdicionarVolume';
 
 import { useUser } from '~/context/UserContext';
 import Status from '../components/Status';
+import { calculoStatusPedido } from './Pedidos';
 
 export default function Pedidos() {
-    const { ordens, setOrdens } = useUser();
+    const { ordens, setOrdens, volumesOP } = useUser();
 
     const { id } = useParams();
 
@@ -48,16 +49,8 @@ export default function Pedidos() {
             <Chip className="stats" size="small" label="Mesa de poker" />,
             'Mesa de poker profissional',
             '11/042025',
-            <Status status={1} size={'small'} />,
+            <Status status={calculoStatusPedido()} size={'small'} />,
             <Button component={Link} to="/ordens/3568" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createDataOrdens(
-            '#3569',
-            <Chip className="stats" size="small" label="Mesa de poker" />,
-            'Mesa de poker redonda',
-            '11/042025',
-            <Status status={3} size={'small'} />,
-            <Button component={Link} to="/ordens/3569" variant="outlined" size="small">Detalhes</Button>
         ),
     ];
     const headCellsOrdens = [
@@ -93,74 +86,6 @@ export default function Pedidos() {
         },
     ];
 
-    const createData = (id, descricao, dimensoes, peso, criacao, acoes) => {
-        return {
-            id,
-            descricao,
-            dimensoes,
-            peso,
-            criacao,
-            acoes,
-        };
-    }
-    const rowsVolumes = [
-        createData(
-            '#3489787', 
-            'Tampa da mesa',
-            '200 x 400 x 50',
-            '20',
-            '01/11/2024',
-            <Box className="acoes">
-                <Button variant="outlined" size="small"><EditSquareIcon /></Button>
-                <Button variant="outlined" size="small"><DeleteIcon /></Button>
-            </Box>
-        ),
-        createData(
-            '#3489788', 
-            'Peças de montagem da mesa',
-            '50 x 50 x 50',
-            '10',
-            '01/11/2024',
-            <Box className="acoes">
-                <Button variant="outlined" size="small"><EditSquareIcon /></Button>
-                <Button variant="outlined" size="small"><DeleteIcon /></Button>
-            </Box>
-        ),
-    ];
-    const headCellsVolumes = [
-        {
-            id: 'id',
-            numeric: false,
-            label: 'Id',
-        },
-        {
-            id: 'descricao',
-            numeric: false,
-            label: 'Descrição',
-        },
-        {
-            id: 'dimensoes',
-            numeric: false,
-            label: 'Dimensões (cm)',
-        },
-        {
-            id: 'peso',
-            numeric: true,
-            label: 'Peso (kg)',
-        },
-        {
-            id: 'criacao',
-            numeric: true,
-            label: 'Criação',
-        },
-        {
-            id: 'acoes',
-            numeric: false,
-            align: "right",
-            label: 'Ações',
-        },
-    ];
-    
     const handleChange = (event, newTab) => {
       setTab(newTab);
     };
@@ -178,12 +103,13 @@ export default function Pedidos() {
                 >
                     <Tab label="Informações" />
                     <Tab label="Ordens" />
-                    <Tab label="Volumes" />
+                    <Tab label="Volumes" disabled={volumesOP.length == 0} />
                 </Tabs>
             </Box>
             <Box className="show_content">
                 { tab == 0 && <Informacoes 
-                    status={status} 
+                    volumesOP={volumesOP}
+                    status={calculoStatusPedido()} 
                     setTab={setTab} />
                 }
                 { tab == 1 && <Ordens headCells={headCellsOrdens} rows={rowsOrdens}/> }
@@ -193,7 +119,7 @@ export default function Pedidos() {
     )
 }
 
-function Informacoes({ status, setTab}) {
+function Informacoes({ status, setTab, volumesOP}) {
     return (
         <>
         <Box className="informacoes">
@@ -219,12 +145,12 @@ function Informacoes({ status, setTab}) {
                     <p>
                         <span className="icon"><AssignmentTwoToneIcon/></span>
                         <b>ORDENS: </b>
-                        <Button variant="contained" size="small" onClick={() => {setTab(1)}}>1/2</Button>
+                        <Button variant="contained" size="small" onClick={() => {setTab(1)}}>0/1</Button>
                     </p>
                     <p>
                         <span className="icon"><ArchiveTwoToneIcon/></span>
                         <b>VOLUMES: </b>
-                        <Button variant="contained" size="small" onClick={() => {setTab(2)}}>2</Button>
+                        <Button variant="contained" size="small" onClick={() => {setTab(2)}}>{volumesOP.length}</Button>
                     </p>
                 </Box>
             </Box>
@@ -250,25 +176,29 @@ export function Volumes() {
     const embalados = volumesOP.filter(item => item.id_embalagem != null);
 
     const createData = (volume) => {
-        console.log(volume);
-        
         const volumeConf = volumes.find(item => item.id == volume.id_volume);
         const title = volumeConf.title;
         const dimensoes = volume.comprimento + ' x ' + volume.largura + ' x ' + volume.altura;
         const peso = volume.peso;
 
-        const atividadeConf = atividadesOP.find(item => (item.id == volume.id_ativ && item.status != -1));
-        const atividadeLink = <Button variant="outlined" size="small" component={Link} to={`/atividades/${atividadeConf.id}`}>#{atividadeConf.id}</Button>;
-
-        const elementStatus = <Status status={atividadeConf.status} size='small' />;
 
         const checklistAtv = checklists?.filter(item => item.id_atividade == volumeConf.id_atividade);
         const checklistFinalizado = checklistOP.filter(item => item.id_ativ == volume.id_ativ && item.status == 1);
 
         const statusCheck = `${checklistFinalizado.length}/${checklistAtv.length}`;
-        console.log(statusCheck);
-
-        return { title, dimensoes, peso, statusCheck, elementStatus, atividadeLink };
+        var chipStatus = null;
+        if(checklistFinalizado.length == checklistAtv.length){
+            chipStatus = <Chip className="stats" size='small' color="success" label={statusCheck} />
+        } else {
+            chipStatus = <Chip className="stats" size='small' label={statusCheck} />
+        }
+        
+        const atividadeConf = atividadesOP.find(item => (item.id == volume.id_ativ && item.status != -1));
+        const atividadeLink = <Button variant="outlined" size="small" component={Link} to={`/atividades/${atividadeConf.id}`}>#{atividadeConf.id}</Button>;
+        
+        const remessaLink = <Button variant="contained" size="small" component={Link} to={`/remessas/${volume.id_remessa}`} sx={{ boxShadow: 'none' }}>#{volume.id_remessa}</Button>;
+        
+        return { title, dimensoes, peso, chipStatus, atividadeLink, remessaLink };
     }
  
     const rowsNaoEmbalados = [];
@@ -279,7 +209,6 @@ export function Volumes() {
     })
 
     const rowEmbalados = [];
-
     embalados.map((item) => {
         rowEmbalados.push(
             createData(item)
@@ -304,28 +233,26 @@ export function Volumes() {
             label: 'Checklist',
         },
         {
-            id: 'status',
-            label: 'Status Ativ.',
-        },
-        {
             id: 'atividade',
             label: 'Atividade',
         },
+        {
+            id: 'remessa',
+            label: 'Remessa',
+        },
     ];
+
 
     return (
         <Box className="volumes">
             <div className="volume_content">
                 <h3>
                     Não embalados
-                    <Button variant="outlined" size="small" onClick={() => {}}>
-                        Embalar
-                    </Button>
                 </h3>
                 <DataTable headCells={headCells} rows={rowsNaoEmbalados}/>
             </div>
             <div className="volume_content">
-                <h3>Embalagens</h3>
+                <h3>Embalados</h3>
                 <DataTable headCells={headCells} rows={rowEmbalados}/>
             </div>
         </Box>

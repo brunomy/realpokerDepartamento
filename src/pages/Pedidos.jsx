@@ -15,6 +15,7 @@ import Title from "~/components/Title";
 import InputAuto from '~/components/InputAuto';
 import InputCalendarRange from '~/components/InputCalendarRange';
 import Status from '../components/Status';
+import { useUser } from '~/context/UserContext';
 
 export default function Pedidos() {
     const hoje = dayjs();
@@ -38,98 +39,18 @@ export default function Pedidos() {
     ]
 
     //dados da tabela
-    const createData = (id, ordens, criacao, comprador, status, link) => {
+    const createData = () => {
+        const id = '#5951'
+        const ordens = '0/1'
+        const criacao = '01/11/2024'
+        const comprador = 'João Felipe'
+        const status = <Status status={calculoStatusPedido()} size={'small'} />
+        const link = <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">Detalhes</Button>
+
         return { id, ordens, criacao, comprador, status, link };
     }
     const rows = [
-        createData(
-            '#5951', 
-            '1/2',
-            '01/11/2024',
-            'João Felipe',
-            <Status status={1} size={'small'} />,
-            <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createData(
-            '#5952', 
-            '0/2',
-            '02/11/2024',
-            'João Felipe',
-            <Status status={0} size={'small'} />,
-            <Button component={Link} to="/pedidos/5952" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createData(
-            '#5953', 
-            '1/2',
-            '03/11/2024',
-            'João Felipe',
-            <Status status={2} size={'small'} />,
-            <Button component={Link} to="/pedidos/5953" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createData(
-            '#5955', 
-            '2/2',
-            '04/11/2024',
-            'João Felipe',
-            <Status status={3} size={'small'} />,
-            <Button component={Link} to="/pedidos/5955" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createData(
-            '#5956', 
-            '2/2',
-            '04/11/2024',
-            'João Felipe',
-            <Status status={3} size={'small'} />,
-            <Button component={Link} to="/pedidos/5956" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createData(
-            '#5957', 
-            '2/2',
-            '04/11/2024',
-            'João Felipe',
-            <Status status={3} size={'small'} />,
-            <Button component={Link} to="/pedidos/5957" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createData(
-            '#5958', 
-            '4/4',
-            '04/11/2024',
-            'João Felipe',
-            <Status status={3} size={'small'} />,
-            <Button component={Link} to="/pedidos/5958" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createData(
-            '#5959', 
-            '1/1',
-            '04/11/2024',
-            'João Felipe',
-            <Status status={3} size={'small'} />,
-            <Button component={Link} to="/pedidos/5959" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createData(
-            '#5960', 
-            '2/2',
-            '04/11/2024',
-            'João Felipe',
-            <Status status={3} size={'small'} />,
-            <Button component={Link} to="/pedidos/5960" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createData(
-            '#5961', 
-            '2/2',
-            '04/11/2024',
-            'João Felipe',
-            <Status status={3} size={'small'} />,
-            <Button component={Link} to="/pedidos/5961" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createData(
-            '#5962', 
-            '2/2',
-            '04/11/2024',
-            'João Felipe',
-            <Status status={3} size={'small'} />,
-            <Button component={Link} to="/pedidos/5962" variant="outlined" size="small">Detalhes</Button>
-        ),
+        createData(),
     ];
     const headCells = [
         {
@@ -190,4 +111,23 @@ export default function Pedidos() {
             </Box>
         </Layout>
     )
+}
+
+export function calculoStatusPedido(){
+    const { atividadesOP, checklistOP, volumesOP, } = useUser();
+
+    const atividadesAndamento = atividadesOP.find((item) => item.status == 1)
+    const atividadesFinalizadas = atividadesOP.filter((item) => item.status == 3)
+
+    if(!atividadesOP)
+        return 0
+    if(atividadesAndamento)
+        return 1
+    if(atividadesFinalizadas.length != 0 && atividadesFinalizadas.length == atividadesOP.length)
+        return 3
+    else if(atividadesFinalizadas.length > 0){
+        return 1
+    }
+
+    return 0
 }

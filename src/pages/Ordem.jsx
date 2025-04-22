@@ -40,7 +40,9 @@ import SelecionarEtapa from '~/components/SelecionarEtapa';
 import VistoriaChecklist from '~/components/VistoriaChecklist';
 
 import dayjs from 'dayjs';
-import Status from '../components/Status';
+import Status from '~/components/Status';
+import { Volumes } from './Pedido';
+import { calculoStatusPedido } from './Pedidos';
 
 export default function Ordem() {
     const { 
@@ -55,7 +57,7 @@ export default function Ordem() {
 
     const [tab, setTab] = useState(0);
 
-    const [status, setStatus] = useState(1);
+    const [status, setStatus] = useState(calculoStatusPedido());
 
     const handleChange = (event, newTab) => {
       setTab(newTab);
@@ -565,14 +567,8 @@ function Checklist({ etapas, etapasOP, checklists, equipes }) {
                 )
             );
 
-            console.log(volumesOP);
-            
             setVolumesOP(prev => prev.filter(item => item.id_ativ != atividadeSelecionada.id));
             atualizarStatusAtividade(atividadeSelecionada, -1);
-            console.log(atividadeSelecionada);
-
-
-
         } else {
             setChecklistOP([...checklistOP, {
                 id: checklistOP.length + 1,
@@ -644,7 +640,6 @@ function ChecklistAtividade({ checklists, atividade, openModal }) {
         <>
         {checklists.map((checklist, index) => {
             const checklistData = checklistOP.find(item => item.id_ativ === atividade.id && item.id_checklist === checklist.id);
-            console.log(checklist);
 
             return (
                 <Box className={"item "+
@@ -670,92 +665,4 @@ function ChecklistAtividade({ checklists, atividade, openModal }) {
         })}
         </>
     );
-}
-function Volumes() {
-    const { atividadesOP, volumes, volumesOP, checklists, checklistOP } = useUser();
-
-    const naoEmbalados = volumesOP.filter(item => item.id_embalagem == null);
-    const embalados = volumesOP.filter(item => item.id_embalagem != null);
-
-    const createData = (volume) => {
-        console.log(volume);
-        
-        const volumeConf = volumes.find(item => item.id == volume.id_volume);
-        const title = volumeConf.title;
-        const dimensoes = volume.comprimento + ' x ' + volume.largura + ' x ' + volume.altura;
-        const peso = volume.peso;
-
-        const atividadeConf = atividadesOP.find(item => (item.id == volume.id_ativ && item.status != -1));
-        const atividadeLink = <Button variant="outlined" size="small" component={Link} to={`/atividades/${atividadeConf.id}`}>#{atividadeConf.id}</Button>;
-
-        const elementStatus = <Status status={atividadeConf.status} size='small' />;
-
-        const checklistAtv = checklists?.filter(item => item.id_atividade == volumeConf.id_atividade);
-        const checklistFinalizado = checklistOP.filter(item => item.id_ativ == volume.id_ativ && item.status == 1);
-
-        const statusCheck = `${checklistFinalizado.length}/${checklistAtv.length}`;
-        console.log(statusCheck);
-
-        return { title, dimensoes, peso, statusCheck, elementStatus, atividadeLink };
-    }
- 
-    const rowsNaoEmbalados = [];
-    naoEmbalados.map((item) => {
-        rowsNaoEmbalados.push(
-            createData(item)
-        )
-    })
-
-    const rowEmbalados = [];
-
-    embalados.map((item) => {
-        rowEmbalados.push(
-            createData(item)
-        )
-    })
-    const headCells = [
-        {
-            id: 'volume',
-            label: 'Volume',
-        },
-        {
-            id: 'dimensoes',
-            numeric: false,
-            label: 'Dimensões (cm)',
-        },
-        {
-            id: 'peso',
-            label: 'Peso (kg)',
-        },
-        {
-            id: 'statusCheck',
-            label: 'Checklist',
-        },
-        {
-            id: 'status',
-            label: 'Status Ativ.',
-        },
-        {
-            id: 'atividade',
-            label: 'Atividade',
-        },
-    ];
-
-    return (
-        <Box className="volumes">
-            <div className="volume_content">
-                <h3>
-                    Não embalados
-                    <Button variant="outlined" size="small" onClick={() => {}}>
-                        Embalar
-                    </Button>
-                </h3>
-                <DataTable headCells={headCells} rows={rowsNaoEmbalados}/>
-            </div>
-            <div className="volume_content">
-                <h3>Embalagens</h3>
-                <DataTable headCells={headCells} rows={rowEmbalados}/>
-            </div>
-        </Box>
-    )
 }

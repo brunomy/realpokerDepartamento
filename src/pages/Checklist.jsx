@@ -91,9 +91,6 @@ export default function Checklist() {
             ...novosChecklists
         ]);
 
-        //aqui existe um errom, o array incrementa dados toda vez que salva, mesmo sem alteração
-        console.log(checklistItem);
-
         navigate('/checklists');
     };
 

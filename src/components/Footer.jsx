@@ -62,20 +62,20 @@ export default function Footer() {
                 showLabel
             />
             <BottomNavigationAction
-                label="Equipes"
-                value="equipes"
-                icon={<GroupsTwoToneIcon />}
-                component={Link}
-                to="/equipes"
-                showLabel
-                sx={{ display: usuarioLogado.permission === "admin" ? 'flex' : 'none' }}
-            />
-            <BottomNavigationAction
                 label="Remessas"
                 value="remessas"
                 icon={<LocalShippingTwoToneIcon />}
                 component={Link}
                 to="/remessas"
+                showLabel
+                sx={{ display: usuarioLogado.permission === "admin" ? 'flex' : 'none' }}
+            />
+            <BottomNavigationAction
+                label="Equipes"
+                value="equipes"
+                icon={<GroupsTwoToneIcon />}
+                component={Link}
+                to="/equipes"
                 showLabel
                 sx={{ display: usuarioLogado.permission === "admin" ? 'flex' : 'none' }}
             />

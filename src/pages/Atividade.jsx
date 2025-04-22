@@ -200,6 +200,8 @@ function Volumes({ id, atividade }) {
                 id_ativ: id,
                 id_etapa: atividade.id_etapa,
                 id_volume: novoVolume.id_volume,
+                id_remessa: 3485,
+                id_embalagem: null,
                 comprimento: novoVolume.comprimento,
                 largura: novoVolume.largura,
                 altura: novoVolume.altura,
