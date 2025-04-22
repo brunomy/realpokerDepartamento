@@ -667,19 +667,19 @@ function Volumes() {
     const embalados = volumesOP.filter(item => item.id_embalagem != null);
 
     const createData = (volume) => {
+        console.log(volume);
+        
         const volumeConf = volumes.find(item => item.id == volume.id_volume);
         const title = volumeConf.title;
-        const dimensoes = volumeConf.comprimento + ' x ' + volumeConf.largura + ' x ' + volumeConf.altura;
-        const peso = volumeConf.peso;
+        const dimensoes = volume.comprimento + ' x ' + volume.largura + ' x ' + volume.altura;
+        const peso = volume.peso;
 
         const atividadeConf = atividadesOP.find(item => (item.id == volume.id_ativ && item.status != -1));
         const atividadeLink = <Button variant="outlined" size="small" component={Link} to={`/atividades/${atividadeConf.id}`}>#{atividadeConf.id}</Button>;
 
         const elementStatus = <Status status={atividadeConf.status} size='small' />;
 
-        console.log(atividadesOP);
-        
-        const checklistAtv = checklists?.filter(item => item.id_atividade == volume.id_atividade);
+        const checklistAtv = checklists?.filter(item => item.id_atividade == volumeConf.id_atividade);
         const checklistFinalizado = checklistOP.filter(item => item.id_ativ == volume.id_ativ && item.status == 1);
 
         const statusCheck = `${checklistFinalizado.length}/${checklistAtv.length}`;

@@ -6,12 +6,36 @@ import { Box } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 
-export default function AdicionarVolume({ value, setValue }) {
+import { useUser } from '~/context/UserContext';
+
+export default function AdicionarVolume({ value, setValue, id_atividade }) {
+    const { volumes } = useUser();
+
+    const formatarArray = () => {
+        let volumes_atividade = volumes.filter((volume) => volume.id_atividade == id_atividade)
+        return volumes_atividade.map((volume) => ({
+            id: volume.id,
+            label: volume.title
+        }));
+    };
+
+    const [selectedVolume, setSelectedVolume] = useState(null);
+    const onChange = (newValue) => {
+        setSelectedVolume(newValue);
+        setValue({ ...value, id_volume: selectedVolume.id })
+    }
+
     return (
         <Box className="adicionarVolume">
             <form action="">
                 <div className="item full">
-                    <TextField value={value.descricao} onChange={(e) => setValue({ ...value, descricao: e.target.value })} label="Descrição" variant="outlined" sx={{width: '100%'}} />
+                    <InputAuto
+                        value={selectedVolume}
+                        setValue={onChange}
+                        label="Volume"
+                        list={formatarArray()}
+                        width={'100%'}
+                    />
                 </div>
                 <div className="item">
                     <TextField value={value.comprimento} onChange={(e) => setValue({ ...value, comprimento: e.target.value })} label="Comprimento" variant="outlined" sx={{width: '100%'}} slotProps={{

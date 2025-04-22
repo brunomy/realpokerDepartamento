@@ -187,12 +187,7 @@ export default function Pedidos() {
                     setTab={setTab} />
                 }
                 { tab == 1 && <Ordens headCells={headCellsOrdens} rows={rowsOrdens}/> }
-                { tab == 2 && <Volumes 
-                    openModal={setAddVolumeModal} 
-                    open={addVolumeModal} 
-                    headCells={headCellsVolumes} 
-                    rows={rowsVolumes} />
-                }
+                { tab == 2 && <Volumes /> }
             </Box>
         </Layout>
     )
@@ -248,20 +243,91 @@ export function Ordens({ headCells, rows }) {
     )
 }
 
-export function Volumes({ openModal, open, adicionar = true, headCells, rows }) {
+function Volumes() {
+    const { atividadesOP, volumes, volumesOP, checklists, checklistOP } = useUser();
+
+    const naoEmbalados = volumesOP.filter(item => item.id_embalagem == null);
+    const embalados = volumesOP.filter(item => item.id_embalagem != null);
+
+    const createData = (volume) => {
+        console.log(volume);
+        
+        const volumeConf = volumes.find(item => item.id == volume.id_volume);
+        const title = volumeConf.title;
+        const dimensoes = volume.comprimento + ' x ' + volume.largura + ' x ' + volume.altura;
+        const peso = volume.peso;
+
+        const atividadeConf = atividadesOP.find(item => (item.id == volume.id_ativ && item.status != -1));
+        const atividadeLink = <Button variant="outlined" size="small" component={Link} to={`/atividades/${atividadeConf.id}`}>#{atividadeConf.id}</Button>;
+
+        const elementStatus = <Status status={atividadeConf.status} size='small' />;
+
+        const checklistAtv = checklists?.filter(item => item.id_atividade == volumeConf.id_atividade);
+        const checklistFinalizado = checklistOP.filter(item => item.id_ativ == volume.id_ativ && item.status == 1);
+
+        const statusCheck = `${checklistFinalizado.length}/${checklistAtv.length}`;
+        console.log(statusCheck);
+
+        return { title, dimensoes, peso, statusCheck, elementStatus, atividadeLink };
+    }
+ 
+    const rowsNaoEmbalados = [];
+    naoEmbalados.map((item) => {
+        rowsNaoEmbalados.push(
+            createData(item)
+        )
+    })
+
+    const rowEmbalados = [];
+
+    embalados.map((item) => {
+        rowEmbalados.push(
+            createData(item)
+        )
+    })
+    const headCells = [
+        {
+            id: 'volume',
+            label: 'Volume',
+        },
+        {
+            id: 'dimensoes',
+            numeric: false,
+            label: 'Dimensões (cm)',
+        },
+        {
+            id: 'peso',
+            label: 'Peso (kg)',
+        },
+        {
+            id: 'statusCheck',
+            label: 'Checklist',
+        },
+        {
+            id: 'status',
+            label: 'Status Ativ.',
+        },
+        {
+            id: 'atividade',
+            label: 'Atividade',
+        },
+    ];
+
     return (
-        <>
-        <Box className="table_content">
-            <DataTable headCells={headCells} rows={rows}/>
-            { adicionar && 
-                <>
-                <Button className="adicionar" variant="contained" onClick={() => openModal(true)}>Adicionar volume</Button>
-                <Modal open={open} setOpen={openModal} title="Adicionar volume">
-                    <AdicionarVolume/>
-                </Modal>
-                </>
-            }
+        <Box className="volumes">
+            <div className="volume_content">
+                <h3>
+                    Não embalados
+                    <Button variant="outlined" size="small" onClick={() => {}}>
+                        Embalar
+                    </Button>
+                </h3>
+                <DataTable headCells={headCells} rows={rowsNaoEmbalados}/>
+            </div>
+            <div className="volume_content">
+                <h3>Embalagens</h3>
+                <DataTable headCells={headCells} rows={rowEmbalados}/>
+            </div>
         </Box>
-        </>
     )
 }

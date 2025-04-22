@@ -1,6 +1,5 @@
 import '~/assets/scss/AdicionarEquipe.scss'
 import InputCalendar from './InputCalendar';
-import InputAuto from './InputAuto';
 
 import { Box, Button } from '@mui/material';
 import TextField from '@mui/material/TextField';

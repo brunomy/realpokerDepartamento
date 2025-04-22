@@ -130,13 +130,7 @@ function Checklists({ id, id_atividade, id_etapa }){
 function Volumes({ id, id_atividade, id_etapa }){
     const { volumes, setVolumes } = useUser();
     const [openModal, setOpenModal] = useState(false);
-    const [novoVolume, setNovoVolume] = useState({
-        descricao: "",
-        largura: "",
-        comprimento: "",
-        altura: "",
-        peso: ""
-    });
+    const [novoVolume, setNovoVolume] = useState('');
 
     const adicionarVolume = () => {
         setVolumes([
@@ -146,11 +140,7 @@ function Volumes({ id, id_atividade, id_etapa }){
                 id_categoria: id,
                 id_etapa: id_etapa,
                 id_atividade: id_atividade,
-                title: novoVolume.descricao,
-                comprimento: novoVolume.comprimento,
-                largura: novoVolume.largura,
-                altura: novoVolume.altura,
-                peso: novoVolume.peso
+                title: novoVolume,
             },
         ]);
         setNovoVolume("");
@@ -160,17 +150,13 @@ function Volumes({ id, id_atividade, id_etapa }){
         setVolumes(volumes.filter(item => item.id !== id))
     }
 
-    const createData = (volume, comprimento, largura, altura, peso, acoes) => {
-        return { volume, comprimento, largura, altura, peso, acoes };
+    const createData = (volume, acoes) => {
+        return { volume, acoes };
     }
     const createDataItem = () => {
         return (volumes.filter((item) => item.id_atividade == id_atividade))?.map((volume) => {
             return createData(
                 volume.title,
-                volume.comprimento,
-                volume.largura,
-                volume.altura,
-                volume.peso,
                 <Box className="acoes">
                     <Button onClick={() => {deletar(volume.id)}} variant="outlined" size="small"><DeleteIcon /></Button>
                 </Box>
@@ -185,10 +171,6 @@ function Volumes({ id, id_atividade, id_etapa }){
 
     const headCells = [
         { id: 'volume', label: 'Volume', },
-        { id: 'comprimento', label: 'Comprimento', },
-        { id: 'largura', label: 'Largura', },
-        { id: 'altura', label: 'Altura', },
-        { id: 'peso', label: 'Peso', },
         {
             id: 'acoes',
             align: "right",
@@ -201,7 +183,7 @@ function Volumes({ id, id_atividade, id_etapa }){
         <DataTable headCells={headCells} rows={rows}/>
         <Button className="adicionar" variant="contained" onClick={() => setOpenModal(true)}>Adicionar volume</Button>
         <Modal open={openModal} setOpen={setOpenModal} title="Adicionar volume" confirm={adicionarVolume}>
-            <AdicionarVolume value={novoVolume} setValue={setNovoVolume} />
+            <AdicionarString value={novoVolume} setValue={setNovoVolume} />
         </Modal>
         </>
     )

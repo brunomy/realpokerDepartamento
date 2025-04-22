@@ -32,7 +32,6 @@ import Modal from '~/components/Modal';
 import ChangeStatus from '~/components/ChangeStatus';
 import Stepper from "~/components/Stepper";
 import InputCalendar from '~/components/InputCalendar';
-import InputAuto from '~/components/InputAuto';
 import DataTable from '~/components/DataTable';
 
 import { useUser } from '~/context/UserContext';
@@ -174,63 +173,81 @@ function Informacoes({ setTab, open, openModal, status, setStatus, atividade }) 
 
 function Volumes({ id, atividade }) {
     const { volumesOP, setVolumesOP, volumes } = useUser();
-    var selecionados = volumesOP.map(v => v.id_volume)
-    const [ids, setIds] = useState(selecionados);
-    
-    const selectListener = (idsSelecionados) => {
-        setIds(idsSelecionados);
-      
-        setVolumesOP(prevVolumes => {
-          const volumesFiltrados = prevVolumes.filter(
-            item => item.id_ativ !== id && !idsSelecionados.includes(item.id_ativ)
-          );
-      
-          const novos = idsSelecionados.map((id_volume, index) => ({
-            id: volumesFiltrados.length + index + 1,
-            id_ativ: id,
-            id_atividade: atividade.id_atividade,
-            id_volume: id_volume,
-            id_embalagem: null,
-          }));
-      
-          const resultado = [...volumesFiltrados, ...novos];
-          return resultado;
-        });
-      };
+    const [openModal, setOpenModal] = useState(false);
+    const [novoVolume, setNovoVolume] = useState({});
+    const [rows, setRows] = useState([]);
+
+    const adicionarVolume = () => {
+        setVolumesOP([
+            ...volumesOP,
+            {
+                id: volumesOP.length + 1,
+                id_ativ: id,
+                id_etapa: atividade.id_etapa,
+                id_volume: novoVolume.id_volume,
+                comprimento: novoVolume.comprimento,
+                largura: novoVolume.largura,
+                altura: novoVolume.altura,
+                peso: novoVolume.peso
+            },
+        ]);
+        setNovoVolume({});
+        setOpenModal(false);
+    }
+    const deletar = (id) => {
+        setVolumesOP(volumesOP.filter(item => item.id !== id))
+    }
+
+    const createDataItens = () => {
+        return (volumesOP.filter((item) => item.id_ativ == id))?.map((item) => {
+            let volume = volumes.find((volume) => volume.id == item.id_volume);
+
+            return createData(
+                volume.title,
+                item.comprimento,
+                item.largura,
+                item.altura,
+                item.peso,
+                <Box className="acoes">
+                    <Button onClick={() => {deletar(item.id)}} variant="outlined" size="small"><DeleteIcon /></Button>
+                </Box>
+            );
+        }) || [] 
+    }
+
+    useEffect(() => {
+        setRows(createDataItens())
+    },[volumesOP])
 
     const createData = (id, volume, comprimento, largura, altura, peso) => {
         return { id, volume, comprimento, largura, altura, peso };
     }
-    const createDataItem = () => {
-        return (volumes.filter((item) => item.id_atividade == atividade.id_atividade))?.map((volume) => {
-            return createData(
-                volume.id,
-                volume.title,
-                volume.comprimento,
-                volume.largura,
-                volume.altura,
-                volume.peso
-            );
-        }) || []
-    }
-    useEffect(() => {
-        setRows(createDataItem())
-    },[volumes])
 
-    const [rows, setRows] = useState(createDataItem());
-
-    const columns = [
-        { field: 'volume', headerName: 'Volume', width: 400 },
-        { field: 'comprimento', headerName: 'Comprimento', width: 110 },
-        { field: 'largura', headerName: 'Largura', width: 110 },
-        { field: 'altura', headerName: 'Altura', width: 110 },
-        { field: 'peso', headerName: 'Peso', width: 110 },
+    const headCells = [
+        { id: 'volume', label: 'Volume', },
+        { id: 'comprimento', label: 'Comprimento', },
+        { id: 'largura', label: 'Largura', },
+        { id: 'altura', label: 'Altura', },
+        { id: 'peso', label: 'Peso', },
+        {
+            id: 'acoes',
+            align: "right",
+            label: 'Ações',
+        },
     ];
       
     return (
         <>
         <Box className="table_content">
-            <DataTableSelect ids={ids} setIds={selectListener} rows={rows} columns={columns}/>
+            <DataTable headCells={headCells} rows={rows}/>
+            <Button className="adicionar" variant="contained" onClick={() => setOpenModal(true)}>Adicionar volume</Button>
+            <Modal open={openModal} setOpen={setOpenModal} title="Adicionar volume" confirm={adicionarVolume}>
+                <AdicionarVolume 
+                    value={novoVolume} 
+                    setValue={setNovoVolume} 
+                    id_atividade={atividade.id_atividade}
+                />
+            </Modal>
         </Box>
         </>
     )
