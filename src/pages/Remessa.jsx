@@ -22,7 +22,12 @@ import MonetizationOnTwoToneIcon from '@mui/icons-material/MonetizationOnTwoTone
 import LocalAtmTwoToneIcon from '@mui/icons-material/LocalAtmTwoTone';
 import ScaleTwoToneIcon from '@mui/icons-material/ScaleTwoTone';
 import FactoryTwoToneIcon from '@mui/icons-material/FactoryTwoTone';
-
+import MoveToInboxTwoToneIcon from '@mui/icons-material/MoveToInboxTwoTone';
+import AccountBoxTwoToneIcon from '@mui/icons-material/AccountBoxTwoTone';
+import MarkunreadMailboxTwoToneIcon from '@mui/icons-material/MarkunreadMailboxTwoTone';
+import HomeTwoToneIcon from '@mui/icons-material/HomeTwoTone';
+import FmdGoodTwoToneIcon from '@mui/icons-material/FmdGoodTwoTone';
+import AddBoxTwoToneIcon from '@mui/icons-material/AddBoxTwoTone';
 
 import Layout from "~/components/Layout";
 import Title from "~/components/Title";
@@ -117,6 +122,7 @@ export default function Remessa() {
                 >
                     <Tab label="Informações" />
                     <Tab label="Volumes" />
+                    <Tab label="Embalagens" />
                 </Tabs>
             </Box>
             <Box className="show_content">
@@ -155,8 +161,13 @@ function Informacoes({ setStatusModalChange, open, setStatus, status, setTab }) 
                         <b>ENTREGA: </b>01/11/2024
                     </p>
                     <p>
-                        <span className="icon"><LocalAtmTwoToneIcon /></span>
-                        <b>VALOR: </b>R$500,00
+                        <span className="icon"><AccountBoxTwoToneIcon/></span>
+                        <b>DESTINATÁRIO: </b>João Felipe
+                    </p>
+                    <p>
+                        <span className="icon"><ShoppingCartTwoToneIcon/></span>
+                        <b>PEDIDOS: </b>
+                        <Button variant="contained" size="small" component={Link} to="/pedidos/5951">#5951</Button>
                     </p>
                     <p>
                         <span className="icon"><FactoryTwoToneIcon/></span>
@@ -164,27 +175,33 @@ function Informacoes({ setStatusModalChange, open, setStatus, status, setTab }) 
                         <Button variant="contained" size="small" component={Link} to="/ordens/3568">#3568</Button>
                     </p>
                     <p>
-                        <span className="icon"><ArchiveTwoToneIcon/></span>
+                        <span className="icon"><MoveToInboxTwoToneIcon/></span>
                         <b>VOLUMES: </b>
                         <Button variant="contained" size="small" onClick={() => {setTab(1)}}>{volumesOP.length}</Button>
                     </p>
+                    <p>
+                        <span className="icon"><ArchiveTwoToneIcon/></span>
+                        <b>EMBALAGENS: </b>
+                        <Button variant="contained" size="small" onClick={() => {setTab(2)}}>0</Button>
+                    </p>
+                    <p>
+                        <span className="icon"><MarkunreadMailboxTwoToneIcon/></span>
+                        <b>CEP: </b>74580-340
+                    </p>
+                    <p>
+                        <span className="icon"><FmdGoodTwoToneIcon/></span>
+                        <b>CIDADE/UF: </b>Goiânia/GO
+                    </p>
+                    <p className="full">
+                        <span className="icon"><HomeTwoToneIcon/></span>
+                        <b>ENDEREÇO: </b>Rua sp 12
+                    </p>
+                    <p className="full">
+                        <span className="icon"><AddBoxTwoToneIcon/></span>
+                        <b>COMPLEMENTO: </b>Q 5 Lt 12, próximo ao pamonharia solza
+                    </p>
           
-                    <p>
-                        <span className="icon"><HeightIcon sx={{ transform: 'rotate(90deg)' }} /></span>
-                        <b>LARGURA: </b>250cm
-                    </p>
-                    <p>
-                        <span className="icon"><HeightIcon sx={{ transform: 'rotate(90deg)' }} /></span>
-                        <b>COMPRIMENTO: </b>450cm
-                    </p>
-                    <p>
-                        <span className="icon"><VerticalAlignTopTwoToneIcon /></span>
-                        <b>ALTURA: </b>100cm
-                    </p>
-                    <p>
-                        <span className="icon"><ScaleTwoToneIcon /></span>
-                        <b>PESO: </b>30kg
-                    </p>
+                  
                     <Button variant="contained" onClick={() => setStatusModalChange(true)}>Alterar status</Button>
                 </Box>
             </Box>
