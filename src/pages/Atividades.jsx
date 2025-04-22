@@ -52,13 +52,14 @@ export default function Atividades() {
     ]
 
     //dados da tabela
-    const createData = (id, equipe, producao, titulo, etapa, status, link) => {
+    const createData = (id, ordem, equipe, producao, titulo, etapa, status, link) => {
         const elementStatus = <Status status={status} size={'small'} />;
 
-        return { id, equipe, producao, titulo, etapa, elementStatus, link };
+        return { id, ordem, equipe, producao, titulo, etapa, elementStatus, link };
     }
     const headCells = [
         {id: 'id', label: 'Id'},
+        {id: 'ordem', label: 'Ordem'},
         {id: 'equipe', label: 'Equipe'},
         {id: 'producao', label: 'Produção'},
         {id: 'titulo', label: 'Título'},
@@ -72,6 +73,7 @@ export default function Atividades() {
         rows.push(
             createData(
                 item.id,
+                <Button component={Link} to={`/ordens/3568`} variant="outlined" size="small">#3568</Button>,
                 equipes.find(e => e.id == item.id_equipe).title,
                 item.data,
                 atividades.find(a => a.id == item.id_atividade).title,

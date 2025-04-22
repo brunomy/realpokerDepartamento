@@ -21,6 +21,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import MonetizationOnTwoToneIcon from '@mui/icons-material/MonetizationOnTwoTone';
 import LocalAtmTwoToneIcon from '@mui/icons-material/LocalAtmTwoTone';
 import ScaleTwoToneIcon from '@mui/icons-material/ScaleTwoTone';
+import FactoryTwoToneIcon from '@mui/icons-material/FactoryTwoTone';
+
 
 import Layout from "~/components/Layout";
 import Title from "~/components/Title";
@@ -28,6 +30,7 @@ import Modal from '~/components/Modal';
 import ChangeStatus from '~/components/ChangeStatus';
 
 import { Volumes } from './Pedido';
+import { useUser } from '~/context/UserContext';
 
 import TransferList from '~/components/TransferList';
 
@@ -40,15 +43,9 @@ export default function Remessa() {
     const [status, setStatus] = useState(1);
 
     const [left, setLeft] = useState([
-        { label: '#5952', value: 5952},
-        { label: '#5953', value: 5953},
+        { label: `Pedido: #5951 | Ordem: #3568`, value: 3568},
     ]);
-    const [right, setRight] = useState([
-        { label: '#5951', value: 5951},
-        { label: '#5955', value: 5955},
-        { label: '#5956', value: 5956},
-        { label: '#5957', value: 5957},
-    ]);
+    const [right, setRight] = useState([]);
 
     const handleChange = (event, newTab) => {
       setTab(newTab);
@@ -141,6 +138,8 @@ export default function Remessa() {
 }
 
 function Informacoes({ setStatusModalChange, open, setStatus, status, setTab }) {
+    const { volumesOP } = useUser();
+
     return (
         <>
         <Box className="informacoes">
@@ -160,15 +159,14 @@ function Informacoes({ setStatusModalChange, open, setStatus, status, setTab }) 
                         <b>VALOR: </b>R$500,00
                     </p>
                     <p>
-                        <span className="icon"><ShoppingCartTwoToneIcon/></span>
-                        <b>PEDIDOS: </b>
-                        <Button variant="contained" size="small" component={Link} to="/pedidos/5952">#5952</Button>
-                        <Button variant="contained" size="small" component={Link} to="/pedidos/5952">#5953</Button>
+                        <span className="icon"><FactoryTwoToneIcon/></span>
+                        <b>ORDENS: </b>
+                        <Button variant="contained" size="small" component={Link} to="/ordens/3568">#3568</Button>
                     </p>
                     <p>
                         <span className="icon"><ArchiveTwoToneIcon/></span>
                         <b>VOLUMES: </b>
-                        <Button variant="contained" size="small" onClick={() => {setTab(1)}}>2</Button>
+                        <Button variant="contained" size="small" onClick={() => {setTab(1)}}>{volumesOP.length}</Button>
                     </p>
           
                     <p>

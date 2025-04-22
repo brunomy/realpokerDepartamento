@@ -50,7 +50,7 @@ export default function Ordens() {
     const rowsOrdens = [
         createDataOrdens(
             '#3568',
-            <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">5951</Button>,
+            <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">#5951</Button>,
             <Chip className="stats" size="small" label="Mesa de poker" />,
             'Mesa de poker profissional',
             '11/04/2025',

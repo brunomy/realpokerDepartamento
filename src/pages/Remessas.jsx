@@ -44,44 +44,34 @@ export default function Remessas() {
     ]
 
     //dados da tabela
-    const createData = (id, pedidos, valor, destino, entrega, status, link) => {
-        return { id, pedidos, valor, destino, entrega, status, link };
+    const createData = (pedidos, ordens, valor, destino, entrega, status, link) => {
+        return { pedidos, ordens, valor, destino, entrega, status, link };
     }
     const rows = [
         createData(
-            '#3486-1', 
             <Box className="pedidos">
-                <Button component={Link} to="/pedidos/5952" variant="outlined" size="small">5952</Button>
-                <Button component={Link} to="/pedidos/5953" variant="outlined" size="small">5953</Button>
+                <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">#5951</Button>
+            </Box>,
+            <Box className="pedidos">
+                <Button component={Link} to="/ordens/3568" variant="outlined" size="small">#3568</Button>
             </Box>,
             'R$500,00',
             'Goiânia/GO',
             '10/05/2025',
             <Chip className="stats" size="small" label="Pendente" />,
-            <Button component={Link} to="/remessas/3486-1" variant="outlined" size="small">Detalhes</Button>
-        ),
-        createData(
-            '#3485-2', 
-            <Box className="pedidos">
-                <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">5951</Button>
-            </Box>,
-            'R$500,00',
-            'Goiânia/GO',
-            '10/05/2025',
-            <Chip className="stats" size="small" label="Pendente" />,
-            <Button component={Link} to="/remessas/3485-1" variant="outlined" size="small">Detalhes</Button>
+            <Button component={Link} to="/remessas/5951" variant="outlined" size="small">Detalhes</Button>
         ),
     ];
     const headCells = [
         {
-            id: 'id',
-            numeric: false,
-            label: 'Id',
-        },
-        {
             id: 'pedidos',
             numeric: false,
             label: 'Pedidos',
+        },
+        {
+            id: 'ordens',
+            numeric: false,
+            label: 'Ordens',
         },
         {
             id: 'valor',
@@ -124,7 +114,7 @@ export default function Remessas() {
                             <InputAuto label="Status" list={statusList} setValue={setStatusFilter} width={'100%'} />
                         </Box>
                         <Box className="item">
-                            <InputAuto label="Pedido" list={pedidosList} setValue={setPedidoFilter} width={'100%'} />
+                            <InputAuto label="Ordem" list={pedidosList} setValue={setPedidoFilter} width={'100%'} />
                         </Box>
                         <Box className="item">
                             <InputAuto label="Destino" list={destinoList} setValue={setDestinoFilter} width={'100%'} />
