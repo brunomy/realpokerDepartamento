@@ -1,6 +1,6 @@
 import '~/assets/scss/AdicionarVolume.scss'
 import { useState } from 'react';
-import InputAuto from './InputAuto';
+import InputAuto from '../InputAuto';
 
 import { Box } from '@mui/material';
 import TextField from '@mui/material/TextField';

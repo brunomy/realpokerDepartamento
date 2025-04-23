@@ -16,16 +16,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AssignmentTwoToneIcon from '@mui/icons-material/AssignmentTwoTone';
 import CalendarMonthTwoToneIcon from '@mui/icons-material/CalendarMonthTwoTone';
 
-import Layout from "~/components/Layout";
-import Title from "~/components/Title";
+import Layout from "~/components/layout/Layout";
+import Title from "~/components/layout/Title";
 import DataTable from '~/components/DataTable';
-import Modal from '~/components/Modal';
-import AdicionarAtividade from '~/components/AdicionarAtividade';
-import ChangeStatus from '~/components/ChangeStatus';
-import AdicionarVolume from '~/components/AdicionarVolume';
+import Modal from '~/components/layout/Modal';
 
 import { useUser } from '~/context/UserContext';
-import Status from '../components/Status';
+import Status from '../components/layout/Status';
 import { calculoStatusPedido } from './Pedidos';
 
 export default function Pedidos() {
@@ -48,7 +45,7 @@ export default function Pedidos() {
             '#3568',
             <Chip className="stats" size="small" label="Mesa de poker" />,
             'Mesa de poker profissional',
-            '11/042025',
+            '11/04/2025',
             <Status status={calculoStatusPedido()} size={'small'} />,
             <Button component={Link} to="/ordens/3568" variant="outlined" size="small">Detalhes</Button>
         ),

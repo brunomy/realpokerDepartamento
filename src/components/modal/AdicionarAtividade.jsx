@@ -1,7 +1,7 @@
 import '~/assets/scss/AdicionarAtividade.scss'
 import { useState } from 'react';
-import InputCalendar from './InputCalendar';
-import InputAuto from './InputAuto';
+import InputCalendar from '../InputCalendar';
+import InputAuto from '../InputAuto';
 
 import { Box, Button } from '@mui/material';
 import TextField from '@mui/material/TextField';

@@ -14,13 +14,13 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
 import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
 
-import Layout from "~/components/Layout";
-import Title from "~/components/Title";
-import Modal from '~/components/Modal';
+import Layout from "~/components/layout/Layout";
+import Title from "~/components/layout/Title";
+import Modal from '~/components/layout/Modal';
 
 import { Volumes, Ordens } from './Pedido';
 import TransferList from '~/components/TransferList';
-import AdicionarFuncionario from '~/components/AdicionarFuncionario';
+import AdicionarFuncionario from '~/components/modal/AdicionarFuncionario';
 
 export default function Equipe() {
     const { id } = useParams();

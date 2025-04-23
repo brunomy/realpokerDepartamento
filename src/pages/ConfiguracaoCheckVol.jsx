@@ -15,14 +15,12 @@ import AccordionActions from "@mui/material/AccordionActions";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 
-import Layout from "~/components/Layout";
-import Title from "~/components/Title";
+import Layout from "~/components/layout/Layout";
+import Title from "~/components/layout/Title";
 import { useUser } from "~/context/UserContext";
 
-import Modal from '~/components/Modal';
-import AdicionarString from '~/components/AdicionarString';
-import AdicionarVolume from '~/components/AdicionarVolume';
-import Breadcrumbs from "~/components/Breadcrumbs";
+import Modal from '~/components/layout/Modal';
+import AdicionarString from '~/components/modal/AdicionarString';
 
 export default function ConfiguracaoCheckVol() {
     const { id, id_etapa, id_atividade } = useParams();

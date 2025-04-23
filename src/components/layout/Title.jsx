@@ -1,5 +1,5 @@
 import '~/assets/scss/Title.scss';
-import Breadcrumbs from "~/components/Breadcrumbs";
+import Breadcrumbs from "~/components/layout/Breadcrumbs";
 
 export default function Title({ title, icon, breadcrumbs = [] }) {
     return (

@@ -15,12 +15,12 @@ import AccordionActions from "@mui/material/AccordionActions";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 
-import Layout from "~/components/Layout";
-import Title from "~/components/Title";
+import Layout from "~/components/layout/Layout";
+import Title from "~/components/layout/Title";
 import { useUser } from "~/context/UserContext";
 
-import Modal from '~/components/Modal';
-import AdicionarString from '~/components/AdicionarString';
+import Modal from '~/components/layout/Modal';
+import AdicionarString from '~/components/modal/AdicionarString';
 
 export default function ConficuracaoEtapas() {
     const { id } = useParams();

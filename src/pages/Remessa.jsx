@@ -29,10 +29,9 @@ import HomeTwoToneIcon from '@mui/icons-material/HomeTwoTone';
 import FmdGoodTwoToneIcon from '@mui/icons-material/FmdGoodTwoTone';
 import AddBoxTwoToneIcon from '@mui/icons-material/AddBoxTwoTone';
 
-import Layout from "~/components/Layout";
-import Title from "~/components/Title";
-import Modal from '~/components/Modal';
-import ChangeStatus from '~/components/ChangeStatus';
+import Layout from "~/components/layout/Layout";
+import Title from "~/components/layout/Title";
+import Modal from '~/components/layout/Modal';
 
 import { Volumes } from './Pedido';
 import { useUser } from '~/context/UserContext';
@@ -198,17 +197,11 @@ function Informacoes({ setStatusModalChange, open, setStatus, status, setTab }) 
                     </p>
                     <p className="full">
                         <span className="icon"><AddBoxTwoToneIcon/></span>
-                        <b>COMPLEMENTO: </b>Q 5 Lt 12, próximo ao pamonharia solza
+                        <b>COMPLEMENTO: </b>Q 5 Lt 12, próximo ao pamonharia souza
                     </p>
-          
-                  
-                    <Button variant="contained" onClick={() => setStatusModalChange(true)}>Alterar status</Button>
                 </Box>
             </Box>
         </Box>
-        <Modal open={open} setOpen={setStatusModalChange} title="Alterar status">
-            <ChangeStatus status={status} setStatus={setStatus} />
-        </Modal>
         </>
     )
 }

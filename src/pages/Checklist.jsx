@@ -11,8 +11,8 @@ import AccordionActions from "@mui/material/AccordionActions";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 
-import Layout from "~/components/Layout";
-import Title from "~/components/Title";
+import Layout from "~/components/layout/Layout";
+import Title from "~/components/layout/Title";
 import { useUser } from "~/context/UserContext";
 
 export default function Checklist() {

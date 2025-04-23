@@ -26,23 +26,22 @@ import AccordionActions from "@mui/material/AccordionActions";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 
-import Layout from "~/components/Layout";
-import Title from "~/components/Title";
-import Modal from '~/components/Modal';
-import ChangeStatus from '~/components/ChangeStatus';
+import Layout from "~/components/layout/Layout";
+import Title from "~/components/layout/Title";
+import Modal from '~/components/layout/Modal';
+import ChangeStatus from '~/components/modal/ChangeStatus';
 import Stepper from "~/components/Stepper";
 import InputCalendar from '~/components/InputCalendar';
 import DataTable from '~/components/DataTable';
 
 import { useUser } from '~/context/UserContext';
 import SelecionarEtapa from '~/components/SelecionarEtapa';
-import VistoriaChecklist from '~/components/VistoriaChecklist';
-import AdicionarVolume from '~/components/AdicionarVolume';
+import AdicionarVolume from '~/components/modal/AdicionarVolume';
 
 
 import dayjs from 'dayjs';
 import DataTableSelect from '~/components/DataTableSelect';
-import Status from '../components/Status';
+import Status from '../components/layout/Status';
 
 export default function Atividade() {
     const { 

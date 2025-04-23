@@ -25,10 +25,9 @@ import AccordionActions from "@mui/material/AccordionActions";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 
-import Layout from "~/components/Layout";
-import Title from "~/components/Title";
-import Modal from '~/components/Modal';
-import ChangeStatus from '~/components/ChangeStatus';
+import Layout from "~/components/layout/Layout";
+import Title from "~/components/layout/Title";
+import Modal from '~/components/layout/Modal';
 import Stepper from "~/components/Stepper";
 import InputCalendar from '~/components/InputCalendar';
 import InputAuto from '~/components/InputAuto';
@@ -37,10 +36,10 @@ import DataTable from '~/components/DataTable';
 
 import { useUser } from '~/context/UserContext';
 import SelecionarEtapa from '~/components/SelecionarEtapa';
-import VistoriaChecklist from '~/components/VistoriaChecklist';
+import VistoriaChecklist from '~/components/modal/VistoriaChecklist';
 
 import dayjs from 'dayjs';
-import Status from '~/components/Status';
+import Status from '~/components/layout/Status';
 import { Volumes } from './Pedido';
 import { calculoStatusPedido } from './Pedidos';
 

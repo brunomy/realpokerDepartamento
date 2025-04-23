@@ -9,8 +9,8 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import dayjs from 'dayjs';
 
 import DataTable from '~/components/DataTable';
-import Layout from "~/components/Layout";
-import Title from "~/components/Title";
+import Layout from "~/components/layout/Layout";
+import Title from "~/components/layout/Title";
 import InputAuto from '~/components/InputAuto';
 import InputCalendarRange from '~/components/InputCalendarRange';
 
