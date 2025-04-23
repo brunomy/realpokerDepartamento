@@ -12,9 +12,6 @@
     @mixin info {
         margin: 0 0 40px;
     
-        .stats{
-            margin: 0 0 25px;
-        }
         .info{
             display: flex;
             flex-wrap: wrap;
@@ -41,6 +38,18 @@
                     svg{
                         width: 30px;
                         height: auto;
+                    }
+                }
+                .editar{
+                    background: $color1;
+                    color: #fff;
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+
+                    svg{
+                        height: auto;
+                        width: 21px;
                     }
                 }
                 b{
@@ -78,53 +87,51 @@
         .info_pedido{
             @include info;
         }
-    
-        .info_produto{
-            background: $grey;
-            border-radius: 3px;
-            overflow: hidden;
-    
-            h3{
-                padding: 13px 20px 9px;
-                background: $color1;
-                color: #fff;
-    
-                b{}
-            }
-            >p{
-                padding: 13px 20px 9px;
-                border: 2px solid #d7d7d7;
-                border-top: none;
-    
-                b{}
-            }
-            .info_table{
-                display: flex;
-                flex-wrap: wrap;
-                border: 2px solid #d7d7d7;
-    
-                >div{
-                    width: 50%;
-                    color: #434343;
-                    font-size: 0.8em;
-    
-                    &:nth-child(2n){
-                        border-left: 2px solid #d7d7d7;
-                    }
-    
-                    h4{
-                        padding: 10px 20px 7px;
-                        font-weight: bold;
-                        background: #d7d7d7;
-                    }
-                    p{
-                        padding: 10px 20px 7px;
-                    }
+    }
+    .info_produto{
+        background: $grey;
+        border-radius: 3px;
+        overflow: hidden;
+
+        h3{
+            padding: 13px 20px 9px;
+            background: $color1;
+            color: #fff;
+
+            b{}
+        }
+        >p{
+            padding: 13px 20px 9px;
+            border: 2px solid #d7d7d7;
+            border-top: none;
+
+            b{}
+        }
+        .info_table{
+            display: flex;
+            flex-wrap: wrap;
+            border: 2px solid #d7d7d7;
+
+            >div{
+                width: 50%;
+                color: #434343;
+
+                &:nth-child(2n){
+                    border-left: 2px solid #d7d7d7;
+                }
+
+                h4{
+                    background: #d7d7d7;
+                    font-size: .8em;
+                    padding: 5px 10px;
+                }
+                p{
+                    font-size: 1.2em;
+                    padding: 5px 10px;
                 }
             }
         }
     }
-
     .funcionarios_content{
         padding: $pagePadding;
         padding-top: 0;
@@ -154,6 +161,7 @@
             margin: 0 0 30px;
             display: flex;
             justify-content: flex-end;
+            gap: 10px;
         }
 
         .etapas{

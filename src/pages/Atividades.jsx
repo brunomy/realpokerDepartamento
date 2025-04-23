@@ -3,26 +3,37 @@ import { useState } from 'react';
 
 import { Link } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 import dayjs from 'dayjs';
 
 import DataTable from '~/components/DataTable';
 import Layout from "~/components/layout/Layout";
 import Title from "~/components/layout/Title";
+import Modal from '~/components/layout/Modal';
 import InputAuto from '~/components/InputAuto';
 import InputCalendarRange from '~/components/InputCalendarRange';
+import InfoProdutoModal from '../components/modal/InfoProdutoModal';
 
 import { useUser } from '~/context/UserContext';
 import Status from '../components/layout/Status';
+
+//icons
+import PlayCircleFilledWhiteTwoToneIcon from '@mui/icons-material/PlayCircleFilledWhiteTwoTone';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import PauseCircleFilledTwoToneIcon from '@mui/icons-material/PauseCircleFilledTwoTone';
+import CheckCircleTwoToneIcon from '@mui/icons-material/CheckCircleTwoTone';
+import MoveToInboxTwoToneIcon from '@mui/icons-material/MoveToInboxTwoTone';
+import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
+import AdicionarVolumeLista from '../components/modal/AdicionarVolumeLista';
 
 export default function Atividades() {
     const { 
         atividadesOP,
         etapas,
         atividades,
-        equipes
+        equipes,
+        categorias
     } = useUser();
 
     const hoje = dayjs();
@@ -52,35 +63,37 @@ export default function Atividades() {
     ]
 
     //dados da tabela
-    const createData = (id, ordem, equipe, producao, titulo, etapa, status, link) => {
-        const elementStatus = <Status status={status} size={'small'} />;
+    const createData = (item) => {
+        console.log(atividades);
+        let atividadeItem = atividades.find(a => a.id == item.id_atividade);
+        
+        const pedido = '#5951';
+        const equipe = equipes.find(e => e.id == item.id_equipe).title;
+        const producao = item.data;
+        const categoria = categorias.find(c => c.id == atividadeItem.id_categoria).title;
+        const atividade = <Box>
+            <span style={{"fontSize": ".8em"}}>{etapas.find(e => e.id == item.id_etapa).title}</span>
+            <br />{atividadeItem.title}
+        </Box>;
+        const elementStatus = <Status status={item.status} size={'small'} />;
+        const acoes = <AcoesAtividades atividade={item} />
 
-        return { id, ordem, equipe, producao, titulo, etapa, elementStatus, link };
+        return { pedido, producao, equipe, categoria, atividade, elementStatus, acoes };
     }
     const headCells = [
-        {id: 'id', label: 'Id'},
-        {id: 'ordem', label: 'Ordem'},
-        {id: 'equipe', label: 'Equipe'},
+        {id: 'pedido', label: 'Pedido'},
         {id: 'producao', label: 'Produção'},
-        {id: 'titulo', label: 'Título'},
-        {id: 'etapa', label: 'Etapa'},
+        {id: 'equipe', label: 'Equipe'},
+        {id: 'categoria', label: 'Categoria'},
+        {id: 'atividade', label: 'Atividade'},
         {id: 'status', label: 'Status'},
-        {id: 'link', label: 'Link'},
+        {id: 'acoes', label: 'Ações'},
     ];
     const rows = [];
 
     atividadesOP.map((item) => {
         rows.push(
-            createData(
-                item.id,
-                <Button component={Link} to={`/ordens/3568`} variant="outlined" size="small">#3568</Button>,
-                equipes.find(e => e.id == item.id_equipe).title,
-                item.data,
-                atividades.find(a => a.id == item.id_atividade).title,
-                etapas.find(e => e.id == item.id_etapa).title,
-                item.status,
-                <Button component={Link} to={`/atividades/${item.id}`} variant="outlined" size="small">Detalhes</Button>
-            )
+            createData(item)
         )
     })
 
@@ -106,10 +119,75 @@ export default function Atividades() {
                     </Box>
                 </Box>
                 <Box className="table_content">
-                    <DataTable headCells={headCells} rows={rows}/>
-                    <Button className="relatorio" variant="contained"><PictureAsPdfIcon/> Gerar relatório</Button>
+                    <DataTable headCells={headCells} rows={rows} buttons={true}/>
                 </Box>
             </Box>
         </Layout>
+    )
+}
+
+export function AcoesAtividades({ atividade }){
+    const { atividadesOP, setAtividadesOP, volumes } = useUser();
+    const volumes_atividade = volumes.filter((volume) => volume.id_atividade == atividade.id_atividade)
+
+    const [open, setOpen] = useState(false);
+    const [openVolumes, setOpenVolumes] = useState(false);
+    const [openInfo, setOpenInfo] = useState(false);
+
+
+    const play = () => {
+        setAtividadesOP(prev =>
+            prev.map(item =>
+                item.id === atividade.id ? { ...item, status: 1 } : item
+            )
+        );
+    }
+    const pausar = () => {
+        setAtividadesOP(prev =>
+            prev.map(item =>
+                item.id === atividade.id ? { ...item, status: 2 } : item
+            )
+        );
+    }
+    const finalizar = () => {
+
+        setAtividadesOP(prev =>
+            prev.map(item =>
+                item.id === atividade.id ? { ...item, status: 3 } : item
+            )
+        );
+        
+        if(volumes_atividade.length != 0){
+            setOpenVolumes(true)
+        }
+    }
+
+    return (
+        <>
+        <Box className="acoes_atividade">
+            { (atividade.status != 3 && atividade.status != -1) &&
+                <div className="content_1">
+                    <Button className="play" onClick={play}><PlayCircleFilledWhiteTwoToneIcon /></Button>
+                    <Button className="pause" onClick={pausar}><PauseCircleFilledTwoToneIcon /></Button>
+                    <Button className="concluir" onClick={finalizar}><CheckCircleTwoToneIcon /></Button>
+                </div>
+            }
+                <div className="content_2">
+                { (atividade.status != -1 && atividade.status == 3 && volumes_atividade.length != 0) && 
+                    <Button className="volumes" onClick={() => setOpenVolumes(true)}><MoveToInboxTwoToneIcon /></Button>
+                }
+                    <Button className="info" onClick={() => setOpenInfo(true)}><InfoTwoToneIcon /></Button>
+                </div>
+        </Box>
+        <Modal open={open} setOpen={setOpen} title="" >
+            {atividade.id}
+        </Modal>
+        <Modal open={openVolumes} setOpen={setOpenVolumes} title="Adicionar volumes" confirmText=''>
+            <AdicionarVolumeLista atividade={atividade} />
+        </Modal>
+        <Modal open={openInfo} setOpen={setOpenInfo} title="Mesa de poker profissional" confirmText="Fechar">
+            <InfoProdutoModal />
+        </Modal>
+        </>
     )
 }

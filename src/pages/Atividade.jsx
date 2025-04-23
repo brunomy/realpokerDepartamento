@@ -6,20 +6,6 @@ import { Link } from 'react-router-dom';
 
 import { Box, Button, Chip, Tabs, Tab, Typography, Switch } from '@mui/material';
 
-import StairsTwoToneIcon from '@mui/icons-material/StairsTwoTone';
-import ChecklistIcon from '@mui/icons-material/Checklist';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import GroupsTwoToneIcon from '@mui/icons-material/GroupsTwoTone';
-import ShoppingCartTwoToneIcon from '@mui/icons-material/ShoppingCartTwoTone';
-import CheckBoxTwoToneIcon from '@mui/icons-material/CheckBoxTwoTone';
-import ArchiveTwoToneIcon from '@mui/icons-material/ArchiveTwoTone';
-import CalendarMonthTwoToneIcon from '@mui/icons-material/CalendarMonthTwoTone';
-import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
-import TagIcon from '@mui/icons-material/Tag';
-import EditSquareIcon from '@mui/icons-material/EditSquare';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import FactoryTwoToneIcon from '@mui/icons-material/FactoryTwoTone';
 
 import Accordion from "@mui/material/Accordion";
 import AccordionActions from "@mui/material/AccordionActions";
@@ -42,6 +28,26 @@ import AdicionarVolume from '~/components/modal/AdicionarVolume';
 import dayjs from 'dayjs';
 import DataTableSelect from '~/components/DataTableSelect';
 import Status from '../components/layout/Status';
+
+//icons
+import StairsTwoToneIcon from '@mui/icons-material/StairsTwoTone';
+import ChecklistIcon from '@mui/icons-material/Checklist';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import GroupsTwoToneIcon from '@mui/icons-material/GroupsTwoTone';
+import ShoppingCartTwoToneIcon from '@mui/icons-material/ShoppingCartTwoTone';
+import CheckBoxTwoToneIcon from '@mui/icons-material/CheckBoxTwoTone';
+import ArchiveTwoToneIcon from '@mui/icons-material/ArchiveTwoTone';
+import CalendarMonthTwoToneIcon from '@mui/icons-material/CalendarMonthTwoTone';
+import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
+import EditSquareIcon from '@mui/icons-material/EditSquare';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import FactoryTwoToneIcon from '@mui/icons-material/FactoryTwoTone';
+import HandymanTwoToneIcon from '@mui/icons-material/HandymanTwoTone';
+import TurnedInTwoToneIcon from '@mui/icons-material/TurnedInTwoTone';
+import MoveToInboxTwoToneIcon from '@mui/icons-material/MoveToInboxTwoTone';
+import { InfoProduto } from './Ordem';
+
 
 export default function Atividade() {
     const { 
@@ -121,7 +127,7 @@ export default function Atividade() {
 }
 
 function Informacoes({ setTab, open, openModal, status, setStatus, atividade }) {
-    const { etapas, atividades, equipes, categorias } = useUser();
+    const { etapas, atividades, equipes, categorias, volumesOP } = useUser();
 
     const [statusModal, setStatusModal] = useState(status);
 
@@ -134,17 +140,7 @@ function Informacoes({ setTab, open, openModal, status, setStatus, atividade }) 
         <>
         <Box className="informacoes">
             <Box className="info_pedido">
-                <Status status={status} />
-
                 <Box className="info">
-                    <p>
-                        <span className="icon"><ShoppingCartTwoToneIcon/></span>
-                        <b>PEDIDO: </b><Button variant="contained" size="small" component={Link} to="/pedidos/5951">#5951</Button>
-                    </p>
-                    <p>
-                        <span className="icon"><FactoryTwoToneIcon/></span>
-                        <b>ORDEM: </b><Button variant="contained" size="small" component={Link} to={`/ordens/${atividade.id_ordem}`}>#{atividade?.id_ordem}</Button>
-                    </p>
                     <p>
                         <span className="icon"><GroupsTwoToneIcon/></span>
                         <b>EQUIPE: </b>{equipe.title}
@@ -153,29 +149,34 @@ function Informacoes({ setTab, open, openModal, status, setStatus, atividade }) 
                         <span className="icon"><CalendarMonthTwoToneIcon/></span>
                         <b>PRODUÇÃO: </b>{atividade.data}
                     </p>
-                    <p >
-                        <span className="icon"><TagIcon/></span>
-                        <b>CATEGORIA: </b>{categoria.title}
-                    </p>
                     <p>
-                        <span className="icon"><ArchiveTwoToneIcon/></span>
-                        <b>VOLUMES: </b>
-                        <Button variant="contained" size="small" onClick={() => {setTab(1)}}>2</Button>
+                        <span className="icon"><TurnedInTwoToneIcon/></span>
+                        <b>CATEGORIA: </b>Mesa de Poker
                     </p>
                     <p>
                         <span className="icon"><StairsTwoToneIcon/></span>
                         <b>ETAPA: </b>{etapa.title}
                     </p>
+                    <p>
+                        <span className="icon"><MoveToInboxTwoToneIcon/></span>
+                        <b>VOLUMES: </b> {volumesOP.length}
+                    </p>
                 
                     <p className="full">
                         <span className="icon"><InfoTwoToneIcon/></span>
-                        <b>DESCRIÇÃO: </b>{atividadeDescricao.title}
+                        <b>ATIVIDADE: </b>{atividadeDescricao.title}
+                    </p>
+                    <p className="full">
+                        <span className="icon"><HandymanTwoToneIcon/></span>
+                        <b>STATUS: </b><Status status={status} />
                     </p>
                     {
                         (status != -1 && status != 3) && 
                         <Button variant="contained" onClick={() => openModal(true)}>Alterar status</Button>
                     }
                 </Box>
+                <br />
+                <InfoProduto />
             </Box>
         </Box>
         <Modal open={open} setOpen={openModal} title="Alterar status" confirm={() => setStatus(statusModal)}>
@@ -199,7 +200,7 @@ function Volumes({ id, atividade }) {
                 id_ativ: id,
                 id_etapa: atividade.id_etapa,
                 id_volume: novoVolume.id_volume,
-                id_remessa: 3485,
+                id_remessa: 5951,
                 id_embalagem: null,
                 comprimento: novoVolume.comprimento,
                 largura: novoVolume.largura,

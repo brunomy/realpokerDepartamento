@@ -6,19 +6,6 @@ import { Link } from 'react-router-dom';
 
 import { Box, Button, Chip, Tabs, Tab, Typography, Switch } from '@mui/material';
 
-import StairsTwoToneIcon from '@mui/icons-material/StairsTwoTone';
-import ChecklistIcon from '@mui/icons-material/Checklist';
-import FactoryIcon from '@mui/icons-material/Factory';
-import GroupsTwoToneIcon from '@mui/icons-material/GroupsTwoTone';
-import ShoppingCartTwoToneIcon from '@mui/icons-material/ShoppingCartTwoTone';
-import CheckBoxTwoToneIcon from '@mui/icons-material/CheckBoxTwoTone';
-import ArchiveTwoToneIcon from '@mui/icons-material/ArchiveTwoTone';
-import CalendarMonthTwoToneIcon from '@mui/icons-material/CalendarMonthTwoTone';
-import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
-import TagIcon from '@mui/icons-material/Tag';
-import EditSquareIcon from '@mui/icons-material/EditSquare';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import Accordion from "@mui/material/Accordion";
 import AccordionActions from "@mui/material/AccordionActions";
@@ -42,6 +29,24 @@ import dayjs from 'dayjs';
 import Status from '~/components/layout/Status';
 import { Volumes } from './Pedido';
 import { calculoStatusPedido } from './Pedidos';
+
+//icons
+import StairsTwoToneIcon from '@mui/icons-material/StairsTwoTone';
+import ChecklistIcon from '@mui/icons-material/Checklist';
+import FactoryIcon from '@mui/icons-material/Factory';
+import GroupsTwoToneIcon from '@mui/icons-material/GroupsTwoTone';
+import ShoppingCartTwoToneIcon from '@mui/icons-material/ShoppingCartTwoTone';
+import CheckBoxTwoToneIcon from '@mui/icons-material/CheckBoxTwoTone';
+import MoveToInboxTwoToneIcon from '@mui/icons-material/MoveToInboxTwoTone';
+import CalendarMonthTwoToneIcon from '@mui/icons-material/CalendarMonthTwoTone';
+import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
+import TurnedInTwoToneIcon from '@mui/icons-material/TurnedInTwoTone';
+import EditSquareIcon from '@mui/icons-material/EditSquare';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import EventAvailableTwoToneIcon from '@mui/icons-material/EventAvailableTwoTone';
+import HandymanTwoToneIcon from '@mui/icons-material/HandymanTwoTone';
+import InfoProdutoModal from '../components/modal/InfoProdutoModal';
 
 export default function Ordem() {
     const { 
@@ -162,126 +167,126 @@ export default function Ordem() {
 }
 
 function Informacoes({ setTab, status }) {
+    const { volumesOP } = useUser();
+
     return (
         <>
         <Box className="informacoes">
             <Box className="info_pedido">
-                <Status status={status} />
 
                 <Box className="info">
                     <p>
-                        <span className="icon"><ShoppingCartTwoToneIcon/></span>
-                        <b>PEDIDO: </b><Button variant="contained" size="small" component={Link} to="/pedidos/5951">#5951</Button>
-                    </p>
-                    <p>
                         <span className="icon"><CalendarMonthTwoToneIcon/></span>
-                        <b>PRODUÇÃO: </b>01/11/2024
+                        <b>PRODUÇÃO: </b>03/04/2024
                     </p>
                     <p>
-                        <span className="icon"><GroupsTwoToneIcon/></span>
-                        <b>EQUIPE: </b>M1
+                        <span className="icon"><EventAvailableTwoToneIcon/></span>
+                        <b>CONCLUSÃO: </b>22/04/2025
                     </p>
                     <p>
                         <span className="icon"><CheckBoxTwoToneIcon/></span>
-                        <b>REQUISITOS: </b>
-                        <Button variant="contained" size="small" onClick={() => {setTab(1)}}>0/3</Button>
+                        <b>REQUISITOS: </b> 0/3
                     </p>
                     <p>
-                        <span className="icon"><StairsTwoToneIcon/></span>
-                        <b>ETAPA: </b>
-                        <Button variant="contained" size="small" onClick={() => {setTab(2)}}>0/6</Button>
+                        <span className="icon"><MoveToInboxTwoToneIcon/></span>
+                        <b>VOLUMES: </b> {volumesOP.length}
                     </p>
                     <p>
-                        <span className="icon"><ArchiveTwoToneIcon/></span>
-                        <b>VOLUMES: </b>
-                        <Button variant="contained" size="small" onClick={() => {setTab(6)}}>2</Button>
-                    </p>
-                    <p>
-                        <span className="icon"><TagIcon/></span>
+                        <span className="icon"><TurnedInTwoToneIcon/></span>
                         <b>CATEGORIA: </b>Mesa de Poker
                     </p>
                 
                     <p className="full">
                         <span className="icon"><InfoTwoToneIcon/></span>
-                        <b>DESCRIÇÃO: </b>Mesa de poker profissional
+                        <b>PRODUTO: </b>Mesa de poker profissional
                     </p>
+                    <p className="full">
+                        <span className="icon"><HandymanTwoToneIcon/></span>
+                        <b>STATUS: </b><Status status={status} />
+                    </p>
+                    
                 </Box>
             </Box>
+            <InfoProduto />
 
-            <Box className="info_produto">
-                <h3>
-                    <b>PRODUTO: </b>MESA DE POKER PROFISSIONAL PARA CLUBES DE POKER E RESIDÊNCIAS
-                </h3>
-              
-                <Box className="info_table">
-                    <div>
-                        <h4>TAMANHO DA MESA:</h4>
-                        <p>9 (2,40 x 1,10M)</p>
-                    </div>
-                    <div>
-                        <h4>EMBARALHADOR AUTOMÁTICO:</h4>
-                        <p>Sem embaralhador</p>
-                    </div>
-                    <div>
-                        <h4>TIPO DA COLUNA DA MESA:</h4>
-                        <p>Retangular</p>
-                    </div>
-                    <div>
-                        <h4>TEXTURA DA COLUNA DA MESA:</h4>
-                        <p>Branco Fosco</p>
-                    </div>
-                    <div>
-                        <h4>PISTA PARA FICHAS:</h4>
-                        <p>Sem embaralhador</p>
-                    </div>
-                    <div>
-                        <h4>EMBARALHADOR AUTOMÁTICO:</h4>
-                        <p>Sem pista</p>
-                    </div>
-                    <div>
-                        <h4>PORTA COPOS:</h4>
-                        <p>Sem Porta Copos</p>
-                    </div>
-                    <div>
-                        <h4>COURÍSSIMO DA BORDA:</h4>
-                        <p>Preto</p>
-                    </div>
-                    <div>
-                        <h4>COR DO TECIDO DA MESA:</h4>
-                        <p>Preto</p>
-                    </div>
-                    <div>
-                        <h4>PERSONALIZE COM SUA MARCA:</h4>
-                        <p>Sem Logo ou Escrita</p>
-                    </div>
-                    <div>
-                        <h4>DESENHO DE FUNDO:</h4>
-                        <p>Sem Personalização</p>
-                    </div>
-                    <div>
-                        <h4>TAMPÃO DE JANTAR / TÊNIS DE MESA:</h4>
-                        <p>Sem tampão</p>
-                    </div>
-                    <div>
-                        <h4>TIPO DE BORDA:</h4>
-                        <p>Borda Baixa</p>
-                    </div>
-                    <div>
-                        <h4>COR DO LED:</h4>
-                        <p>Sem LED</p>
-                    </div>
-                    <div>
-                        <h4>GAVETA E RACK PARA FICHAS:</h4>
-                        <p>Para Cash Game + Rack METAL 500 Fichas (39mm)</p>
-                    </div>
-                    <div>
-                        <h4>CONFIGURAÇÃO DO TAMPÃO:</h4>
-                        <p>Configuração do Tampão</p>
-                    </div>
-                </Box>
-            </Box>
         </Box>
         </>
+    )
+}
+export function InfoProduto(){
+    return (
+    <Box className="info_produto">
+        <h3>
+            <b>PRODUTO: </b>Mesa de poker profissional
+        </h3>
+      
+        <Box className="info_table">
+            <div>
+                <h4>TAMANHO DA MESA:</h4>
+                <p>9 (2,40 x 1,10M)</p>
+            </div>
+            <div>
+                <h4>EMBARALHADOR AUTOMÁTICO:</h4>
+                <p>Sem embaralhador</p>
+            </div>
+            <div>
+                <h4>TIPO DA COLUNA DA MESA:</h4>
+                <p>Retangular</p>
+            </div>
+            <div>
+                <h4>TEXTURA DA COLUNA DA MESA:</h4>
+                <p>Branco Fosco</p>
+            </div>
+            <div>
+                <h4>PISTA PARA FICHAS:</h4>
+                <p>Sem embaralhador</p>
+            </div>
+            <div>
+                <h4>EMBARALHADOR AUTOMÁTICO:</h4>
+                <p>Sem pista</p>
+            </div>
+            <div>
+                <h4>PORTA COPOS:</h4>
+                <p>Sem Porta Copos</p>
+            </div>
+            <div>
+                <h4>COURÍSSIMO DA BORDA:</h4>
+                <p>Preto</p>
+            </div>
+            <div>
+                <h4>COR DO TECIDO DA MESA:</h4>
+                <p>Preto</p>
+            </div>
+            <div>
+                <h4>PERSONALIZE COM SUA MARCA:</h4>
+                <p>Sem Logo ou Escrita</p>
+            </div>
+            <div>
+                <h4>DESENHO DE FUNDO:</h4>
+                <p>Sem Personalização</p>
+            </div>
+            <div>
+                <h4>TAMPÃO DE JANTAR / TÊNIS DE MESA:</h4>
+                <p>Sem tampão</p>
+            </div>
+            <div>
+                <h4>TIPO DE BORDA:</h4>
+                <p>Borda Baixa</p>
+            </div>
+            <div>
+                <h4>COR DO LED:</h4>
+                <p>Sem LED</p>
+            </div>
+            <div>
+                <h4>GAVETA E RACK PARA FICHAS:</h4>
+                <p>Para Cash Game + Rack METAL 500 Fichas (39mm)</p>
+            </div>
+            <div>
+                <h4>CONFIGURAÇÃO DO TAMPÃO:</h4>
+                <p>Configuração do Tampão</p>
+            </div>
+        </Box>
+    </Box>
     )
 }
 function Requisitos({ step_list }) {
@@ -310,10 +315,11 @@ function RequisitoItem({ step }) {
         </div>
     )
 }
-function Etapas ({ etapas = [], atividades = [], equipes = [] }) {
-    const { etapasOP, setEtapasOP } = useUser();
+function Etapas({ etapas = [], atividades = [], equipes = [] }) {
+    const { etapasOP, setEtapasOP } = useUser();    
 
     const [openModal, setOpenModal] = useState(false);
+    const [openModalInfo, setOpenModalInfo] = useState(false);
     const [selecionadasModal, setSelecionadasModal] = useState(etapasOP ? etapasOP : []);
 
     const salvarSelecionadas = () => {
@@ -323,20 +329,31 @@ function Etapas ({ etapas = [], atividades = [], equipes = [] }) {
     return (
         <Box className="ordem_etapas">
             <Box className="selecionar_etapas">
+                <Button variant="contained" size="small" onClick={() => setOpenModalInfo(true)}>Produto</Button>
                 <Button variant="contained" size="small" onClick={() => setOpenModal(true)}>Selecionar Etapa</Button>
+
+                <Modal
+                    open={openModal}
+                    setOpen={setOpenModal}
+                    title="Selecionar Etapa"
+                    confirm={salvarSelecionadas}
+                >
+                    <SelecionarEtapa
+                        etapas={etapas}
+                        selecionadas={selecionadasModal}
+                        setSelecionadasModal={setSelecionadasModal}
+                    />
+                </Modal>
+                <Modal
+                    open={openModalInfo}
+                    setOpen={setOpenModalInfo}
+                    title="Mesa de poker profissional"
+                    confirmText='Fechar'
+                >
+                    <InfoProdutoModal />
+                </Modal>
+                
             </Box>
-            <Modal
-                open={openModal}
-                setOpen={setOpenModal}
-                title="Selecionar Etapa"
-                confirm={salvarSelecionadas}
-            >
-                <SelecionarEtapa
-                    etapas={etapas}
-                    selecionadas={selecionadasModal}
-                    setSelecionadasModal={setSelecionadasModal}
-                />
-            </Modal>
 
             <Box className="etapas">
             {etapas
@@ -366,7 +383,7 @@ function Etapas ({ etapas = [], atividades = [], equipes = [] }) {
 function AtividadeItem({ atividade, equipes }) {
     const { atividadesOP, setAtividadesOP, volumes, volumesOP, setVolumesOP } = useUser();
     const { id } = useParams();
-    
+
     const formatarArray = () => {
         return equipes.map((equipe) => ({
             id: equipe.id,
@@ -387,7 +404,7 @@ function AtividadeItem({ atividade, equipes }) {
 
     const [checked, setChecked] = useState(find?.ativo);
     const [equipeSelecionada, setEquipeSelecionada] = useState(formatarArray().find(item => item.id === find?.id_equipe) || null);
-    const [dataSelecionada, setDataSelecionada] = useState(find?.data || '');
+    const [dataSelecionada, setDataSelecionada] = useState(find?.data || dayjs().format('DD/MM/YYYY'));
 
     useEffect(() => {
         if(checked && equipeSelecionada && dataSelecionada && dataSelecionada != "Invalid Date" && !find){

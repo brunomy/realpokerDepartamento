@@ -19,7 +19,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-export default function CustomizedDialogs({ children, open, setOpen, title, confirm }) {
+export default function CustomizedDialogs({ children, open, setOpen, title, confirm, confirmText = 'Salvar alterações' }) {
 
   const handleClose = () => {
     setOpen(false);
@@ -53,12 +53,14 @@ export default function CustomizedDialogs({ children, open, setOpen, title, conf
           {children}
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={() => {
-            handleClose(false) 
-            confirm()
-          }}>
-              Salvar alterações
-          </Button>
+          { confirmText != '' &&
+            <Button autoFocus onClick={() => {
+              handleClose(false) 
+              confirm()
+            }}>
+                {confirmText}
+            </Button>
+          }
         </DialogActions>
       </BootstrapDialog>
     </React.Fragment>

@@ -1,6 +1,7 @@
 @use "~/assets/scss/Variables.scss" as *;
 
 .dataTable_style{
+    &.acoes_buttons table thead tr th:last-child{ width: 0; padding: 0 10px !important; }
     .MuiPaper-root{
         --Paper-shadow: none !important;
         background: #f9f9f9;
@@ -48,6 +49,40 @@
                             }
                         }
                     }
+                    .acoes_atividade{
+                        display: flex;
+                        justify-content: flex-end;
+                        
+                        >div{
+                            display: flex;
+                            flex-wrap: wrap;
+                            
+                            &.content_1{
+                                width: 106px;
+                                background: #ffffff;
+                                border-radius: 8px;
+                                border: 2px solid $color1;
+                                margin: 0 10px 0 0;
+                            }
+                            &.content_2{
+                                justify-content: flex-end;
+                            }
+                        }
+
+                        button{
+                            border: none;
+                            padding: 5px;
+                            background: none;
+                            cursor: pointer;
+                            min-width: 0;
+
+                            &.play { color: $color1; }
+                            &.pause{ color: #ed6c02; }
+                            &.concluir{ color: #2e7d32; }
+                            &.volumes{ color: #454545; }
+                            &.info{ color: #454545; }
+                        }
+                    }
                     .pedidos{
                         display: flex;
                         flex-wrap: wrap;
@@ -59,6 +94,20 @@
                             width: fit-content;
                         }
                     }
+                    .data_late, .data_alert{
+                        display: flex;
+                        align-items: center;
+                        gap: 3px;
+                        
+                        font-weight: bold;
+
+                        svg{
+                            height: auto;
+                            width: 18px;
+                        }
+                    }
+                    .data_late{ color: #d32f2f; }
+                    .data_alert{ color: #ed6c02; }
                 }
             }
         }

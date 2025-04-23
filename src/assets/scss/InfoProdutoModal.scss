@@ -1,0 +1,23 @@
+@use '~/assets/scss/Variables.scss' as *;
+
+.infoProdutoModal{
+    width: 550px;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    >div{
+        background: #f3f3f3;
+        border: 2px solid #d7d7d7;
+
+        h4{
+            background: #d7d7d7;
+            font-size: .8em;
+            padding: 5px 10px;
+        }
+        p{
+            font-size: 1.2em;
+            padding: 5px 10px;
+        }
+    }
+}

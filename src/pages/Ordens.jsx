@@ -3,8 +3,6 @@ import { useState } from 'react';
 
 import { Link } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
-import FactoryIcon from '@mui/icons-material/Factory';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 import dayjs from 'dayjs';
 
@@ -13,8 +11,14 @@ import Layout from "~/components/layout/Layout";
 import Title from "~/components/layout/Title";
 import InputAuto from '~/components/InputAuto';
 import InputCalendarRange from '~/components/InputCalendarRange';
-import Status from '../components/layout/Status';
+import Status from '~/components/layout/Status';
 import { calculoStatusPedido } from './Pedidos';
+
+//icons
+import FactoryIcon from '@mui/icons-material/Factory';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import TimerTwoToneIcon from '@mui/icons-material/TimerTwoTone';
+import ReportProblemTwoToneIcon from '@mui/icons-material/ReportProblemTwoTone';
 
 export default function Ordens() {
     const hoje = dayjs();
@@ -44,54 +48,52 @@ export default function Ordens() {
     ]
 
     //dados da tabela
-    const createDataOrdens = (id, Pedido, categoria, descricao, producao, status, link) => {
-        return { id, Pedido, categoria, descricao, producao, status, link };
+
+
+    const createDataOrdens = () => {
+        const id = <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">#5951-1</Button>;
+        const remessa = <Button component={Link} to="/remessas/5951" variant="outlined" size="small">#5951</Button>;
+        const categoria = <Chip className="stats" size="small" label="Mesa de poker" />;
+        const descricao = 'Mesa de poker profissional';
+        const producao = '03/04/2025';
+        const conclusao = <Box className="data_late">22/04/2025 <TimerTwoToneIcon color="error"/></Box>;
+        const status = <Status status={calculoStatusPedido()} size={'small'} />;
+        const link = <Button component={Link} to="/ordens/5951-1" variant="outlined" size="small">Detalhes</Button>;
+
+        return { id, remessa, categoria, descricao, producao, conclusao, status, link };
     }
-    const rowsOrdens = [
-        createDataOrdens(
-            '#3568',
-            <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">#5951</Button>,
-            <Chip className="stats" size="small" label="Mesa de poker" />,
-            'Mesa de poker profissional',
-            '11/04/2025',
-            <Status status={calculoStatusPedido()} size={'small'} />,
-            <Button component={Link} to="/ordens/3568" variant="outlined" size="small">Detalhes</Button>
-        )
-    ];
+    const rowsOrdens = [createDataOrdens()];
     const headCellsOrdens = [
         {
             id: 'id',
-            numeric: false,
             label: 'Id',
         },
         {
-            id: 'pedido',
-            numeric: false,
-            label: 'Pedido',
+            id: 'remessa',
+            label: 'Remessa',
         },
         {
             id: 'categoria',
-            numeric: false,
             label: 'Categoria',
         },
         {
             id: 'descricao',
-            numeric: false,
             label: 'Descrição',
         },
         {
             id: 'producao',
-            numeric: true,
             label: 'Produção',
         },
         {
+            id: 'conclusao',
+            label: 'Conclusão',
+        },
+        {
             id: 'status',
-            numeric: true,
             label: 'Status',
         },
         {
             id: 'link',
-            numeric: false,
             label: 'Link',
         },
     ];

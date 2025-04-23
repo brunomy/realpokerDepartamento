@@ -24,7 +24,7 @@ import { visuallyHidden } from '@mui/utils';
 import '~/assets/scss/DataTable.scss';
 
 
-export default function DataTable({headCells, rows}) {
+export default function DataTable({headCells, rows, buttons = false}) {
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('calories');
     const [page, setPage] = React.useState(0);
@@ -62,7 +62,7 @@ export default function DataTable({headCells, rows}) {
       }, [order, orderBy, page, rowsPerPage, rows]);
 
     return (
-      <Box className="dataTable_style" sx={{ width: '100%' }}>
+      <Box className={'dataTable_style' + (buttons ? ' acoes_buttons' : '')} sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 2 }}>
           <TableContainer>
             <Table

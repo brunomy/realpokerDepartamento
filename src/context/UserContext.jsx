@@ -270,8 +270,29 @@ export function UserProvider({ children }) {
   ])
 
   //etapas de um OP
-  const [etapasOP, setEtapasOP] = useState([])
-  const [atividadesOP, setAtividadesOP] = useState([])
+  const [etapasOP, setEtapasOP] = useState([1, 2, 3, 4, 5, 6])
+  const [atividadesOP, setAtividadesOP] = useState([
+    {
+      "id": 1,
+      "id_ordem": "5951-1",
+      "id_etapa": 1,
+      "id_atividade": 0,
+      "id_equipe": 1,
+      "data": "23/04/2025",
+      "ativo": 1,
+      "status": 0
+    },
+    {
+      "id": 2,
+      "id_ordem": "5951-1",
+      "id_etapa": 1,
+      "id_atividade": 1,
+      "id_equipe": 2,
+      "data": "23/04/2025",
+      "ativo": 1,
+      "status": 0
+    }
+  ])
   const [checklistOP, setChecklistOP] = useState([])
   const [volumesOP, setVolumesOP] = useState([])
   const [embalagensOP, setEmbalagensOP] = useState([])

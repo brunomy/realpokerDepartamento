@@ -2,6 +2,12 @@ $color1: #1976d2;
 $color2: #696069;
 $grey: #f9f9f9;
 
+
+$sucess: #2e7d32;
+$error: #d32f2f;
+$warning: #ed6c02;
+$default: #e5e5e5;
+
 @mixin content {
     padding: 0 25px;
 }
