@@ -140,16 +140,8 @@ function VolumeItem({item, atividade_id}) {
                     </div>
                     <div className="dimensoes">
                         <div>
-                            <h3>Comprimento</h3>
-                            <span>{find.comprimento}</span>
-                        </div>
-                        <div>
-                            <h3>Largura</h3>
-                            <span>{find.largura}</span>
-                        </div>
-                        <div>
-                            <h3>Altura</h3>
-                            <span>{find.altura}</span>
+                            <h3>Dimensões</h3>
+                            <span>{find.comprimento} x {find.largura} x {find.altura}</span>
                         </div>
                         <div>
                             <h3>Peso</h3>

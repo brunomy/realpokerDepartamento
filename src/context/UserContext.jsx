@@ -247,7 +247,8 @@ export function UserProvider({ children }) {
       id_atividade: 0,
       title: 'Borda da mesa',
     },
-    { id: 1, id_categoria: 1,  id_etapa: 1, id_atividade: 1, title: 'Tiras de couro' },
+    { id: 1,id_categoria: 1, id_etapa: 1, id_atividade: 0, title: 'Suporte da borda',},
+    { id: 2, id_categoria: 1, id_etapa: 1, id_atividade: 1, title: 'Tiras de couro' },
   ])
 
   const [equipes, setEquipes] = useState([
@@ -273,25 +274,16 @@ export function UserProvider({ children }) {
   const [etapasOP, setEtapasOP] = useState([1, 2, 3, 4, 5, 6])
   const [atividadesOP, setAtividadesOP] = useState([
     {
-      "id": 1,
-      "id_ordem": "5951-1",
-      "id_etapa": 1,
-      "id_atividade": 0,
-      "id_equipe": 1,
-      "data": "23/04/2025",
-      "ativo": 1,
-      "status": 0
+        "id": 1,
+        "id_ordem": "5951-1",
+        "id_etapa": 1,
+        "id_atividade": 0,
+        "id_equipe": 1,
+        "data": "23/04/2025",
+        "ativo": 1,
+        "status": 0
     },
-    {
-      "id": 2,
-      "id_ordem": "5951-1",
-      "id_etapa": 1,
-      "id_atividade": 1,
-      "id_equipe": 2,
-      "data": "23/04/2025",
-      "ativo": 1,
-      "status": 0
-    }
+    {"id": 2,"id_ordem": "5951-1","id_etapa": 1,"id_atividade": 1,"id_equipe": 2,"data": "23/04/2025","ativo": 1,"status": 0},{"id": 3,"id_ordem": "5951-1","id_etapa": 1,"id_atividade": 2,"id_equipe": 3,"data": "24/04/2025","ativo": 1,"status": 0},{"id": 4,"id_ordem": "5951-1","id_etapa": 1,"id_atividade": 3,"id_equipe": 4,"data": "24/04/2025","ativo": 1,"status": 0},{"id": 5,"id_ordem": "5951-1","id_etapa": 1,"id_atividade": 4,"id_equipe": 1,"data": "24/04/2025","ativo": 1,"status": 0},{"id": 6,"id_ordem": "5951-1","id_etapa": 2,"id_atividade": 5,"id_equipe": 4,"data": "25/04/2025","ativo": 1,"status": 0},{"id": 7,"id_ordem": "5951-1","id_etapa": 2,"id_atividade": 6,"id_equipe": 3,"data": "25/04/2025","ativo": 1,"status": 0},{"id": 8,"id_ordem": "5951-1","id_etapa": 2,"id_atividade": 7,"id_equipe": 1,"data": "25/04/2025","ativo": 1,"status": 0},{"id": 9,"id_ordem": "5951-1","id_etapa": 3,"id_atividade": 8,"id_equipe": 1,"data": "26/04/2025","ativo": 1,"status": 0},{"id": 10,"id_ordem": "5951-1","id_etapa": 3,"id_atividade": 9,"id_equipe": 2,"data": "26/04/2025","ativo": 0,"status": 0},{"id": 11,"id_ordem": "5951-1","id_etapa": 3,"id_atividade": 10,"id_equipe": 3,"data": "26/04/2025","ativo": 1,"status": 0},{"id": 12,"id_ordem": "5951-1","id_etapa": 4,"id_atividade": 11,"id_equipe": 1,"data": "28/04/2025","ativo": 1,"status": 0},{"id": 13,"id_ordem": "5951-1","id_etapa": 4,"id_atividade": 12,"id_equipe": 2,"data": "28/04/2025","ativo": 1,"status": 0},{"id": 14,"id_ordem": "5951-1","id_etapa": 4,"id_atividade": 13,"id_equipe": 3,"data": "28/04/2025","ativo": 1,"status": 0},{"id": 15,"id_ordem": "5951-1","id_etapa": 4,"id_atividade": 14,"id_equipe": 4,"data": "28/04/2025","ativo": 1,"status": 0},{"id": 16,"id_ordem": "5951-1","id_etapa": 4,"id_atividade": 15,"id_equipe": 4,"data": "28/04/2025","ativo": 1,"status": 0},{"id": 17,"id_ordem": "5951-1","id_etapa": 5,"id_atividade": 16,"id_equipe": 1,"data": "28/04/2025","ativo": 1,"status": 0},{"id": 18,"id_ordem": "5951-1","id_etapa": 5,"id_atividade": 17,"id_equipe": 4,"data": "28/04/2025","ativo": 1,"status": 0},{"id": 19,"id_ordem": "5951-1","id_etapa": 5,"id_atividade": 18,"id_equipe": 3,"data": "28/04/2025","ativo": 1,"status": 0},{"id": 20,"id_ordem": "5951-1","id_etapa": 5,"id_atividade": 19,"id_equipe": 1,"data": "28/04/2025","ativo": 1,"status": 0},{"id": 21,"id_ordem": "5951-1","id_etapa": 5,"id_atividade": 20,"id_equipe": 2,"data": "28/04/2025","ativo": 1,"status": 0},{"id": 22,"id_ordem": "5951-1","id_etapa": 6,"id_atividade": 21,"id_equipe": 1,"data": "12/05/2025","ativo": 1,"status": 0}
   ])
   const [checklistOP, setChecklistOP] = useState([])
   const [volumesOP, setVolumesOP] = useState([])

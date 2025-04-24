@@ -95,7 +95,7 @@ export default function Atividades() {
     ];
     const rows = [];
 
-    atividadesOP.map((item) => {
+    atividadesOP.filter((a) => a.ativo == 1).map((item) => {
         rows.push(
             createData(item)
         )
@@ -134,10 +134,6 @@ export function AcoesAtividades({ atividade }){
     const { atividadesOP, setAtividadesOP, volumes, volumesOP } = useUser();
     const volumes_atividade = volumes.filter((volume) => volume.id_atividade == atividade.id_atividade)
     const volumesEnviados = volumesOP.filter((volume) => volume.id_ativ == atividade.id)
-
-    console.log(volumesEnviados);
-    console.log(atividade);
-    
 
     const [codigo, setCodigo] = useState('');
     const [acao, setAcao] = useState('');
@@ -199,9 +195,10 @@ export function AcoesAtividades({ atividade }){
                     <Button className="volumes" onClick={() => setOpenVolumes(true)}>
                         <MoveToInboxTwoToneIcon />
                         <span 
-                            // className="numero"
-                            className={'numero '+(!volumesEnviados.length ? 'vazio' : '')}
-
+                            className={'numero '+
+                                (!volumesEnviados.length ? 'vazio ' : '')+
+                                (volumesEnviados.length < volumes_atividade.length ? 'incompleto ' : '')
+                            }
                         >{volumesEnviados.length}</span>
                     </Button>
                     }

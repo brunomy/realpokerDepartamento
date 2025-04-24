@@ -99,7 +99,10 @@
                                 padding-top: 2px;
 
                                 &.vazio{
-                                    background: $error;
+                                    background: $error !important;
+                                }
+                                &.incompleto{
+                                    background: $warning;
                                 }
                             }
                             svg{
