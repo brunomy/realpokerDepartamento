@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import dayjs from 'dayjs';
 
 import DataTable from '~/components/DataTable';
@@ -118,7 +117,6 @@ export default function Remessas() {
                 <Box className="table_content">
                     <DataTable headCells={headCells} rows={rows}/>
                     <div className="buttons">
-                        <Button className="relatorio" variant="contained"><PictureAsPdfIcon/> Gerar relatório</Button>
                         <Button className="relatorio" variant="contained">Criar remessa</Button>
                     </div>
                 </Box>

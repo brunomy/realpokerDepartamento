@@ -16,7 +16,6 @@ import { calculoStatusPedido } from './Pedidos';
 
 //icons
 import FactoryIcon from '@mui/icons-material/Factory';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import TimerTwoToneIcon from '@mui/icons-material/TimerTwoTone';
 import ReportProblemTwoToneIcon from '@mui/icons-material/ReportProblemTwoTone';
 
@@ -121,7 +120,6 @@ export default function Ordens() {
                 </Box>
                 <Box className="table_content">
                     <DataTable headCells={headCellsOrdens} rows={rowsOrdens}/>
-                    <Button className="relatorio" variant="contained"><PictureAsPdfIcon/> Gerar relatório</Button>
                 </Box>
             </Box>
         </Layout>

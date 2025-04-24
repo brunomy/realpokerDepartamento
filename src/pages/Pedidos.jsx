@@ -16,7 +16,6 @@ import { useUser } from '~/context/UserContext';
 
 //icons
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import TimerTwoToneIcon from '@mui/icons-material/TimerTwoTone';
 import ReportProblemTwoToneIcon from '@mui/icons-material/ReportProblemTwoTone';
 
@@ -118,7 +117,6 @@ export default function Pedidos() {
                 </Box>
                 <Box className="table_content">
                     <DataTable headCells={headCells} rows={rows}/>
-                    <Button className="relatorio" variant="contained"><PictureAsPdfIcon /> Gerar relatório</Button>
                 </Box>
             </Box>
         </Layout>

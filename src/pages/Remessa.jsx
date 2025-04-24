@@ -28,10 +28,12 @@ import MarkunreadMailboxTwoToneIcon from '@mui/icons-material/MarkunreadMailboxT
 import HomeTwoToneIcon from '@mui/icons-material/HomeTwoTone';
 import FmdGoodTwoToneIcon from '@mui/icons-material/FmdGoodTwoTone';
 import AddBoxTwoToneIcon from '@mui/icons-material/AddBoxTwoTone';
+import HandymanTwoToneIcon from '@mui/icons-material/HandymanTwoTone';
 
 import Layout from "~/components/layout/Layout";
 import Title from "~/components/layout/Title";
 import Modal from '~/components/layout/Modal';
+import Status from '~/components/layout/Status';
 
 import { Volumes } from './Pedido';
 import { useUser } from '~/context/UserContext';
@@ -136,7 +138,7 @@ export default function Remessa() {
                         <MudarRemessa left={left} setLeft={setLeft} right={right} setRight={setRight}/>
                     </>
                 }
-                { tab == 1 && <Volumes headCells={headCells} rows={rows} adicionar={false} /> }
+                { tab == 1 && <Volumes /> }
             </Box>
         </Layout>
     )
@@ -149,11 +151,6 @@ function Informacoes({ setStatusModalChange, open, setStatus, status, setTab }) 
         <>
         <Box className="informacoes">
             <Box className="info_pedido">
-                { status == 0 && <Chip className="stats" label="Pendente" /> }
-                { status == 1 && <Chip className="stats" color="primary" label="Em andamento" /> }
-                { status == 2 && <Chip className="stats" color="error" label="Parado" /> }
-                { status == 3 && <Chip className="stats" color="success" label="Finalizado" /> }
-
                 <Box className="info">
                     <p>
                         <span className="icon"><CalendarMonthTwoToneIcon/></span>
@@ -198,6 +195,10 @@ function Informacoes({ setStatusModalChange, open, setStatus, status, setTab }) 
                     <p className="full">
                         <span className="icon"><AddBoxTwoToneIcon/></span>
                         <b>COMPLEMENTO: </b>Q 5 Lt 12, próximo ao pamonharia souza
+                    </p>
+                    <p className="full">
+                        <span className="icon"><HandymanTwoToneIcon/></span>
+                        <b>STATUS: </b><Status status={status} />
                     </p>
                 </Box>
             </Box>
