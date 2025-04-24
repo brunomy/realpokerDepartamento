@@ -5,7 +5,7 @@ import { Box, Button } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-export default function AdicionarString({value, setValue}) {
+export default function AdicionarString({value, setValue, label = 'Título'}) {
     return (
         <Box className="adicionarString">
             <form action="">
@@ -14,7 +14,7 @@ export default function AdicionarString({value, setValue}) {
                         (e) => {
                             setValue(e.target.value)
                         }
-                    } label="Título" variant="outlined" sx={{width: '100%'}} />
+                    } label={label} variant="outlined" sx={{width: '100%'}} />
                 </div>
             </form>
         </Box>

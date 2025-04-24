@@ -55,10 +55,8 @@
                         
                         >div{
                             display: flex;
-                            flex-wrap: wrap;
                             
                             &.content_1{
-                                width: 106px;
                                 background: #ffffff;
                                 border-radius: 8px;
                                 border: 2px solid $color1;
@@ -70,6 +68,7 @@
                         }
 
                         button{
+                            position: relative;
                             border: none;
                             padding: 5px;
                             background: none;
@@ -81,6 +80,32 @@
                             &.concluir{ color: #2e7d32; }
                             &.volumes{ color: #454545; }
                             &.info{ color: #454545; }
+
+                            span.numero{
+                                position: absolute;
+                                pointer-events: none;
+                                right: 2px;
+                                top: 0;
+                                background: $sucess;
+                                color: white;
+                                font-size: 0.6em;
+                                width: 15px;
+                                height: 15px;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                font-weight: bold;
+                                border-radius: 50%;
+                                padding-top: 2px;
+
+                                &.vazio{
+                                    background: $error;
+                                }
+                            }
+                            svg{
+                                height: auto;
+                                width: 30px;
+                            }
                         }
                     }
                     .pedidos{

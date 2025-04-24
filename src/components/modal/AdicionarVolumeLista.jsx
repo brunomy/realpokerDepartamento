@@ -135,8 +135,8 @@ function VolumeItem({item, atividade_id}) {
             { find && (
                 <Box>
                     <div className="title_content">
-                        <Button color="error" onClick={deletar}><DeleteTwoToneIcon  /></Button>
                         <h2>{item.title}</h2>
+                        <Button color="error" onClick={deletar}><DeleteTwoToneIcon  /></Button>
                     </div>
                     <div className="dimensoes">
                         <div>

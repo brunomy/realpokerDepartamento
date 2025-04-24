@@ -1,23 +1,26 @@
 import '~/assets/scss/Index.scss';
-import { useState } from 'react';
 
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
-
 import dayjs from 'dayjs';
 
-import DataTable from '~/components/DataTable';
+//LAYOUT
 import Layout from "~/components/layout/Layout";
 import Title from "~/components/layout/Title";
-import Modal from '~/components/layout/Modal';
+
+//COMPONENTS
+import Status from '../components/layout/Status';
 import InputAuto from '~/components/InputAuto';
 import InputCalendarRange from '~/components/InputCalendarRange';
+import DataTable from '~/components/DataTable';
+
+//MODAIS
+import Modal from '~/components/layout/Modal';
 import InfoProdutoModal from '../components/modal/InfoProdutoModal';
+import AdicionarString from '../components/modal/AdicionarString';
 
-import { useUser } from '~/context/UserContext';
-import Status from '../components/layout/Status';
-
-//icons
+//ICONS
 import PlayCircleFilledWhiteTwoToneIcon from '@mui/icons-material/PlayCircleFilledWhiteTwoTone';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
@@ -26,6 +29,8 @@ import CheckCircleTwoToneIcon from '@mui/icons-material/CheckCircleTwoTone';
 import MoveToInboxTwoToneIcon from '@mui/icons-material/MoveToInboxTwoTone';
 import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
 import AdicionarVolumeLista from '../components/modal/AdicionarVolumeLista';
+
+import { useUser } from '~/context/UserContext';
 
 export default function Atividades() {
     const { 
@@ -64,7 +69,6 @@ export default function Atividades() {
 
     //dados da tabela
     const createData = (item) => {
-        console.log(atividades);
         let atividadeItem = atividades.find(a => a.id == item.id_atividade);
         
         const pedido = '#5951';
@@ -127,20 +131,44 @@ export default function Atividades() {
 }
 
 export function AcoesAtividades({ atividade }){
-    const { atividadesOP, setAtividadesOP, volumes } = useUser();
+    const { atividadesOP, setAtividadesOP, volumes, volumesOP } = useUser();
     const volumes_atividade = volumes.filter((volume) => volume.id_atividade == atividade.id_atividade)
+    const volumesEnviados = volumesOP.filter((volume) => volume.id_ativ == atividade.id)
+
+    console.log(volumesEnviados);
+    console.log(atividade);
+    
+
+    const [codigo, setCodigo] = useState('');
+    const [acao, setAcao] = useState('');
 
     const [open, setOpen] = useState(false);
     const [openVolumes, setOpenVolumes] = useState(false);
     const [openInfo, setOpenInfo] = useState(false);
 
-
-    const play = () => {
-        setAtividadesOP(prev =>
-            prev.map(item =>
-                item.id === atividade.id ? { ...item, status: 1 } : item
-            )
-        );
+    const playFinalizar = () => {
+        if(codigo.length >= 4){
+            if(acao == 'play'){
+                setAtividadesOP(prev =>
+                    prev.map(item =>
+                        item.id === atividade.id ? { ...item, status: 1 } : item
+                    )
+                );
+            } else if(acao == 'finalizar'){
+                setAtividadesOP(prev =>
+                    prev.map(item =>
+                        item.id === atividade.id ? { ...item, status: 3 } : item
+                    )
+                );
+                
+                if(volumes_atividade.length != 0){
+                    setOpenVolumes(true)
+                }
+            }
+        } else {
+            alert('Codigo inválido')
+        }
+        setCodigo('')
     }
     const pausar = () => {
         setAtividadesOP(prev =>
@@ -149,38 +177,39 @@ export function AcoesAtividades({ atividade }){
             )
         );
     }
-    const finalizar = () => {
-
-        setAtividadesOP(prev =>
-            prev.map(item =>
-                item.id === atividade.id ? { ...item, status: 3 } : item
-            )
-        );
-        
-        if(volumes_atividade.length != 0){
-            setOpenVolumes(true)
-        }
-    }
 
     return (
         <>
         <Box className="acoes_atividade">
             { (atividade.status != 3 && atividade.status != -1) &&
                 <div className="content_1">
-                    <Button className="play" onClick={play}><PlayCircleFilledWhiteTwoToneIcon /></Button>
+                    { atividade.status != 1 &&
+                    <Button className="play" onClick={() => {setOpen(true); setAcao('play');}}><PlayCircleFilledWhiteTwoToneIcon /></Button>
+                    }
+                    { (atividade.status != 0 && atividade.status != 2) &&
                     <Button className="pause" onClick={pausar}><PauseCircleFilledTwoToneIcon /></Button>
-                    <Button className="concluir" onClick={finalizar}><CheckCircleTwoToneIcon /></Button>
+                    }
+                    { (atividade.status != 0 ) &&
+                    <Button className="concluir" onClick={() => {setOpen(true); setAcao('finalizar');}}><CheckCircleTwoToneIcon /></Button>
+                    }
                 </div>
             }
                 <div className="content_2">
-                { (atividade.status != -1 && atividade.status == 3 && volumes_atividade.length != 0) && 
-                    <Button className="volumes" onClick={() => setOpenVolumes(true)}><MoveToInboxTwoToneIcon /></Button>
-                }
+                    { (atividade.status != -1 && atividade.status == 3 && volumes_atividade.length != 0) && 
+                    <Button className="volumes" onClick={() => setOpenVolumes(true)}>
+                        <MoveToInboxTwoToneIcon />
+                        <span 
+                            // className="numero"
+                            className={'numero '+(!volumesEnviados.length ? 'vazio' : '')}
+
+                        >{volumesEnviados.length}</span>
+                    </Button>
+                    }
                     <Button className="info" onClick={() => setOpenInfo(true)}><InfoTwoToneIcon /></Button>
                 </div>
         </Box>
-        <Modal open={open} setOpen={setOpen} title="" >
-            {atividade.id}
+        <Modal open={open} setOpen={setOpen} title="Insira o seu código" confirmText="Confirmar" confirm={playFinalizar}>
+            <AdicionarString label='Código' value={codigo} setValue={setCodigo} />
         </Modal>
         <Modal open={openVolumes} setOpen={setOpenVolumes} title="Adicionar volumes" confirmText=''>
             <AdicionarVolumeLista atividade={atividade} />
