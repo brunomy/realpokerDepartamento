@@ -26,7 +26,6 @@ import AdicionarVolume from '~/components/modal/AdicionarVolume';
 
 
 import dayjs from 'dayjs';
-import DataTableSelect from '~/components/DataTableSelect';
 import Status from '../components/layout/Status';
 
 //icons

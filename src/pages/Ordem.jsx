@@ -27,7 +27,7 @@ import VistoriaChecklist from '~/components/modal/VistoriaChecklist';
 
 import dayjs from 'dayjs';
 import Status from '~/components/layout/Status';
-import { Volumes } from './Pedido';
+import { Volumes } from './Remessa';
 import { calculoStatusPedido } from './Pedidos';
 
 //icons

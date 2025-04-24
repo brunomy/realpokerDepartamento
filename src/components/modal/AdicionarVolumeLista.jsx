@@ -65,6 +65,7 @@ function VolumeItem({item, atividade_id}) {
             {
                 id: volumesOP.length + 1,
                 id_ativ: atividade_id,
+                id_atividade: item.id_atividade,
                 id_etapa: item.id_etapa,
                 id_volume: item.id,
                 id_remessa: 5951,

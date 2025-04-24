@@ -1,5 +1,7 @@
 import '~/assets/scss/Index.scss';
 
+import { useUser } from '~/context/UserContext';
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
@@ -8,6 +10,7 @@ import dayjs from 'dayjs';
 //LAYOUT
 import Layout from "~/components/layout/Layout";
 import Title from "~/components/layout/Title";
+import Modal from '~/components/layout/Modal';
 
 //COMPONENTS
 import Status from '../components/layout/Status';
@@ -16,7 +19,6 @@ import InputCalendarRange from '~/components/InputCalendarRange';
 import DataTable from '~/components/DataTable';
 
 //MODAIS
-import Modal from '~/components/layout/Modal';
 import InfoProdutoModal from '../components/modal/InfoProdutoModal';
 import AdicionarString from '../components/modal/AdicionarString';
 
@@ -30,7 +32,6 @@ import MoveToInboxTwoToneIcon from '@mui/icons-material/MoveToInboxTwoTone';
 import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
 import AdicionarVolumeLista from '../components/modal/AdicionarVolumeLista';
 
-import { useUser } from '~/context/UserContext';
 
 export default function Atividades() {
     const { 

@@ -8,11 +8,13 @@ import { Box, Button, Chip, Tabs, Tab } from '@mui/material';
 import Layout from "~/components/layout/Layout";
 import Title from "~/components/layout/Title";
 import DataTable from '~/components/DataTable';
-import Modal from '~/components/layout/Modal';
 
 import { useUser } from '~/context/UserContext';
 import Status from '../components/layout/Status';
 import { calculoStatusPedido } from './Pedidos';
+
+import { Volumes } from './Remessa';
+
 
 //icons
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -164,92 +166,3 @@ export function Ordens({ headCells, rows }) {
     )
 }
 
-export function Volumes() {
-    const { atividadesOP, volumes, volumesOP, checklists, checklistOP } = useUser();
-
-    const naoEmbalados = volumesOP.filter(item => item.id_embalagem == null);
-    const embalados = volumesOP.filter(item => item.id_embalagem != null);
-
-    const createData = (volume) => {
-        const volumeConf = volumes.find(item => item.id == volume.id_volume);
-        const title = volumeConf.title;
-        const dimensoes = volume.comprimento + ' x ' + volume.largura + ' x ' + volume.altura;
-        const peso = volume.peso;
-
-
-        const checklistAtv = checklists?.filter(item => item.id_atividade == volumeConf.id_atividade);
-        const checklistFinalizado = checklistOP.filter(item => item.id_ativ == volume.id_ativ && item.status == 1);
-
-        const statusCheck = `${checklistFinalizado.length}/${checklistAtv.length}`;
-        var chipStatus = null;
-        if(checklistFinalizado.length == checklistAtv.length){
-            chipStatus = <Chip className="stats" size='small' color="success" label={statusCheck} />
-        } else {
-            chipStatus = <Chip className="stats" size='small' label={statusCheck} />
-        }
-        
-        const atividadeConf = atividadesOP.find(item => (item.id == volume.id_ativ && item.status != -1));
-        const atividadeLink = <Button variant="outlined" size="small" component={Link} to={`/atividades/${atividadeConf.id}`}>#{atividadeConf.id}</Button>;
-        
-        const remessaLink = <Button variant="contained" size="small" component={Link} to={`/remessas/${volume.id_remessa}`} sx={{ boxShadow: 'none' }}>#{volume.id_remessa}</Button>;
-        
-        return { title, dimensoes, peso, chipStatus, atividadeLink, remessaLink };
-    }
- 
-    const rowsNaoEmbalados = [];
-    naoEmbalados.map((item) => {
-        rowsNaoEmbalados.push(
-            createData(item)
-        )
-    })
-
-    const rowEmbalados = [];
-    embalados.map((item) => {
-        rowEmbalados.push(
-            createData(item)
-        )
-    })
-    const headCells = [
-        {
-            id: 'volume',
-            label: 'Volume',
-        },
-        {
-            id: 'dimensoes',
-            numeric: false,
-            label: 'Dimensões (cm)',
-        },
-        {
-            id: 'peso',
-            label: 'Peso (kg)',
-        },
-        {
-            id: 'statusCheck',
-            label: 'Checklist',
-        },
-        {
-            id: 'atividade',
-            label: 'Atividade',
-        },
-        {
-            id: 'remessa',
-            label: 'Remessa',
-        },
-    ];
-
-
-    return (
-        <Box className="volumes">
-            <div className="volume_content">
-                <h3>
-                    Não embalados
-                </h3>
-                <DataTable headCells={headCells} rows={rowsNaoEmbalados}/>
-            </div>
-            <div className="volume_content">
-                <h3>Embalados</h3>
-                <DataTable headCells={headCells} rows={rowEmbalados}/>
-            </div>
-        </Box>
-    )
-}

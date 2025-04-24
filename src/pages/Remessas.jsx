@@ -63,32 +63,26 @@ export default function Remessas() {
     const headCells = [
         {
             id: 'pedidos',
-            numeric: false,
             label: 'Pedidos',
         },
         {
             id: 'ordens',
-            numeric: false,
             label: 'Ordens',
         },
         {
             id: 'destino',
-            numeric: false,
             label: 'Destino',
         },
         {
             id: 'entrega',
-            numeric: false,
             label: 'Entrega',
         },
         {
             id: 'status',
-            numeric: false,
             label: 'Status',
         },
         {
             id: 'link',
-            numeric: false,
             label: 'Link',
         },
     ];

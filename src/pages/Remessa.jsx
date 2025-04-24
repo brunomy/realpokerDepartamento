@@ -1,26 +1,29 @@
 import '~/assets/scss/Show.scss';
 
+import { useUser } from '~/context/UserContext';
+
 import { useParams } from 'react-router-dom';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-
 import { Box, Button, Chip, Tabs, Tab } from '@mui/material';
+
+//LAYOUT
+import Layout from "~/components/layout/Layout";
+import Title from "~/components/layout/Title";
+import Status from '~/components/layout/Status';
+import Modal from '~/components/layout/Modal';
+
+//COMPONENTS
+import DataTable from '~/components/DataTable';
+import TransferList from '~/components/TransferList';
+
+//MODAIS
+
+//ICONS
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
-import HeightIcon from '@mui/icons-material/Height';
-import VerticalAlignTopTwoToneIcon from '@mui/icons-material/VerticalAlignTopTwoTone';
-import GroupsTwoToneIcon from '@mui/icons-material/GroupsTwoTone';
 import ShoppingCartTwoToneIcon from '@mui/icons-material/ShoppingCartTwoTone';
-import CheckBoxTwoToneIcon from '@mui/icons-material/CheckBoxTwoTone';
 import ArchiveTwoToneIcon from '@mui/icons-material/ArchiveTwoTone';
 import CalendarMonthTwoToneIcon from '@mui/icons-material/CalendarMonthTwoTone';
-import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
-import TagIcon from '@mui/icons-material/Tag';
-import EditSquareIcon from '@mui/icons-material/EditSquare';
-import DeleteIcon from '@mui/icons-material/Delete';
-
-import MonetizationOnTwoToneIcon from '@mui/icons-material/MonetizationOnTwoTone';
-import LocalAtmTwoToneIcon from '@mui/icons-material/LocalAtmTwoTone';
-import ScaleTwoToneIcon from '@mui/icons-material/ScaleTwoTone';
 import FactoryTwoToneIcon from '@mui/icons-material/FactoryTwoTone';
 import MoveToInboxTwoToneIcon from '@mui/icons-material/MoveToInboxTwoTone';
 import AccountBoxTwoToneIcon from '@mui/icons-material/AccountBoxTwoTone';
@@ -29,16 +32,8 @@ import HomeTwoToneIcon from '@mui/icons-material/HomeTwoTone';
 import FmdGoodTwoToneIcon from '@mui/icons-material/FmdGoodTwoTone';
 import AddBoxTwoToneIcon from '@mui/icons-material/AddBoxTwoTone';
 import HandymanTwoToneIcon from '@mui/icons-material/HandymanTwoTone';
+import AdicionarEmbalagem from '../components/modal/AdicionarEmbalagem';
 
-import Layout from "~/components/layout/Layout";
-import Title from "~/components/layout/Title";
-import Modal from '~/components/layout/Modal';
-import Status from '~/components/layout/Status';
-
-import { Volumes } from './Pedido';
-import { useUser } from '~/context/UserContext';
-
-import TransferList from '~/components/TransferList';
 
 export default function Remessa() {
     const { id } = useParams();
@@ -56,59 +51,6 @@ export default function Remessa() {
     const handleChange = (event, newTab) => {
       setTab(newTab);
     };
-
-    const createData = (id, descricao, dimensoes, peso, criacao) => {
-        return {
-            id,
-            descricao,
-            dimensoes,
-            peso,
-            criacao,
-        };
-    }
-    const rows = [
-        createData(
-            '#3489787', 
-            'Tampa da mesa',
-            '200 x 400 x 50',
-            '20',
-            '01/11/2024',
-        ),
-        createData(
-            '#3489788', 
-            'Peças de montagem da mesa',
-            '50 x 50 x 50',
-            '10',
-            '01/11/2024',
-        ),
-    ];
-    const headCells = [
-        {
-            id: 'id',
-            numeric: false,
-            label: 'Id',
-        },
-        {
-            id: 'descricao',
-            numeric: false,
-            label: 'Descrição',
-        },
-        {
-            id: 'dimensoes',
-            numeric: false,
-            label: 'Dimensões (cm)',
-        },
-        {
-            id: 'peso',
-            numeric: true,
-            label: 'Peso (kg)',
-        },
-        {
-            id: 'criacao',
-            numeric: true,
-            label: 'Criação',
-        },
-    ];
 
     return (
         <Layout>
@@ -130,10 +72,7 @@ export default function Remessa() {
                 { tab == 0 && 
                     <>
                         <Informacoes 
-                            setStatusModalChange={setStatusModalChange} 
-                            open={statusModalChange}
                             status={status} 
-                            setStatus={setStatus}
                             setTab={setTab} />
                         <MudarRemessa left={left} setLeft={setLeft} right={right} setRight={setRight}/>
                     </>
@@ -144,7 +83,7 @@ export default function Remessa() {
     )
 }
 
-function Informacoes({ setStatusModalChange, open, setStatus, status, setTab }) {
+function Informacoes({ status, setTab }) {
     const { volumesOP } = useUser();
 
     return (
@@ -211,6 +150,106 @@ function MudarRemessa({ left, setLeft, right, setRight }) {
     return (
         <Box className="mudar_remessa">
             <TransferList className="teste" left={left} setLeft={setLeft} right={right} setRight={setRight} />
+        </Box>
+    )
+}
+
+export function Volumes() {
+    const { atividadesOP, volumes, volumesOP, checklists, checklistOP } = useUser();
+
+    const [openModal, setOpenModal] = useState(false);
+
+    const naoEmbalados = volumesOP.filter(item => item.id_embalagem == null);
+    const embalados = volumesOP.filter(item => item.id_embalagem != null);
+
+    const createData = (volume) => {
+        const volumeConf = volumes.find(item => item.id == volume.id_volume);
+        const title = volumeConf.title;
+        const dimensoes = volume.comprimento + ' x ' + volume.largura + ' x ' + volume.altura;
+        const peso = volume.peso;
+
+        const checklistAtv = checklists?.filter(item => item.id_atividade == volumeConf.id_atividade);
+        const checklistFinalizado = checklistOP.filter(item => item.id_ativ == volume.id_ativ && item.status == 1);
+
+        const statusCheck = `${checklistFinalizado.length}/${checklistAtv.length}`;
+        var chipStatus = null;
+        if(checklistFinalizado.length == checklistAtv.length){
+            chipStatus = <Chip className="stats" size='small' color="success" label={statusCheck} />
+        } else {
+            chipStatus = <Chip className="stats" size='small' label={statusCheck} />
+        }
+        
+        const atividadeConf = atividadesOP.find(item => (item.id == volume.id_ativ && item.status != -1));
+        const atividadeLink = <Button variant="outlined" size="small" component={Link} to={`/atividades/${atividadeConf.id}`}>#{atividadeConf.id}</Button>;
+        
+        const remessaLink = <Button variant="contained" size="small" component={Link} to={`/remessas/${volume.id_remessa}`} sx={{ boxShadow: 'none' }}>#{volume.id_remessa}</Button>;
+        
+        return { title, dimensoes, peso, chipStatus, atividadeLink, remessaLink };
+    }
+ 
+    const rowsNaoEmbalados = [];
+    naoEmbalados.map((item) => {
+        rowsNaoEmbalados.push(
+            createData(item)
+        )
+    })
+
+    const rowEmbalados = [];
+    embalados.map((item) => {
+        rowEmbalados.push(
+            createData(item)
+        )
+    })
+    const headCells = [
+        {
+            id: 'volume',
+            label: 'Volume',
+        },
+        {
+            id: 'dimensoes',
+            label: 'Dimensões (cm)',
+        },
+        {
+            id: 'peso',
+            label: 'Peso (kg)',
+        },
+        {
+            id: 'statusCheck',
+            label: 'Checklist',
+        },
+        {
+            id: 'atividade',
+            label: 'Atividade',
+        },
+        {
+            id: 'remessa',
+            label: 'Remessa',
+        },
+    ];
+
+
+    return (
+        <Box className="volumes">
+            <div className="volume_content">
+                <h3>
+                    Não embalados
+
+                    <Button size="small" onClick={() => setOpenModal(true)}>Embalar</Button>
+                </h3>
+                <DataTable headCells={headCells} rows={rowsNaoEmbalados}/>
+            </div>
+            <div className="volume_content">
+                <h3>Embalados</h3>
+                <DataTable headCells={headCells} rows={rowEmbalados}/>
+            </div>
+
+            <Modal 
+                open={openModal}
+                setOpen={setOpenModal}
+                title="Embalar volumes prontos"
+            >
+                <AdicionarEmbalagem />
+            </Modal>
         </Box>
     )
 }

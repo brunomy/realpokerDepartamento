@@ -18,7 +18,8 @@ import Layout from "~/components/layout/Layout";
 import Title from "~/components/layout/Title";
 import Modal from '~/components/layout/Modal';
 
-import { Volumes, Ordens } from './Pedido';
+import { Ordens } from './Pedido';
+import { Volumes } from './Remessa';
 import TransferList from '~/components/TransferList';
 import AdicionarFuncionario from '~/components/modal/AdicionarFuncionario';
 
@@ -26,10 +27,6 @@ export default function Equipe() {
     const { id } = useParams();
 
     const [tab, setTab] = useState(0);
-
-    const [addOrdemModal, setAddOrdemModal] = useState(false);
-
-    const [addVolumeModal, setAddVolumeModal] = useState(false);
 
     const [openModal, setOpenModal] = useState(false);
 
