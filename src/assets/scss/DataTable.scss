@@ -19,6 +19,8 @@
         }
         tbody{
             tr{
+                position: relative;
+
                 td{
                     padding: 5px 5px !important;
 
@@ -27,6 +29,18 @@
                     }
                     a{
                         width: 100%;
+                        z-index: 1;
+
+                        &.link{
+                            opacity: 0;
+                            background: red;
+                            position: absolute;
+                            left: 0;
+                            top: 0;
+                            width: 100% !important;
+                            height: 100% !important;
+                            z-index: 0;
+                        }
                     }
                     .categorias{
                         display: flex;

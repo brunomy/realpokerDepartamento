@@ -31,12 +31,12 @@ export default function Configuracoes() {
                 etapas.filter((etapa) => etapa.id_categoria == categoria.id).length,
                 atividades.filter((atividade) => atividade.id_categoria == categoria.id).length,
                 checklists.filter((checklist) => checklist.id_categoria == categoria.id).length,
-                volumes.filter((volume) => volume.id_categoria == categoria.id).length,
-                <Box className="acoes">
-                    <Button component={Link} to={`/configuracoes/${categoria.id}`} variant="outlined" size="small">
+                <>
+                    {volumes.filter((volume) => volume.id_categoria == categoria.id).length}
+                    <Button className="link" component={Link} to={`/configuracoes/${categoria.id}`} variant="outlined" size="small">
                         <EditSquareIcon />
                     </Button>
-                </Box>
+                </>
             );
         }) || [] 
     );
@@ -65,12 +65,6 @@ export default function Configuracoes() {
             id: 'volumes',
             numeric: true,
             label: 'Volumes',
-        },
-        {
-            id: 'acoes',
-            numeric: false,
-            align: "right",
-            label: 'Ações',
         },
     ];
 

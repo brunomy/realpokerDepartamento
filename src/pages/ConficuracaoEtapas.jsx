@@ -61,7 +61,7 @@ export default function ConficuracaoEtapas() {
                 checklists.filter((checklist) => checklist.id_etapa == etapa.id).length,
                 volumes.filter((volume) => volume.id_etapa == etapa.id).length,
                 <Box className="acoes">
-                    <Button component={Link} to={`/configuracoes/${id}/etapa/${etapa.id}`} variant="outlined" size="small">
+                    <Button className="link" component={Link} to={`/configuracoes/${id}/etapa/${etapa.id}`} variant="outlined" size="small">
                         <EditSquareIcon />
                     </Button>
                     <Button onClick={() => {deletar(etapa.id)}} variant="outlined" size="small"><DeleteIcon /></Button>

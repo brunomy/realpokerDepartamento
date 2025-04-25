@@ -467,11 +467,23 @@ function AtividadeItem({ atividade, equipes }) {
     );
 }
 function Atividades({ atividadesOP, atividades, etapas, equipes }) {
-    const createData = (id, equipe, producao, titulo, etapa, status, link) => {
-        const elementStatus = <Status status={status} size='small' />;
 
-        return { id, equipe, producao, titulo, etapa, elementStatus, link };
+    const createData = (item) => {
+        
+        const id = item.id
+        const equipe = equipes.find(e => e.id == item.id_equipe).title
+        const producao = item.data
+        const titulo = atividades.find(a => a.id == item.id_atividade).title
+        const etapa = etapas.find(e => e.id == item.id_etapa).title
+        
+        const status = <>
+            <Status status={item.status} size='small' />
+            <Button className="link" component={Link} to={`/atividades/${item.id}`} variant="outlined" size="small">Detalhes</Button>
+        </>
+        
+        return { id, equipe, producao, titulo, etapa, status };
     }
+
     const headCells = [
         {id: 'id', label: 'Id'},
         {id: 'equipe', label: 'Equipe'},
@@ -479,22 +491,11 @@ function Atividades({ atividadesOP, atividades, etapas, equipes }) {
         {id: 'titulo', label: 'Título'},
         {id: 'etapa', label: 'Etapa'},
         {id: 'status', label: 'Status'},
-        {id: 'link', label: 'Link'},
     ];
     const rows = [];
 
     atividadesOP.map((item) => {
-        rows.push(
-            createData(
-                item.id,
-                equipes.find(e => e.id == item.id_equipe).title,
-                item.data,
-                atividades.find(a => a.id == item.id_atividade).title,
-                etapas.find(e => e.id == item.id_etapa).title,
-                item.status,
-                <Button component={Link} to={`/atividades/${item.id}`} variant="outlined" size="small">Detalhes</Button>
-            )
-        )
+        rows.push(createData(item))
     })
 
     return (
@@ -667,11 +668,11 @@ function ChecklistAtividade({ checklists, atividade, openModal }) {
                         {checklistData?.observacao && 
                             <p className="observacoes">Observações: {checklistData?.observacao || 'Nenhuma'}</p>
                         }
-                        {(atividade.status < 3 && atividade.status !== -1) &&
+                        {(atividade.status < 4 && atividade.status !== -1) &&
                             <p className="observacoes">Aguardando a atividade ser finalizada!</p>
                         }
                     </div>
-                    {(atividade.status === 3 && !checklistData) &&
+                    {(atividade.status === 4 && !checklistData) &&
                         <Button variant="outlined" size="small" onClick={() => openModal(checklist, atividade)}>
                             Fazer vistoria
                         </Button>

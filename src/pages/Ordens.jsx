@@ -58,10 +58,12 @@ export default function Ordens() {
         const descricao = 'Mesa de poker profissional';
         const producao = '03/04/2025';
         const conclusao = <Box className="data_late">22/04/2025 <TimerTwoToneIcon color="error"/></Box>;
-        const status = <Status status={calculoStatusPedido()} size={'small'} />;
-        const link = <Button component={Link} to="/ordens/5951-1" variant="outlined" size="small">Detalhes</Button>;
+        const status = <>
+            <Status status={calculoStatusPedido()} size={'small'} />
+            <Button className="link" component={Link} to="/ordens/5951-1" variant="outlined" size="small">Detalhes</Button>
+        </>
 
-        return { id, remessa, categoria, descricao, producao, conclusao, status, link };
+        return { id, remessa, categoria, descricao, producao, conclusao, status};
     }
     const rowsOrdens = [createDataOrdens()];
     const headCellsOrdens = [
@@ -93,10 +95,7 @@ export default function Ordens() {
             id: 'status',
             label: 'Status',
         },
-        {
-            id: 'link',
-            label: 'Link',
-        },
+
     ];
 
     return (

@@ -60,7 +60,7 @@ export default function ConfiguracaoAtividades() {
                 checklists.filter((checklist) => checklist.id_atividade == atividade.id).length,
                 volumes.filter((volume) => volume.id_atividade == atividade.id).length,
                 <Box className="acoes">
-                    <Button component={Link} to={`/configuracoes/${id}/etapa/${id_etapa}/atividade/${atividade.id}`} variant="outlined" size="small">
+                    <Button className="link" component={Link} to={`/configuracoes/${id}/etapa/${id_etapa}/atividade/${atividade.id}`} variant="outlined" size="small">
                         <EditSquareIcon />
                     </Button>
                     <Button onClick={() => {deletar(atividade.id)}} variant="outlined" size="small"><DeleteIcon /></Button>
