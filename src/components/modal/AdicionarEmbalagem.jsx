@@ -1,19 +1,38 @@
+import '~/assets/scss/AdicionarEmbalagem.scss'
+
 import { useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import DataTableSelect from "~/components/DataTableSelect";
 import { useUser } from "~/context/UserContext";
 
-export default function AdicionarEmbalagem() {
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+
+export default function AdicionarEmbalagem({
+    descricao, setDescricao,
+    comprimento, setComprimento,
+    largura, setLargura,
+    altura, setAltura,
+    peso, setPeso,
+    volumesSelecionados, setVolumesSelecionados
+}) {
     const { volumes, volumesOP, checklistOP, checklists } = useUser();
+    const [volumesCheckados, setVolumesCheckados] = useState([]);
+
 
     const volumesNaoEmbalados = volumesOP.filter(
         (volume) => volume.id_embalagem === null
     );
 
-    const [volumesCheckados, setVolumesCheckados] = useState([]);
-
     useEffect(() => {
+        setVolumesCheckados([]);
         const novosCheckados = [];
+
+        setDescricao('')
+        setComprimento('')
+        setLargura('')
+        setAltura('')
+        setPeso('')
 
         volumesNaoEmbalados.forEach((volume) => {
             const volumeChecklists = checklists.filter(
@@ -37,20 +56,12 @@ export default function AdicionarEmbalagem() {
         setVolumesCheckados(novosCheckados);
     }, [volumesOP, checklistOP, checklists]);
 
-    // Para teste, exibe no console
-    useEffect(() => {
-        console.log("Volumes checkados:", volumesCheckados);
-    }, [volumesCheckados]);
-
-    const [ids, setIds] = useState([]);
 
     const columns = [
         { field: "descricao", headerName: "Descrição", width: 340 },
         { field: "pedido", headerName: "Pedido", width: 80 },
         { field: "ordem", headerName: "Ordem", width: 80 },
     ];
-
-    // Aqui você pode adaptar volumesCheckados para se tornar os rows
 
     const createData = (volume) => {
         const id = volume.id;
@@ -65,9 +76,43 @@ export default function AdicionarEmbalagem() {
 
     return (
         <Box className="adicionarEmbalagem">
+            <form action="">
+                <div>
+                    <TextField value={descricao} onChange={(e) => setDescricao(e.target.value)}
+                        label="Descrição" variant="outlined" sx={{width: '100%'}} />
+                </div>
+                <div className="half">
+                    <TextField value={comprimento} onChange={(e) => setComprimento(e.target.value)} label="Comprimento" variant="outlined" sx={{width: '100%'}} slotProps={{
+                        input: {
+                            endAdornment: <InputAdornment position="start">cm</InputAdornment>,
+                        },
+                    }} />
+                </div>
+                <div className="half">
+                    <TextField value={largura} onChange={(e) => setLargura(e.target.value)} label="Largura" variant="outlined" sx={{width: '100%'}} slotProps={{
+                        input: {
+                            endAdornment: <InputAdornment position="start">cm</InputAdornment>,
+                        },
+                    }} />
+                </div>
+                <div className="half">
+                    <TextField value={altura} onChange={(e) => setAltura(e.target.value)} label="Altura" variant="outlined" sx={{width: '100%'}} slotProps={{
+                        input: {
+                            endAdornment: <InputAdornment position="start">cm</InputAdornment>,
+                        },
+                    }} />
+                </div>
+                <div className="half">
+                    <TextField value={peso} onChange={(e) => setPeso(e.target.value)} label="Peso" variant="outlined" sx={{width: '100%'}} slotProps={{
+                        input: {
+                            endAdornment: <InputAdornment position="start">kg</InputAdornment>,
+                        },
+                    }} />
+                </div>
+            </form>
             <DataTableSelect
-                ids={ids}
-                setIds={setIds}
+                ids={volumesSelecionados}
+                setIds={setVolumesSelecionados}
                 rows={rows}
                 columns={columns}
             />

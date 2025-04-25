@@ -19,8 +19,12 @@ import FactoryIcon from '@mui/icons-material/Factory';
 import TimerTwoToneIcon from '@mui/icons-material/TimerTwoTone';
 import ReportProblemTwoToneIcon from '@mui/icons-material/ReportProblemTwoTone';
 
+import { useUser } from '~/context/UserContext';
+
 export default function Ordens() {
     const hoje = dayjs();
+
+    const { volumes, volumesOP, checklistOP, atividadesOP } = useUser();
 
     const [statusFilter, setStatusFilter] = useState([]);
     const [teamFilter, setTeamFilter] = useState([]);
@@ -47,8 +51,6 @@ export default function Ordens() {
     ]
 
     //dados da tabela
-
-
     const createDataOrdens = () => {
         const id = <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">#5951-1</Button>;
         const remessa = <Button component={Link} to="/remessas/5951" variant="outlined" size="small">#5951</Button>;

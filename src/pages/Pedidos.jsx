@@ -124,17 +124,17 @@ export default function Pedidos() {
 }
 
 export function calculoStatusPedido(){
-    const { atividadesOP, checklistOP, volumesOP, } = useUser();
+    const { atividadesOP } = useUser();
 
     const atividadesAndamento = atividadesOP.find((item) => item.status == 1)
-    const atividadesFinalizadas = atividadesOP.filter((item) => item.status == 3)
+    const atividadesFinalizadas = atividadesOP.filter((item) => item.status == 4)
 
     if(!atividadesOP)
         return 0
     if(atividadesAndamento)
         return 1
     if(atividadesFinalizadas.length != 0 && atividadesFinalizadas.length == atividadesOP.length)
-        return 3
+        return 4
     else if(atividadesFinalizadas.length > 0){
         return 1
     }

@@ -154,7 +154,7 @@ export function AcoesAtividades({ atividade }){
             } else if(acao == 'finalizar'){
                 setAtividadesOP(prev =>
                     prev.map(item =>
-                        item.id === atividade.id ? { ...item, status: 3 } : item
+                        item.id === atividade.id ? { ...item, status: 4 } : item
                     )
                 );
                 
@@ -178,7 +178,7 @@ export function AcoesAtividades({ atividade }){
     return (
         <>
         <Box className="acoes_atividade">
-            { (atividade.status != 3 && atividade.status != -1) &&
+            { (atividade.status != 4 && atividade.status != -1) &&
                 <div className="content_1">
                     { atividade.status != 1 &&
                     <Button className="play" onClick={() => {setOpen(true); setAcao('play');}}><PlayCircleFilledWhiteTwoToneIcon /></Button>
@@ -192,7 +192,7 @@ export function AcoesAtividades({ atividade }){
                 </div>
             }
                 <div className="content_2">
-                    { (atividade.status != -1 && atividade.status == 3 && volumes_atividade.length != 0) && 
+                    { (atividade.status != -1 && atividade.status == 4 && volumes_atividade.length != 0) && 
                     <Button className="volumes" onClick={() => setOpenVolumes(true)}>
                         <MoveToInboxTwoToneIcon />
                         <span 

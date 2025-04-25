@@ -3,7 +3,7 @@ import '~/assets/scss/Show.scss';
 import { useUser } from '~/context/UserContext';
 
 import { useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Button, Chip, Tabs, Tab } from '@mui/material';
 
@@ -33,7 +33,7 @@ import FmdGoodTwoToneIcon from '@mui/icons-material/FmdGoodTwoTone';
 import AddBoxTwoToneIcon from '@mui/icons-material/AddBoxTwoTone';
 import HandymanTwoToneIcon from '@mui/icons-material/HandymanTwoTone';
 import AdicionarEmbalagem from '../components/modal/AdicionarEmbalagem';
-
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
 export default function Remessa() {
     const { id } = useParams();
@@ -65,7 +65,6 @@ export default function Remessa() {
                 >
                     <Tab label="Informações" />
                     <Tab label="Volumes" />
-                    <Tab label="Embalagens" />
                 </Tabs>
             </Box>
             <Box className="show_content">
@@ -77,7 +76,7 @@ export default function Remessa() {
                         <MudarRemessa left={left} setLeft={setLeft} right={right} setRight={setRight}/>
                     </>
                 }
-                { tab == 1 && <Volumes /> }
+                { tab == 1 && <Volumes remessa={true} /> }
             </Box>
         </Layout>
     )
@@ -154,18 +153,19 @@ function MudarRemessa({ left, setLeft, right, setRight }) {
     )
 }
 
-export function Volumes() {
-    const { atividadesOP, volumes, volumesOP, checklists, checklistOP } = useUser();
-
+export function Volumes({ remessa = false }) {
+    const { atividadesOP, volumes, volumesOP, setVolumesOP, checklists, checklistOP, embalagensOP, setEmbalagensOP } = useUser();
+    
     const [openModal, setOpenModal] = useState(false);
 
     const naoEmbalados = volumesOP.filter(item => item.id_embalagem == null);
     const embalados = volumesOP.filter(item => item.id_embalagem != null);
 
+    //TABELA NAO EMBALADOS
     const createData = (volume) => {
         const volumeConf = volumes.find(item => item.id == volume.id_volume);
         const title = volumeConf.title;
-        const dimensoes = volume.comprimento + ' x ' + volume.largura + ' x ' + volume.altura;
+        const dimensoes = `${volume.comprimento} x ${volume.largura} x ${volume.altura}`
         const peso = volume.peso;
 
         const checklistAtv = checklists?.filter(item => item.id_atividade == volumeConf.id_atividade);
@@ -194,6 +194,7 @@ export function Volumes() {
         )
     })
 
+    // TABELA EMBALADOS
     const rowEmbalados = [];
     embalados.map((item) => {
         rowEmbalados.push(
@@ -227,6 +228,72 @@ export function Volumes() {
         },
     ];
 
+    //TABELA EMBALAGEM
+    const deletarEmbalagem = (embalagem) => {
+        setEmbalagensOP(prev => prev.filter(emb => emb.id !== embalagem.id));
+
+        setVolumesOP(prev =>
+            prev.map(vol =>
+            vol.id_embalagem === embalagem.id
+                ? { ...vol, id_embalagem: null }
+                : vol
+            )
+        );
+    }
+    const createDataEmbalagem = (embalagem) => {
+        const descricao = embalagem.descricao
+        const dimensoes = `${embalagem.comprimento} x ${embalagem.largura} x ${embalagem.altura}`
+        const peso = embalagem.peso
+
+        const volumesEmbalagem = embalados.filter(volume => volume.id_embalagem === embalagem.id)
+
+        const volumesResult = volumesEmbalagem.map((item, index) => {
+            const volumeConf = volumes.find(vol => vol.id == item.id_volume);
+            const title = volumeConf?.title || 'Volume'; // fallback de segurança
+            return <Chip key={index} size="small" label={title} sx={{margin: '3px 3px'}}/>;
+        });
+        
+        // const volumes = ''
+        const acoes = <Button onClick={() => deletarEmbalagem(embalagem)}
+        color="error" sx={{
+            margin: '0 0 0 auto',
+            display: 'flex',
+            padding: '10px',
+            minWidth: '0'
+        }}
+        ><DeleteTwoToneIcon /></Button>
+
+        return { descricao, dimensoes, peso, volumesResult, acoes };
+    }
+    const rowEmbalagens = [];
+    embalagensOP.map((item) => {
+        rowEmbalagens.push(
+            createDataEmbalagem(item)
+        )
+    })
+    const headCellsEmbalagens = [
+        {
+            id: 'descricao',
+            label: 'Descrição',
+        },
+        {
+            id: 'dimensoes',
+            label: 'Dimensões (cm)',
+        },
+        {
+            id: 'peso',
+            label: 'Peso (kg)',
+        },
+        {
+            id: 'volumes',
+            label: 'Volumes',
+        },
+        {
+            id: 'acoes',
+            align: "right",
+            label: 'Ações',
+        },
+    ];
 
     return (
         <Box className="volumes">
@@ -234,22 +301,79 @@ export function Volumes() {
                 <h3>
                     Não embalados
 
+                    { (remessa && naoEmbalados.length != 0) &&
                     <Button size="small" onClick={() => setOpenModal(true)}>Embalar</Button>
+                    }
                 </h3>
                 <DataTable headCells={headCells} rows={rowsNaoEmbalados}/>
             </div>
+            { !remessa &&
             <div className="volume_content">
                 <h3>Embalados</h3>
                 <DataTable headCells={headCells} rows={rowEmbalados}/>
             </div>
+            }
+            { remessa && 
+            <div className="volume_content">
+                <h3>Embalagens</h3>
+                <DataTable headCells={headCellsEmbalagens} rows={rowEmbalagens}/>
+            </div>
+            }
 
-            <Modal 
-                open={openModal}
-                setOpen={setOpenModal}
-                title="Embalar volumes prontos"
-            >
-                <AdicionarEmbalagem />
-            </Modal>
+            <Embalar openModal={openModal} setOpenModal={setOpenModal} />
         </Box>
+    )
+}
+
+function Embalar({ openModal, setOpenModal }) {
+    const { volumesOP, setVolumesOP, embalagensOP, setEmbalagensOP } = useUser();
+
+    const [descricao, setDescricao] = useState('');
+    const [comprimento, setComprimento] = useState('');
+    const [largura, setLargura] = useState('');
+    const [altura, setAltura] = useState('');
+    const [peso, setPeso] = useState('');
+    const [volumesSelecionados, setVolumesSelecionados] = useState([]);
+
+    const adicionarVolumeNaEmbalagem = (id, idEmbalagem) => {
+        setVolumesOP(prev =>
+          prev.map(item =>
+            item.id === id ? { ...item, id_embalagem: idEmbalagem } : item
+          )
+        );
+      };
+    
+    const salvar = () => {
+        const novaEmbalagem = {
+            id: embalagensOP.length,
+            id_remessa: '5951',
+            descricao: descricao,
+            comprimento: comprimento,
+            largura: largura,
+            altura: altura,
+            peso: peso,
+        }
+        setEmbalagensOP([...embalagensOP, novaEmbalagem])
+
+        volumesSelecionados.map((id) => { adicionarVolumeNaEmbalagem(id, novaEmbalagem.id) })
+
+        setVolumesSelecionados([])
+    }
+    
+    return (
+        <Modal 
+            open={openModal}
+            setOpen={setOpenModal}
+            title="Embalar volumes prontos"
+            confirm={salvar}>
+
+            <AdicionarEmbalagem 
+                descricao={descricao} setDescricao={setDescricao}
+                comprimento={comprimento} setComprimento={setComprimento}
+                largura={largura} setLargura={setLargura}
+                altura={altura} setAltura={setAltura}
+                peso={peso} setPeso={setPeso}
+                volumesSelecionados={volumesSelecionados} setVolumesSelecionados={setVolumesSelecionados} />
+        </Modal>
     )
 }
