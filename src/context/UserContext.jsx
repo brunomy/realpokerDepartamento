@@ -153,21 +153,24 @@ export function UserProvider({ children }) {
   const [equipes, setEquipes] = useState([
     {
       id: 1,
-      title: 'M1'
+      title: 'M1',
+      descricao: "Responsável por montagem",
+      usuario: 'm1',
+      senha: '1234'
     },
-    {
-      id: 2,
-      title: 'M2'
-    },
-    {
-      id: 3,
-      title: 'M3'
-    },
-    {
-      id: 4,
-      title: 'M4'
-    },
+    {id: 2,title: 'M2',descricao: "Responsável por montagem",usuario: 'm2',senha: '1234'},
+    {id: 3,title: 'M3',descricao: "Responsável por montagem",usuario: 'm3',senha: '1234'},
+    {id: 4,title: 'M4',descricao: "Responsável por montagem",usuario: 'm4',senha: '1234'}
   ])
+  const [funcionarios, setFuncionarios] = useState([{
+    id: 0,
+    id_equipe: 1,
+    nome: 'Bruno Yosimura',
+    funcao: "Montador",
+    usuario: 'bruno',
+    senha: '1234',
+    hashCode: 'asdkjhasdlkajfçkfdasjakjsdasdasdadasd'
+  }])
 
   //etapas de um OP
   const [etapasOP, setEtapasOP] = useState([1, 2, 3, 4, 5, 6])
@@ -197,6 +200,7 @@ export function UserProvider({ children }) {
       checklists, setChecklists,
       volumes, setVolumes,
       equipes, setEquipes,
+      funcionarios, setFuncionarios,
 
       etapasOP, setEtapasOP,
       atividadesOP, setAtividadesOP,

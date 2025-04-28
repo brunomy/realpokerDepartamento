@@ -11,16 +11,17 @@ body {
 }
 
 #root{
-    width: 100%;
-    height: 100vh;
+  width: 100%;
+  height: 100vh;
 }
 
 .container{
-    width: 100%;
-    height: 100%;
-    max-width: 1200px;
-    padding: 0;
-    margin: 0 auto;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 1200px;
+  padding: 0;
+  margin: 0 auto;
 }
 .css-28116y-MuiAutocomplete-root{
   max-width: 100%;
