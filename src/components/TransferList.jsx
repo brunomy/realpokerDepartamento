@@ -1,92 +1,121 @@
-import * as React from 'react';
-import dayjs from 'dayjs';
-import isBetweenPlugin from 'dayjs/plugin/isBetween';
-import { styled } from '@mui/material/styles';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { PickersDay } from '@mui/x-date-pickers/PickersDay';
+import "~/assets/scss/TransferList.scss";
+import * as React from "react";
+import Grid from "@mui/material/Grid";
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Checkbox from "@mui/material/Checkbox";
+import Button from "@mui/material/Button";
+import Paper from "@mui/material/Paper";
 
-dayjs.extend(isBetweenPlugin);
-
-const CustomPickersDay = styled(PickersDay, {
-  shouldForwardProp: (prop) => prop !== 'isSelected' && prop !== 'isHovered',
-})(({ theme, isSelected, isHovered, day }) => ({
-  borderRadius: 0,
-  ...(isSelected && {
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.primary.contrastText,
-    '&:hover, &:focus': {
-      backgroundColor: theme.palette.primary.main,
-    },
-  }),
-  ...(isHovered && {
-    backgroundColor: theme.palette.primary.light,
-    '&:hover, &:focus': {
-      backgroundColor: theme.palette.primary.light,
-    },
-    ...theme.applyStyles('dark', {
-      backgroundColor: theme.palette.primary.dark,
-      '&:hover, &:focus': {
-        backgroundColor: theme.palette.primary.dark,
-      },
-    }),
-  }),
-  ...(day.day() === 0 && {
-    borderTopLeftRadius: '50%',
-    borderBottomLeftRadius: '50%',
-  }),
-  ...(day.day() === 6 && {
-    borderTopRightRadius: '50%',
-    borderBottomRightRadius: '50%',
-  }),
-}));
-
-const isInSameWeek = (dayA, dayB) => {
-  if (dayB == null) {
-    return false;
-  }
-
-  return dayA.isSame(dayB, 'week');
-};
-
-function Day(props) {
-  const { day, selectedDay, hoveredDay, ...other } = props;
-
-  return (
-    <CustomPickersDay
-      {...other}
-      day={day}
-      sx={{ px: 2.5 }}
-      disableMargin
-      selected={false}
-      isSelected={isInSameWeek(day, selectedDay)}
-      isHovered={isInSameWeek(day, hoveredDay)}
-    />
-  );
+function not(a, b) {
+    return a.filter((value) => !b.includes(value));
 }
 
-export default function WeekPicker() {
-  const [hoveredDay, setHoveredDay] = React.useState(null);
-  const [value, setValue] = React.useState(dayjs('2022-04-17'));
+function intersection(a, b) {
+    return a.filter((value) => b.includes(value));
+}
 
-  return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DateCalendar
-        value={value}
-        onChange={(newValue) => setValue(newValue)}
-        showDaysOutsideCurrentMonth
-        displayWeekNumber
-        slots={{ day: Day }}
-        slotProps={{
-          day: (ownerState) => ({
-            selectedDay: value,
-            hoveredDay,
-            onPointerEnter: () => setHoveredDay(ownerState.day),
-            onPointerLeave: () => setHoveredDay(null),
-          }),
-        }}
-      />
-    </LocalizationProvider>
-  );
+export default function TransferList({ left, setLeft, right, setRight }) {
+    const [checked, setChecked] = React.useState([]);
+
+    const leftChecked = intersection(checked, left);
+    const rightChecked = intersection(checked, right);
+    const handleToggle = (value) => () => {
+        const currentIndex = checked.indexOf(value);
+        const newChecked = [...checked];
+        if (currentIndex === -1) {
+            newChecked.push(value);
+        } else {
+            newChecked.splice(currentIndex, 1);
+        }
+        setChecked(newChecked);
+    };
+    const handleCheckedRight = () => {
+        setRight(right.concat(leftChecked));
+        setLeft(not(left, leftChecked));
+        setChecked(not(checked, leftChecked));
+    };
+    const handleCheckedLeft = () => {
+        setLeft(left.concat(rightChecked));
+        setRight(not(right, rightChecked));
+        setChecked(not(checked, rightChecked));
+    };
+
+    const customList = (items) => (
+        <Paper sx={{ width: 200, height: 230, overflow: "auto" }}>
+            <List dense component="div" role="list">
+                {items.map((value) => {
+                    const labelId = `transfer-list-item-${value}-label`;
+
+                    return (
+                        <ListItemButton
+                            key={value}
+                            role="listitem"
+                            onClick={handleToggle(value)}
+                        >
+                            <ListItemIcon>
+                                <Checkbox
+                                    checked={checked.includes(value)}
+                                    tabIndex={-1}
+                                    disableRipple
+                                    inputProps={{
+                                        "aria-labelledby": labelId,
+                                    }}
+                                />
+                            </ListItemIcon>
+                            <ListItemText
+                                id={labelId}
+                                primary={`${value.label}`}
+                            />
+                        </ListItemButton>
+                    );
+                })}
+            </List>
+        </Paper>
+    );
+    return (
+        <Grid
+            className="transfer_component"
+            container
+            spacing={2}
+            sx={{ justifyContent: "center", alignItems: "center" }}
+        >
+            <Grid className="left_content side_content">
+                {customList(left)}
+            </Grid>
+            <Grid>
+                <Grid
+                    container
+                    direction="column"
+                    sx={{ alignItems: "center" }}
+                >
+                    <Button
+                        sx={{ my: 0.5 }}
+                        variant="outlined"
+                        size="small"
+                        onClick={handleCheckedRight}
+                        disabled={leftChecked.length === 0}
+                        aria-label="move selected right"
+                    >
+                        &gt;
+                    </Button>
+                    <Button
+                        sx={{ my: 0.5 }}
+                        variant="outlined"
+                        size="small"
+                        onClick={handleCheckedLeft}
+                        disabled={rightChecked.length === 0}
+                        aria-label="move selected left"
+                    >
+                        &lt;
+                    </Button>
+                </Grid>
+            </Grid>
+            <Grid className="right_content side_content">
+                {customList(right)}
+            </Grid>
+        </Grid>
+    );
 }
