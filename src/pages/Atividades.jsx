@@ -2,9 +2,9 @@ import '~/assets/scss/Index.scss';
 
 import { useUser } from '~/context/UserContext';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
+import { Box, Autocomplete, Typography, TextField, Button, Chip, Tabs, Tab } from '@mui/material';
 import dayjs from 'dayjs';
 
 //LAYOUT
@@ -17,6 +17,7 @@ import Status from '../components/layout/Status';
 import InputAuto from '~/components/InputAuto';
 import InputCalendarRange from '~/components/InputCalendarRange';
 import DataTable from '~/components/DataTable';
+import InputCalendarWeek from '~/components/InputCalendarWeek'
 
 //MODAIS
 import InfoProdutoModal from '../components/modal/InfoProdutoModal';
@@ -34,6 +35,11 @@ import AdicionarVolumeLista from '../components/modal/AdicionarVolumeLista';
 
 
 export default function Atividades() {
+    const [tab, setTab] = useState(0);
+
+    const handleChange = (event, newTab) => {
+        setTab(newTab);
+    };
     const { 
         atividadesOP,
         etapas,
@@ -105,28 +111,47 @@ export default function Atividades() {
     return (
         <Layout>
             <Title title="Lista de atividades" icon={<AssignmentIcon/>} />
-            <Box className="index_content atividades_list">
-                <Box className="filtros">
-                    <h2>Filtros:</h2>
-                    <Box className="filter_list">
-                        <Box className="item">
-                            <InputAuto label="id" list={idList} setValue={setIdFilter} width={'100%'} />
-                        </Box>
-                        <Box className="item">
-                            <InputAuto label="Equipe" list={teamList} setValue={setTeamFilter} width={'100%'} />
-                        </Box>
-                        <Box className="item">
-                            <InputAuto label="Status" list={statusList} setValue={setStatusFilter} width={'100%'} />
-                        </Box>
-                        <Box className="item calendario">
-                            <InputCalendarRange setFunctionDe={setDateFilterDe} setFunctionAte={setDateFilterAte} />
+            <Box className="tabs_content">
+                <Tabs
+                    value={tab}
+                    onChange={handleChange}
+                    variant="scrollable"
+                    scrollButtons
+                    allowScrollButtonsMobile
+                >
+                    <Tab label="Todas" />
+                    <Tab label="Semana" />
+                </Tabs>
+            </Box>
+                <Box className="index_content atividades_list">
+                { tab == 0 &&
+                    <>
+                    <Box className="filtros">
+                        <h2>Filtros:</h2>
+                        <Box className="filter_list">
+                            <Box className="item">
+                                <InputAuto label="id" list={idList} setValue={setIdFilter} width={'100%'} />
+                            </Box>
+                            <Box className="item">
+                                <InputAuto label="Equipe" list={teamList} setValue={setTeamFilter} width={'100%'} />
+                            </Box>
+                            <Box className="item">
+                                <InputAuto label="Status" list={statusList} setValue={setStatusFilter} width={'100%'} />
+                            </Box>
+                            <Box className="item calendario">
+                                <InputCalendarRange setFunctionDe={setDateFilterDe} setFunctionAte={setDateFilterAte} />
+                            </Box>
                         </Box>
                     </Box>
+                    <Box className="table_content">
+                        <DataTable headCells={headCells} rows={rows} buttons={true}/>
+                    </Box>
+                    </>
+                }
+                { tab == 1 &&
+                    <Semana />
+                }
                 </Box>
-                <Box className="table_content">
-                    <DataTable headCells={headCells} rows={rows} buttons={true}/>
-                </Box>
-            </Box>
         </Layout>
     )
 }
@@ -217,4 +242,108 @@ export function AcoesAtividades({ atividade }){
         </Modal>
         </>
     )
+}
+
+function Semana() {
+    const { atividadesOP, equipes, etapas, atividades, categorias } = useUser();
+
+    const [primeiroDia, setPrimeiroDia] = useState();
+    const [ultimoDia, setUltimoDia] = useState();
+    const [atividadesSeparadas, setAtividadesSeparadas] = useState([[], [], [], [], [], []]);
+    var separadas;
+    const [mudarData, setMudarData] = useState(false)
+
+    useEffect(() => {
+        setAtividadesSeparadas([[], [], [], [], [], []])
+        setMudarData(false)
+        if (primeiroDia) {
+            separadas = separarAtividadesPorSemana(primeiroDia, atividadesOP.filter((a) => a.status != -1));
+            setAtividadesSeparadas(separadas);
+        }
+        console.log(atividadesSeparadas);
+        
+    }, [primeiroDia, atividadesOP]);
+
+    return (
+        <>
+        <div className="calendario_semana">
+            { !mudarData && 
+                <Button onClick={() => setMudarData(true)} variant="contained" size="small">Alterar semana</Button>
+            }
+            <Box sx={{display: !mudarData ? 'none' : ''}}>
+                <InputCalendarWeek setPrimeiroDia={setPrimeiroDia} setUltimoDia={setUltimoDia} />
+            </Box>
+        </div>
+        <Box className="atividades_semana">
+
+            <div className="dias">
+                <span>{primeiroDia}</span> - <span>{ultimoDia}</span>
+            </div>
+
+            {/* Aqui você mostra atividades de segunda a sábado */}
+            <Box className="semana_calendario">
+            {atividadesSeparadas.map((atividadesDia, index) => (
+                <div className="dia" key={index} >
+                    <h2>
+                        { index == 0 && 'Seg'}
+                        { index == 1 && 'Ter'}
+                        { index == 2 && 'Qua'}
+                        { index == 3 && 'Qui'}
+                        { index == 4 && 'Sex'}
+                        { index == 5 && 'Sab'}
+
+                    </h2>
+                    {atividadesDia.length == 0 && <div className="sem_atividade">Sem atividades</div>}
+                    {atividadesDia.length != 0 && 
+                    <>
+
+                    { atividadesDia?.map((atv, index) => (
+                        <div className={"atividade "+(atv.status == 4 ? 'finalizado' : '')}>
+                            <p className="pedido">#5952</p>
+                            <p className="categoria">{
+                                categorias.find(c => c.id == atividades.find(a => a.id == atv.id_atividade).id_categoria).title
+                            }</p>
+                            <p className="etapa">{etapas.find(e => e.id == atv.id_etapa).title}</p>
+                            <p className="atv">{atividades.find(a => a.id == atv.id_atividade).title}</p>
+                            <div className="acoes">
+                                <p className="equipe">{equipes.find(e => e.id == atv.id_equipe).title}</p>
+                                <AcoesAtividades key={index} atividade={atv} />
+                            </div>
+                        </div>
+                    ))}
+                    </>
+                    }
+                </div>
+            ))}
+            </Box>
+
+        </Box>
+        </>
+    );
+}
+  
+function separarAtividadesPorSemana(dataSelecionada, atividades) {
+    const diasSemana = [[], [], [], [], [], []]; // Segunda (0) até Sábado (5)
+  
+    const dataBase = dayjs(dataSelecionada, 'DD/MM/YYYY');
+    const inicioSemana = dataBase.startOf('week');
+    const fimSemana = dataBase.endOf('week');
+  
+    atividades.forEach((atividade) => {
+        const dataAtividade = dayjs(atividade.data, 'DD/MM/YYYY');
+    
+        // Agora verificamos se a atividade está dentro da semana selecionada
+        if (!dataAtividade.isBetween(inicioSemana, fimSemana, 'day', '[]')) {
+            return;
+        }
+    
+        const diaSemana = dataAtividade.day(); 
+        // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+    
+        if (diaSemana >= 1 && diaSemana <= 6) {
+            diasSemana[diaSemana - 1].push(atividade);
+        }
+    });
+  
+    return diasSemana;
 }

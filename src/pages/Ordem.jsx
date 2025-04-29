@@ -467,7 +467,8 @@ function AtividadeItem({ atividade, equipes }) {
     );
 }
 function Atividades({ atividadesOP, atividades, etapas, equipes }) {
-
+    console.log(atividadesOP);
+    
     const createData = (item) => {
         
         const id = item.id

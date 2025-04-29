@@ -63,68 +63,6 @@
                             }
                         }
                     }
-                    .acoes_atividade{
-                        display: flex;
-                        justify-content: flex-end;
-                        
-                        >div{
-                            display: flex;
-                            
-                            &.content_1{
-                                background: #ffffff;
-                                border-radius: 8px;
-                                border: 2px solid $color1;
-                                margin: 0 10px 0 0;
-                            }
-                            &.content_2{
-                                justify-content: flex-end;
-                            }
-                        }
-
-                        button{
-                            position: relative;
-                            border: none;
-                            padding: 5px;
-                            background: none;
-                            cursor: pointer;
-                            min-width: 0;
-
-                            &.play { color: $color1; }
-                            &.pause{ color: #ed6c02; }
-                            &.concluir{ color: #2e7d32; }
-                            &.volumes{ color: #454545; }
-                            &.info{ color: #454545; }
-
-                            span.numero{
-                                position: absolute;
-                                pointer-events: none;
-                                right: 2px;
-                                top: 0;
-                                background: $sucess;
-                                color: white;
-                                font-size: 0.6em;
-                                width: 15px;
-                                height: 15px;
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                font-weight: bold;
-                                border-radius: 50%;
-                                padding-top: 2px;
-
-                                &.vazio{
-                                    background: $error !important;
-                                }
-                                &.incompleto{
-                                    background: $warning;
-                                }
-                            }
-                            svg{
-                                height: auto;
-                                width: 30px;
-                            }
-                        }
-                    }
                     .pedidos{
                         display: flex;
                         flex-wrap: wrap;

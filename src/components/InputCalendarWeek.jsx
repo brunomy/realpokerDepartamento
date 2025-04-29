@@ -46,7 +46,6 @@ const isInSameWeek = (dayA, dayB) => {
   if (dayB == null) {
     return false;
   }
-
   return dayA.isSame(dayB, 'week');
 };
 
@@ -66,21 +65,43 @@ function Day(props) {
   );
 }
 
-export default function WeekPicker() {
+export default function WeekPicker({ setPrimeiroDia, setUltimoDia }) {
   const [hoveredDay, setHoveredDay] = React.useState(null);
-  const [value, setValue] = React.useState(dayjs('2022-04-17'));
+
+  const hoje = dayjs();
+  const [inicio, setInicio] = React.useState(hoje.startOf('week'));
+  const [fim, setFim] = React.useState(hoje.endOf('week'));
+
+  const handleChange = (newValue) => {
+    const inicioDaSemana = newValue.startOf('week');
+    const fimDaSemana = newValue.endOf('week');
+
+    setFim(fimDaSemana)
+    setInicio(inicioDaSemana);
+    setPrimeiroDia(inicioDaSemana.format('DD/MM/YYYY'));
+    setUltimoDia(fimDaSemana.format('DD/MM/YYYY'));
+    
+    console.log('Primeiro dia da semana:', inicioDaSemana.format('DD/MM/YYYY'));
+    console.log('ultimo dia da semana:', fimDaSemana.format('DD/MM/YYYY'));
+  };
+
+  // 👉 Quando o componente montar, já define o primeiro dia
+  React.useEffect(() => {
+    setPrimeiroDia(inicio.format('DD/MM/YYYY'));
+    setUltimoDia(fim.format('DD/MM/YYYY'));
+  }, []); // (executa só uma vez ao montar)
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DateCalendar
-        value={value}
-        onChange={(newValue) => setValue(newValue)}
+        value={inicio}
+        onChange={handleChange}
         showDaysOutsideCurrentMonth
         displayWeekNumber
         slots={{ day: Day }}
         slotProps={{
           day: (ownerState) => ({
-            selectedDay: value,
+            selectedDay: inicio,
             hoveredDay,
             onPointerEnter: () => setHoveredDay(ownerState.day),
             onPointerLeave: () => setHoveredDay(null),

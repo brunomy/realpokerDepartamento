@@ -465,3 +465,199 @@
         margin: 0 auto;
     }
 }
+
+.acoes_atividade{
+    display: flex;
+    justify-content: flex-end;
+    
+    >div{
+        display: flex;
+        
+        &.content_1{
+            background: #ffffff;
+            border-radius: 8px;
+            border: 2px solid $color1;
+            margin: 0 10px 0 0;
+        }
+        &.content_2{
+            justify-content: flex-end;
+        }
+    }
+
+    button{
+        position: relative;
+        border: none;
+        padding: 5px;
+        background: none;
+        cursor: pointer;
+        min-width: 0;
+
+        &.play { color: $color1; }
+        &.pause{ color: #ed6c02; }
+        &.concluir{ color: #2e7d32; }
+        &.volumes{ color: #454545; }
+        &.info{ color: #454545; }
+
+        span.numero{
+            position: absolute;
+            pointer-events: none;
+            right: 2px;
+            top: 0;
+            background: $sucess;
+            color: white;
+            font-size: 0.6em;
+            width: 15px;
+            height: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            border-radius: 50%;
+            padding-top: 2px;
+
+            &.vazio{
+                background: $error !important;
+            }
+            &.incompleto{
+                background: $warning;
+            }
+        }
+        svg{
+            height: auto;
+            width: 30px;
+        }
+    }
+}
+
+.calendario_semana{
+    display: flex;
+    justify-content: flex-end;
+    padding: 15px 0 20px;
+    >div{
+        zoom: 0.7;
+        margin: 0 0 0 auto;
+    }
+}
+.atividades_semana{
+    border: 2px solid $color1;
+    background: $color1;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 0 0 50px;
+
+    .dias{
+        color: #fff;
+        font-weight: 500;
+        padding: 5px 7px;
+        border-radius: 4px;
+        text-align: center;
+        span{
+        }
+    }
+    .semana_calendario{
+        display: flex;
+
+        .dia{
+            width: calc(100% / 6);
+            background: $grey;
+
+            h2{
+                background: $color1;
+                color: #fff;
+                text-transform: uppercase;
+                text-align: center;
+                font-weight: bold;
+                padding: 5px 0;
+                margin: 0 0 5px;
+                filter: opacity(0.5);
+            }
+
+            .sem_atividade{
+                text-align: center;
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                border: 3px solid $error;
+                color: $error;
+                background: rgba($error, .1);
+                margin: 10px auto 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-transform: uppercase;
+                font-size: 0.6em;
+                font-weight: bold;
+                transform: rotate(45deg);
+            }
+
+            .atividade{
+                width: calc(100% - 5px);
+                margin: 0 auto 5px;
+                border: 2px solid #454545;
+                border-radius: 5px;
+                overflow: hidden;
+
+                &.finalizado{
+                    border-color: $sucess;
+                    opacity: .8;
+
+                    p{
+                        &.pedido{
+                            background: $sucess;
+                        }
+                        &.categoria{
+                            background: rgba($sucess, .25);
+                        }
+                        &.atv{
+                            background: rgba($sucess, .25);
+                        }
+                    }
+                }
+
+                p{
+                    font-size: .8em;
+
+                    &.pedido{
+                        text-align: center;
+                        padding: 6px 0;
+                        background: #454545;
+                        color: white;
+                        font-weight: bold;
+                    }
+                    &.categoria{
+                        font-size: .8em;
+                        padding: 5px 3px;
+                        text-align: center;
+                        background: #d7d7d7;
+                    }
+                    &.etapa{
+                        padding: 5px 3px;
+                        text-align: center;
+                    }
+                    &.atv{
+                        padding: 5px 3px;
+                        text-align: center;
+                        background: #d7d7d7;
+                    }
+                    &.pedido{
+                    }
+                }
+                .acoes{
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    padding: 10px 0 5px;
+                    gap: 8px;
+                    background: #fff;
+
+
+                    p.equipe{
+                        font-weight: bold;
+                        color: $color1;
+                    }
+                    .acoes_atividade{}
+                }
+            }
+        }
+    }
+}

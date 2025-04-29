@@ -42,12 +42,17 @@ export default function Pedidos() {
         const descricao = 'Mesa de poker profissional';
         const producao = '03/04/2025';
         const conclusao = <Box className="data_late">22/04/2025 <TimerTwoToneIcon color="error"/></Box>;
+        const requisitos = <Box sx={{display: 'flex', flexDirection: 'column', gap: '2px'}}>
+            <Chip size="small" color="success" label="Router" />
+            <Chip size="small" label="Adesivo" />
+            <Chip size="small" label="Tecido" />
+        </Box>;
         const status = <>
             <Status status={calculoStatusPedido()} size={'small'} />
             <Button className="link" component={Link} to="/ordens/5951-1" variant="outlined" size="small">Detalhes</Button>
         </>
 
-        return { id, remessa, categoria, descricao, producao, conclusao, status };
+        return { id, remessa, categoria, descricao, producao, conclusao, requisitos, status };
     }
     const rowsOrdens = [createDataOrdens()];
     const headCellsOrdens = [
@@ -74,6 +79,10 @@ export default function Pedidos() {
         {
             id: 'conclusao',
             label: 'Conclusão',
+        },
+        {
+            id: 'requisitos',
+            label: 'Requisitos',
         },
         {
             id: 'status',
