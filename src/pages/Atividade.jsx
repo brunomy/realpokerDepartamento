@@ -120,6 +120,7 @@ export default function Atividade() {
                     usuarioLogado={usuarioLogado}
                 /> }
                 { tab == 1 && <Volumes id={id} atividade={atividade} /> }
+                { tab == 2 && <Historico /> }
             </Box>
         </Layout>
     )
@@ -266,5 +267,32 @@ function Volumes({ id, atividade }) {
             </Modal>
         </Box>
         </>
+    )
+}
+
+export function Historico() {
+    const createData = (data, descricao, equipe, responsavel) => {
+        return { data, descricao, equipe, responsavel };
+    }
+
+    const rows = [
+        createData('05/05/2025 às 13:30', 'Iniciou a atividade "Cortar borda"', 'M1', 'Bruno'),
+        createData('05/05/2025 às 13:35', 'Parou a atividade "Cortar borda"', 'M1', 'Bruno'),
+        createData('05/05/2025 às 13:50', 'Retomou a atividade "Cortar borda"', 'M1', 'Bruno'),
+        createData('05/05/2025 às 14:30', 'Finalizou a atividade "Cortar borda"', 'M1', 'Bruno'),
+        createData('05/05/2025 às 14:30', 'A atividade "Cortar borda" gerou o volume "Borda da mesa"', 'M1', 'Bruno'),
+        createData('05/05/2025 às 14:30', 'A atividade "Cortar borda" gerou o volume "Suporte da borda"', 'M1', 'Bruno'),
+    ]
+
+    const headCells = [
+        { id: 'data', label: 'Data', },
+        { id: 'descricao', label: 'Descrição', },
+        { id: 'equipe', label: 'Equipe', },
+        { id: 'responsavel', label: 'Responsável', },
+    ];
+    return (
+        <Box className="historico">
+            <DataTable headCells={headCells} rows={rows} />
+        </Box>
     )
 }

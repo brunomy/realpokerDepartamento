@@ -47,6 +47,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import EventAvailableTwoToneIcon from '@mui/icons-material/EventAvailableTwoTone';
 import HandymanTwoToneIcon from '@mui/icons-material/HandymanTwoTone';
 import InfoProdutoModal from '../components/modal/InfoProdutoModal';
+import { Historico } from './Atividade';
 
 export default function Ordem() {
     const { 
@@ -149,6 +150,7 @@ export default function Ordem() {
                     <Tab label="Atividades" disabled={!atividadesOP.find(item => item.ativo === 1)} />
                     <Tab label="Checklist" disabled={!atividadesOP.find(item => item.ativo === 1)} />
                     <Tab label="Volumes" disabled={!atividadesOP.find(item => item.ativo === 1) || volumesOP.length == 0} />
+                    <Tab label="Histórico"  />
                 </Tabs>
             </Box>
             <Box className="show_content">
@@ -161,6 +163,7 @@ export default function Ordem() {
                 { tab == 3 && <Atividades atividadesOP={atividadesOP.filter((a) => a.ativo == 1)} atividades={atividades} etapas={etapas} equipes={equipes} /> }
                 { tab == 4 && <Checklist etapas={etapas} etapasOP={etapasOP} checklists={checklists} equipes={equipes} /> }
                 { tab == 5 && <Volumes /> }
+                { tab == 6 && <Historico /> }
             </Box>
         </Layout>
     )
