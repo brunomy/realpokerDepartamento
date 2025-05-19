@@ -161,15 +161,16 @@ export function Volumes({ remessa = false }) {
     const naoEmbalados = volumesOP.filter(item => item.id_embalagem == null);
     const embalados = volumesOP.filter(item => item.id_embalagem != null);
 
+
     //TABELA NAO EMBALADOS
     const createData = (volume) => {
-        const volumeConf = volumes.find(item => item.id == volume.id_volume);
-        const title = volumeConf.title;
-        const dimensoes = `${volume.comprimento} x ${volume.largura} x ${volume.altura}`
-        const peso = volume.peso;
+        const volumeConf = volumesOP.find(item => item.id_volume == volume.id);
+        const title = volume.title;
+        const dimensoes = volumeConf?.comprimento ? `${volumeConf?.comprimento} x ${volumeConf?.largura} x ${volumeConf?.altura}` : ''
+        const peso = volumeConf?.peso;
 
-        const checklistAtv = checklists?.filter(item => item.id_atividade == volumeConf.id_atividade);
-        const checklistFinalizado = checklistOP.filter(item => item.id_ativ == volume.id_ativ && item.status == 1);
+        const checklistAtv = checklists?.filter(item => item.id_atividade == volume.id_atividade);
+        const checklistFinalizado = checklistOP.filter(item => item.id_ativ == volumeConf?.id_ativ && item.status == 1);
 
         const statusCheck = `${checklistFinalizado.length}/${checklistAtv.length}`;
         var chipStatus = null;
@@ -179,16 +180,29 @@ export function Volumes({ remessa = false }) {
             chipStatus = <Chip className="stats" size='small' label={statusCheck} />
         }
         
-        const atividadeConf = atividadesOP.find(item => (item.id == volume.id_ativ && item.status != -1));
-        const atividadeLink = <Button variant="outlined" size="small" component={Link} to={`/atividades/${atividadeConf.id}`}>#{atividadeConf.id}</Button>;
+        const atividadeConf = atividadesOP.find(item => (item.id_atividade == volume?.id_atividade && item.status != -1));
         
-        const remessaLink = <Button variant="contained" size="small" component={Link} to={`/remessas/${volume.id_remessa}`} sx={{ boxShadow: 'none' }}>#{volume.id_remessa}</Button>;
+        const atividadeStatus = <Status size="small" status={atividadeConf?.status ? atividadeConf?.status : 0} />;
+
+        console.log('volumeConf');
+        console.log(volumeConf);
         
-        return { title, dimensoes, peso, chipStatus, atividadeLink, remessaLink };
+        var embalado = null;
+        if(volumeConf?.id_embalagem == null){
+            embalado = <Chip className="stats" size='small' label={'Não'} />
+        } else {
+            embalado = <Chip className="stats" size='small' color="success" label={'Sim'} />
+        }
+        
+        return { title, dimensoes, peso, atividadeStatus, chipStatus, embalado };
     }
- 
+
+    const volumesPrevistos = volumes.filter(item2 =>
+        atividadesOP.some(item1 => item1.id_atividade === item2.id_atividade)
+    );
+
     const rowsNaoEmbalados = [];
-    naoEmbalados.map((item) => {
+    volumesPrevistos.map((item) => {
         rowsNaoEmbalados.push(
             createData(item)
         )
@@ -215,17 +229,17 @@ export function Volumes({ remessa = false }) {
             label: 'Peso (kg)',
         },
         {
-            id: 'statusCheck',
-            label: 'Checklist',
-        },
-        {
             id: 'atividade',
             label: 'Atividade',
         },
         {
-            id: 'remessa',
-            label: 'Remessa',
+            id: 'statusCheck',
+            label: 'Checklist',
         },
+        {
+            id: 'embalado',
+            label: 'Embalado',
+        }
     ];
 
     //TABELA EMBALAGEM

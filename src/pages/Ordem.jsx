@@ -149,7 +149,6 @@ export default function Ordem() {
                     <Tab label="Etapas " />
                     <Tab label="Atividades" disabled={!atividadesOP.find(item => item.ativo === 1)} />
                     <Tab label="Checklist" disabled={!atividadesOP.find(item => item.ativo === 1)} />
-                    <Tab label="Volumes" disabled={!atividadesOP.find(item => item.ativo === 1) || volumesOP.length == 0} />
                     <Tab label="Histórico"  />
                 </Tabs>
             </Box>
@@ -162,8 +161,7 @@ export default function Ordem() {
                 { tab == 2 && <Etapas etapas={etapas.filter(e => e.id_categoria === 1)} atividades={atividades} equipes={equipes} /> }
                 { tab == 3 && <Atividades atividadesOP={atividadesOP.filter((a) => a.ativo == 1)} atividades={atividades} etapas={etapas} equipes={equipes} /> }
                 { tab == 4 && <Checklist etapas={etapas} etapasOP={etapasOP} checklists={checklists} equipes={equipes} /> }
-                { tab == 5 && <Volumes /> }
-                { tab == 6 && <Historico /> }
+                { tab == 5 && <Historico /> }
             </Box>
         </Layout>
     )

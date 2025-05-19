@@ -42,6 +42,10 @@ function VolumeItem({item, atividade_id}) {
     const [altura, setAltura] = useState('');
     const [peso, setPeso] = useState('');
 
+    console.log('volumesOP');
+    console.log(volumesOP);
+    
+
     const salvar = () => {
         if(comprimento == ''){
             alert('Preencha o comprimento')
@@ -78,8 +82,8 @@ function VolumeItem({item, atividade_id}) {
         ]);
     }
 
-    const deletar = () => {
-        setVolumesOP(volumesOP.filter(volume => volume.id !== find.id))
+    const deletar = (id) => {
+        setVolumesOP(volumesOP.filter(volume => volume.id !== id))
     }
 
     return (
@@ -137,7 +141,7 @@ function VolumeItem({item, atividade_id}) {
                 <Box>
                     <div className="title_content">
                         <h2>{item.title}</h2>
-                        <Button color="error" onClick={deletar}><DeleteTwoToneIcon  /></Button>
+                        <Button color="error" onClick={() => deletar(find.id)}><DeleteTwoToneIcon  /></Button>
                     </div>
                     <div className="dimensoes">
                         <div>

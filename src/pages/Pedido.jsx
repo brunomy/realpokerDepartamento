@@ -106,7 +106,6 @@ export default function Pedidos() {
                     allowScrollButtonsMobile
                 >
                     <Tab label="Informações" />
-                    <Tab label="Volumes" disabled={volumesOP.length == 0} />
                 </Tabs>
             </Box>
             <Box className="show_content">
@@ -119,7 +118,6 @@ export default function Pedidos() {
                     <Ordens headCells={headCellsOrdens} rows={rowsOrdens}/>
                     </>
                 }
-                { tab == 1 && <Volumes /> }
             </Box>
         </Layout>
     )
