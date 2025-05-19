@@ -184,9 +184,6 @@ export function Volumes({ remessa = false }) {
         
         const atividadeStatus = <Status size="small" status={atividadeConf?.status ? atividadeConf?.status : 0} />;
 
-        console.log('volumeConf');
-        console.log(volumeConf);
-        
         var embalado = null;
         if(volumeConf?.id_embalagem == null){
             embalado = <Chip className="stats" size='small' label={'Não'} />

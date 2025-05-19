@@ -42,10 +42,6 @@ function VolumeItem({item, atividade_id}) {
     const [altura, setAltura] = useState('');
     const [peso, setPeso] = useState('');
 
-    console.log('volumesOP');
-    console.log(volumesOP);
-    
-
     const salvar = () => {
         if(comprimento == ''){
             alert('Preencha o comprimento')

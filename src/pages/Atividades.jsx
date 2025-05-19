@@ -260,7 +260,6 @@ function Semana() {
             separadas = separarAtividadesPorSemana(primeiroDia, atividadesOP.filter((a) => a.status != -1));
             setAtividadesSeparadas(separadas);
         }
-        console.log(atividadesSeparadas);
         
     }, [primeiroDia, atividadesOP]);
 

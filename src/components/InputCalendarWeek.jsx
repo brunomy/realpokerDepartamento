@@ -80,9 +80,6 @@ export default function WeekPicker({ setPrimeiroDia, setUltimoDia }) {
     setInicio(inicioDaSemana);
     setPrimeiroDia(inicioDaSemana.format('DD/MM/YYYY'));
     setUltimoDia(fimDaSemana.format('DD/MM/YYYY'));
-    
-    console.log('Primeiro dia da semana:', inicioDaSemana.format('DD/MM/YYYY'));
-    console.log('ultimo dia da semana:', fimDaSemana.format('DD/MM/YYYY'));
   };
 
   // 👉 Quando o componente montar, já define o primeiro dia

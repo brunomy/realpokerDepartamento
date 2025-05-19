@@ -38,8 +38,6 @@ export default function Equipe() {
     const funcionariosEquipe = funcionarios.filter((func) => func.id_equipe == id)
     
 
-    console.log(funcionariosEquipe);
-    
     const [openModal, setOpenModal] = useState(false);
 
     const adicionarFuncionario = () => setFuncionarios([...funcionarios, novoFuncionario])
