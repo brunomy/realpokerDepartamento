@@ -222,6 +222,11 @@ export function InfoProduto(){
         <h3>
             <b>PRODUTO: </b>Mesa de poker profissional
         </h3>
+        
+        <div className="obs">
+            <h4>OBSERVAÇÕES:</h4>
+            <p>A mesa precisa ter detalhes na pintura em vermelho</p>
+        </div>
       
         <Box className="info_table">
             <div>

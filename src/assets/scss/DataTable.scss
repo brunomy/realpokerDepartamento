@@ -88,6 +88,21 @@
                     }
                     .data_late{ color: #d32f2f; }
                     .data_alert{ color: #ed6c02; }
+
+                    .linha_dupla{
+                        display: flex;
+                        flex-direction: column;
+                        
+                        >div{
+                            height: 41px;
+                            display: flex;
+                            align-items: center;
+
+                            &:nth-child(2n){
+                            }
+                            padding: 5px;
+                        }
+                    }
                 }
             }
         }

@@ -107,6 +107,20 @@
 
             b{}
         }
+        .obs{
+            border-right: 2px solid #d7d7d7;
+            border-left: 2px solid #d7d7d7;
+            padding: 10px 10px;
+            color: #434343;
+
+            h4{
+                font-size: .8em;
+                margin: 0 0 2px;
+            }
+            p{
+                font-size: 1em;
+            }
+        }
         .info_table{
             display: flex;
             flex-wrap: wrap;

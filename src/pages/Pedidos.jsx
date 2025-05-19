@@ -42,31 +42,53 @@ export default function Pedidos() {
 
     //dados da tabela
     const createData = () => {
-        const id = '#5951'
-        const ordens = '0/1'
-        const criacao = '01/04/2025'
-        const conclusao = <Box className="data_late">22/04/2025 <TimerTwoToneIcon color="error"/></Box>
-        const saida = <Box className="data_alert">28/04/2025 <ReportProblemTwoToneIcon color="warning"/></Box>
-        const entrega = '02/05/2025'
-        const comprador = 'João Felipe'
-        const status = <>
-            <Status status={calculoStatusPedido()} size={'small'} />
-            <Button className={'link'} component={Link} to="/pedidos/5951" variant="outlined" size="small">Detalhes</Button>
-        </>
+        const remessa = <Button component={Link} to="/remessas/5951" variant="outlined" size="small">5951</Button>
+        const pedidos = <Box className="linha_dupla">
+            <div>
+                <Button component={Link} to="/pedidos/5951-1" variant="outlined" size="small">5951-1</Button>
+            </div>
+            <div>
+                <Button component={Link} to="/pedidos/5951-3" variant="outlined" size="small">5951-3</Button>
+            </div>
+        </Box>
+        const criacao = <Box className="linha_dupla">
+            <div>01/04/2025</div>
+            <div>01/04/2025</div>
+        </Box>
+        const conclusao = <Box className="linha_dupla">
+            <div>22/04/2025</div>
+            <div><Box className="data_late">22/04/2025 <TimerTwoToneIcon color="error"/></Box></div>
+        </Box>
+        const saida = <Box className="linha_dupla">
+            <div>22/04/2025</div>
+            <div><Box className="data_alert">28/04/2025 <ReportProblemTwoToneIcon color="warning"/></Box></div>
+        </Box>
+        const entrega = <Box className="linha_dupla">
+            <div>02/05/2025</div>
+            <div>02/05/2025</div>
+        </Box>
+        const comprador = <Box className="linha_dupla">
+            <div>João Felipe</div>
+            <div>João Felipe</div>
+        </Box>
+        const status = <Box className="linha_dupla">
+            <div><Status status={calculoStatusPedido()} size={'small'} /></div>
+            <div><Status status={calculoStatusPedido()} size={'small'} /></div>
+        </Box>
 
-        return { id, ordens, criacao, conclusao, saida, entrega, comprador, status };
+        return { remessa, pedidos, criacao, conclusao, saida, entrega, comprador, status };
     }
     const rows = [
         createData(),
     ];
     const headCells = [
         {
-            id: 'id',
-            label: 'Id',
+            id: 'remessa',
+            label: 'Remessa',
         },
         {
-            id: 'ordens',
-            label: 'Ordens',
+            id: 'pedidos',
+            label: 'Pedidos',
         },
         {
             id: 'criacao',

@@ -5,6 +5,10 @@ import { Box } from '@mui/material';
 export default function InfoProdutoModal() {
     return (
         <Box className="infoProdutoModal">
+            <div className="obs">
+                <h4>OBSERVAÇÕES:</h4>
+                <p>A mesa precisa ter detalhes na pintura em vermelho</p>
+            </div>
             <div>
                 <h4>TAMANHO DA MESA:</h4>
                 <p>9 (2,40 x 1,10M)</p>
