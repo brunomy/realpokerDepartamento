@@ -16,99 +16,95 @@ import InputCalendarRange from '~/components/InputCalendarRange';
 import Modal from '~/components/layout/Modal';
 import AdicionarChecklist from '~/components/modal/AdicionarChecklist';
 
+import { useUser } from '~/context/UserContext';
+
+
 export default function Checklists() {
-    const [tab, setTab] = useState(0);
+    const [pedidoFilter, setPedidoFilter] = useState([]);
+    const { atividadesOP, checklistOP } = useUser();
 
-    const [idFilter, setIdFilter] = useState([]);
-    const [categoria, setCategoria] = useState([]);
-    const [descricao, setDescricao] = useState([]);
+    const atividades = atividadesOP.filter((atividade) => atividade.status == 4).length;
+    const checklists = checklistOP.filter((checklist) => checklist.status == 1).length
+    const disponiveis = atividades - checklists;
 
-    const [openModal, setOpenModal] = useState(false);
 
-    const descricaoList = [
-        { label: 'Criar mesa', value: 1},
-        { label: 'Mesa com porta copos', value: 2},
-        { label: 'Criar cadeira', value: 3},
-    ]
-    const idList = [
-        { label: '#5951', value: 5951},
-        { label: '#5952', value: 5952},
-        { label: '#5953', value: 5953},
-        { label: '#5954', value: 5954},
-    ]
-    const categorias = [
-        { label: 'Mesa de poker', value: 5951},
-        { label: 'Futmesa', value: 5952},
-        { label: 'Cadeiras', value: 5952},
+    const pedidosList = [
+        { label: '#5951', value: 1},
+        { label: '#5952', value: 2},
+        { label: '#5953', value: 3},
+        { label: '#5955', value: 3},
+        { label: '#5956', value: 3}
     ]
 
     //dados da tabela
-    const createData = (categorias, acoes) => {
-        return {
-            categorias,
-            acoes,
-        };
+    const createData = (pedido, produto, disponiveis, checklists, porcentagem) => {
+        return { pedido, produto, disponiveis, checklists, porcentagem };
     }
     const [rows, setRows] = useState([
         createData(
+            '5951',
             'Mesa de poker',
-            <Box className="acoes">
-                <Button component={Link} to={`/checklists/1`} variant="outlined" size="small"><EditSquareIcon /></Button>
-                <Button variant="outlined" size="small"><DeleteIcon /></Button>
-            </Box>
+            0,
+            <Chip label="0/27" />,
+            <>
+                0%
+                <Button className="link" component={Link} to="/checklists/5951" variant="outlined" size="small">Detalhes</Button>
+            </>
         ),
+        createData(
+            '5952',
+            'Mesa de poker profissional',
+            disponiveis,
+            <Chip label={checklists+"/27"} />,
+            <>
+                {Math.floor((100/27)*checklists)}%
+                <Button className="link" component={Link} to="/checklists/5951" variant="outlined" size="small">Detalhes</Button>
+            </>
+        ),
+        createData('5952','Futmesa',0,<Chip label="27/27" color="success" />,<>100%<Button className="link" component={Link} to="/checklists/5951" variant="outlined" size="small">Detalhes</Button></>),
+        createData('5953','Cadeira para mesa de poker',0,<Chip label="10/20" />,<>50%<Button className="link" component={Link} to="/checklists/5951" variant="outlined" size="small">Detalhes</Button></>),
+        createData('5954','Mesa de poker',0,<Chip label="10/20" />,<>50%<Button className="link" component={Link} to="/checklists/5951" variant="outlined" size="small">Detalhes</Button></>),
+        createData('5954','Cadeira para mesa de poker',0,<Chip label="20/20" color="success" />,<>100%<Button className="link" component={Link} to="/checklists/5951" variant="outlined" size="small">Detalhes</Button></>),
     ]);
     const headCells = [
         {
-            id: 'categoria',
-            numeric: false,
-            label: 'Categoria',
+            id: 'pedido',
+            label: 'Pedido',
         },
         {
-            id: 'acoes',
-            numeric: false,
-            align: "right",
-            label: 'Ações',
+            id: 'produto',
+            label: 'Produto',
+        },
+        {
+            id: 'disponiveis',
+            label: 'Disponíveis',
+        },
+        {
+            id: 'checklists',
+            label: 'Checklists',
+        },
+        {
+            id: 'porcentagem',
+            label: 'Porcentagem',
         },
     ];
-
-    const handleChange = (event, newTab) => {
-        setTab(newTab);
-    };
 
     return (
         <Layout>
             <Title title="Lista de checklists" icon={<CheckBoxIcon/>} />
-            <Box className="tabs_content">
-                <Tabs
-                    value={tab}
-                    onChange={handleChange}
-                    variant="scrollable"
-                    scrollButtons
-                    allowScrollButtonsMobile
-                >
-                    <Tab label="Fábrica" />
-                    <Tab label="Fichas" />
-                    <Tab label="Comunicação" />
-                </Tabs>
-            </Box>
             <Box className="index_content atividades_list">
                 <Box className="filtros">
                     <h2>Filtros:</h2>
                     <Box className="filter_list">
                         <Box className="item">
-                            <InputAuto value={{id: 1, label: 'M2'}} label="Categoria" list={categorias} setValue={setCategoria} width={'100%'} />
+                            <InputAuto label="Pedido" list={pedidosList} setValue={setPedidoFilter} width={'100%'} />
                         </Box>
                     </Box>
                 </Box>
                 <Box className="table_content">
                     <DataTable headCells={headCells} rows={rows}/>
-                    <Button className="adicionar" variant="contained" onClick={() => setOpenModal(true)}>Adicionar checklist</Button>
                 </Box>
             </Box>
-            <Modal open={openModal} setOpen={setOpenModal} title="Adicionar checklist">
-                <AdicionarChecklist />
-            </Modal>
         </Layout>
     )
 }

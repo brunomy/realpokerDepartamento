@@ -274,6 +274,12 @@
     }
 
     .checklist{
+        button.info_produto{
+            background: $color1;
+            margin: 0 0 15px auto;
+            display: flex;
+            gap: 5px;
+        }
         .checklist_etapa{
             border: 2px solid $color1;
             border-radius: 3px;
@@ -471,6 +477,11 @@
 
     .historico{
         padding: $pagePadding;
+    }
+
+    .checklist_content{
+        padding: $pagePadding;
+
     }
 }
 .adicionar_checklist{
