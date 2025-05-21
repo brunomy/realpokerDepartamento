@@ -35,31 +35,53 @@ export default function Pedidos() {
     const [tab, setTab] = useState(0);
 
     //dados
-    const createDataOrdens = () => {
-        const id = '#5951-1';
-        const remessa = <Button component={Link} to="/remessas/5951" variant="outlined" size="small">#5951</Button>;
-        const categoria = <Chip className="stats" size="small" label="Mesa de poker" />;
-        const descricao = 'Mesa de poker profissional';
-        const producao = '03/04/2025';
-        const conclusao = <Box className="data_late">22/04/2025 <TimerTwoToneIcon color="error"/></Box>;
-        const requisitos = <Box sx={{display: 'flex', flexDirection: 'column', gap: '2px'}}>
-            <Chip size="small" color="success" label="Router" />
-            <Chip size="small" label="Adesivo" />
-            <Chip size="small" label="Tecido" />
+    const createDataOrdens = ({ id, remessa, categoria, descricao, producao, conclusao, requisitos, status }) => {
+        const rem = <Button component={Link} to={"/remessas/"+remessa} variant="outlined" size="small">{remessa}</Button>;
+        const cat = <Chip className="stats" size="small" label={categoria} />;
+        const desc = descricao;
+        const prod = producao;
+        var conc;
+        if(conclusao == '22/04/2025'){
+            conc = <Box className="data_late">{conclusao} <TimerTwoToneIcon color="error"/></Box>;
+            
+        } else {
+            conc = conclusao;
+        }
+        const req = <Box sx={{display: 'flex', flexDirection: 'column', gap: '2px'}}>
+            {(requisitos == 3 || requisitos == 2 || requisitos == 1) && <Chip size="small" color="success" label="Router" />}
+            {(requisitos == 3 || requisitos == 2) && <Chip size="small" label="Adesivo" />}
+            {(requisitos == 3) && <Chip size="small" label="Tecido" />}
         </Box>;
-        const status = <>
-            <Status status={calculoStatusPedido()} size={'small'} />
-            <Button className="link" component={Link} to="/ordens/5951-1" variant="outlined" size="small">Detalhes</Button>
+        const stats = <>
+            <Status status={status} size={'small'} />
+            <Button className="link" component={Link} to={"/ordens/"+id} variant="outlined" size="small">Detalhes</Button>
         </>
 
-        return { id, remessa, categoria, descricao, producao, conclusao, requisitos, status };
+        return { rem, cat, desc, prod, conc, req, stats};
     }
-    const rowsOrdens = [createDataOrdens()];
+    const rowsOrdens = [
+        createDataOrdens({ 
+            id: 1,
+            remessa: '5951-1',
+            categoria: 'Mesa de poker',
+            descricao: 'Mesa de poker profissional',
+            producao: '03/04/2025',
+            conclusao: '22/04/2025',
+            requisitos: 3,
+            status: calculoStatusPedido(),
+        }),
+        createDataOrdens({ 
+            id: 2,
+            remessa: '5951-1',
+            categoria: 'Futmesa',
+            descricao: 'Futmesa',
+            producao: '04/04/2025',
+            conclusao: '22/04/2025',
+            requisitos: 1,
+            status: 4,
+        }),
+    ];
     const headCellsOrdens = [
-        {
-            id: 'id',
-            label: 'Id',
-        },
         {
             id: 'remessa',
             label: 'Remessa',
@@ -140,7 +162,7 @@ function Informacoes({ setTab, volumesOP}) {
                     </p>
                     <p>
                         <span className="icon"><LocalShippingTwoToneIcon/></span>
-                        <b>REMESSA(s): </b><Button component={Link} to="/remessas/5951" variant="outlined" size="small">#5951</Button>
+                        <b>REMESSA(s): </b><Button component={Link} to="/remessas/5951" variant="outlined" size="small">5951-1</Button>
                     </p>
                     <p>
                         <span className="icon"><PermIdentityTwoToneIcon/></span>

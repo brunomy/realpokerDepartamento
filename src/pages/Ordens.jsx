@@ -51,34 +51,107 @@ export default function Ordens() {
     ]
 
     //dados da tabela
-    const createDataOrdens = () => {
-        const id = <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">#5951-1</Button>;
-        const remessa = <Button component={Link} to="/remessas/5951" variant="outlined" size="small">#5951</Button>;
-        const categoria = <Chip className="stats" size="small" label="Mesa de poker" />;
-        const descricao = 'Mesa de poker profissional';
-        const producao = '03/04/2025';
-        const conclusao = <Box className="data_late">22/04/2025 <TimerTwoToneIcon color="error"/></Box>;
-        const requisitos = <Box sx={{display: 'flex', flexDirection: 'column', gap: '2px'}}>
-            <Chip size="small" color="success" label="Router" />
-            <Chip size="small" label="Adesivo" />
-            <Chip size="small" label="Tecido" />
+    const createDataOrdens = ({ id, remessa, pedido, categoria, descricao, producao, conclusao, requisitos, status }) => {
+        const rem = <Button component={Link} to={"/remessas/"+remessa} variant="outlined" size="small">{remessa}</Button>;
+        const ped = <Button component={Link} to={"/pedidos/"+pedido} variant="outlined" size="small">{pedido}</Button>;
+        const cat = <Chip className="stats" size="small" label={categoria} />;
+        const desc = descricao;
+        const prod = producao;
+        var conc;
+        if(conclusao == '22/04/2025'){
+            conc = <Box className="data_late">{conclusao} <TimerTwoToneIcon color="error"/></Box>;
+            
+        } else {
+            conc = conclusao;
+        }
+        const req = <Box sx={{display: 'flex', flexDirection: 'column', gap: '2px'}}>
+            {(requisitos == 3 || requisitos == 2 || requisitos == 1) && <Chip size="small" color="success" label="Router" />}
+            {(requisitos == 3 || requisitos == 2) && <Chip size="small" label="Adesivo" />}
+            {(requisitos == 3) && <Chip size="small" label="Tecido" />}
         </Box>;
-        const status = <>
-            <Status status={calculoStatusPedido()} size={'small'} />
-            <Button className="link" component={Link} to="/ordens/5951-1" variant="outlined" size="small">Detalhes</Button>
+        const stats = <>
+            <Status status={status} size={'small'} />
+            <Button className="link" component={Link} to={"/ordens/"+id} variant="outlined" size="small">Detalhes</Button>
         </>
 
-        return { id, remessa, categoria, descricao, producao, conclusao, requisitos, status};
+        return { rem, ped, cat, desc, prod, conc, req, stats};
     }
-    const rowsOrdens = [createDataOrdens()];
+    const rowsOrdens = [
+        createDataOrdens({ 
+            id: 3,
+            remessa: '5951-1',
+            pedido: '5951',
+            categoria: 'Mesa de poker',
+            descricao: 'Mesa de poker',
+            producao: '04/05/2025',
+            conclusao: '22/05/2025',
+            requisitos: 2,
+            status: 1,
+        }),
+        createDataOrdens({ 
+            id: 1,
+            remessa: '5951-1',
+            pedido: '5952',
+            categoria: 'Mesa de poker',
+            descricao: 'Mesa de poker profissional',
+            producao: '03/04/2025',
+            conclusao: '22/04/2025',
+            requisitos: 3,
+            status: calculoStatusPedido(),
+        }),
+        createDataOrdens({ 
+            id: 2,
+            remessa: '5951-1',
+            pedido: '5952',
+            categoria: 'Futmesa',
+            descricao: 'Futmesa',
+            producao: '04/04/2025',
+            conclusao: '22/04/2025',
+            requisitos: 1,
+            status: 4,
+        }),
+        createDataOrdens({ 
+            id: 4,
+            remessa: '5953-1',
+            pedido: '5953',
+            categoria: 'Cadeira',
+            descricao: 'Cadeira para mesa de poker',
+            producao: '04/05/2025',
+            conclusao: '22/05/2025',
+            requisitos: 1,
+            status: 1,
+        }),
+        createDataOrdens({ 
+            id: 5,
+            remessa: '5954-1',
+            pedido: '5954',
+            categoria: 'Mesa de poker',
+            descricao: 'Mesa de poker',
+            producao: '04/06/2025',
+            conclusao: '22/06/2025',
+            requisitos: 1,
+            status: 2,
+        }),
+        createDataOrdens({ 
+            id: 6,
+            remessa: '5954-2',
+            pedido: '5954',
+            categoria: 'Cadeira',
+            descricao: 'Cadeira para mesa de poker',
+            producao: '06/06/2025',
+            conclusao: '22/06/2025',
+            requisitos: 1,
+            status: 4,
+        }),
+    ];
     const headCellsOrdens = [
-        {
-            id: 'id',
-            label: 'Id',
-        },
         {
             id: 'remessa',
             label: 'Remessa',
+        },
+        {
+            id: 'pedido',
+            label: 'Pedido',
         },
         {
             id: 'categoria',

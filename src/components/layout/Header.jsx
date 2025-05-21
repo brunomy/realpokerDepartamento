@@ -81,7 +81,7 @@ export default function Header() {
             </IconButton>
             <h1>Fábrica</h1>
           </Box>
-          <Box className="right">
+          {/* <Box className="right">
             <Search>
               <SearchIconWrapper>
                 <SearchIcon />
@@ -91,7 +91,7 @@ export default function Header() {
                 inputProps={{ 'aria-label': 'search' }}
               />
             </Search>
-          </Box>
+          </Box> */}
         </Toolbar>
       </AppBar>
       <Box className={"menu "+(active ? 'active' : '') }>

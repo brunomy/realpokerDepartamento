@@ -41,45 +41,75 @@ export default function Pedidos() {
     ]
 
     //dados da tabela
-    const createData = () => {
-        const remessa = <Button component={Link} to="/remessas/5951" variant="outlined" size="small">5951</Button>
-        const pedidos = <Box className="linha_dupla">
-            <div>
-                <Button component={Link} to="/pedidos/5951-1" variant="outlined" size="small">5951-1</Button>
-            </div>
-            <div>
-                <Button component={Link} to="/pedidos/5951-3" variant="outlined" size="small">5951-3</Button>
-            </div>
+    const createData = ({ remessas, pedidos, criacoes, conclusoes, saidas, entregas, clientes, status }) => {
+        const remessa = <Box className="linha_dupla">
+            {remessas.map((r) => <div><Button component={Link} to={"/remessas/"+r} variant="outlined" size="small">{r}</Button></div>)}
+        </Box>
+        const pedido = <Box className="linha_dupla">
+            {pedidos.map((p) => <div><Button component={Link} to={"/pedidos/"+p} variant="outlined" size="small">{p}</Button></div>)}
         </Box>
         const criacao = <Box className="linha_dupla">
-            <div>01/04/2025</div>
-            <div>01/04/2025</div>
+            {criacoes.map((c) => <div>{c}</div>)}
         </Box>
         const conclusao = <Box className="linha_dupla">
-            <div>22/04/2025</div>
-            <div><Box className="data_late">22/04/2025 <TimerTwoToneIcon color="error"/></Box></div>
+            {conclusoes.map((c) => <div>{c}</div>)}
         </Box>
         const saida = <Box className="linha_dupla">
-            <div>22/04/2025</div>
-            <div><Box className="data_alert">28/04/2025 <ReportProblemTwoToneIcon color="warning"/></Box></div>
+            {saidas.map((s, index) => {
+                if(index == 1)
+                    return (<div><Box className="data_late">{s} <TimerTwoToneIcon color="error"/></Box></div>)
+                else
+                    return (<div>{s}</div>)
+            })}
         </Box>
         const entrega = <Box className="linha_dupla">
-            <div>02/05/2025</div>
-            <div>02/05/2025</div>
+            {entregas.map((e) => {
+                if(e == '02/05/2025')
+                    return (<div><Box className="data_alert">{e} <ReportProblemTwoToneIcon color="warning"/></Box></div>)
+                else
+                    return (<div>{e}</div>)
+            })}
         </Box>
         const comprador = <Box className="linha_dupla">
-            <div>João Felipe</div>
-            <div>João Felipe</div>
+            {clientes.map((c) => <div>{c}</div>)}
         </Box>
-        const status = <Box className="linha_dupla">
-            <div><Status status={calculoStatusPedido()} size={'small'} /></div>
-            <div><Status status={calculoStatusPedido()} size={'small'} /></div>
+        const status2 = <Box className="linha_dupla">
+            {status.map((s) => <div><Status status={s} size={'small'} /></div>)}
         </Box>
 
-        return { remessa, pedidos, criacao, conclusao, saida, entrega, comprador, status };
+        return { remessa, pedido, criacao, conclusao, saida, entrega, comprador, status2 };
     }
     const rows = [
-        createData(),
+        createData({ 
+            remessas: ['5951-1'], 
+            pedidos: ['5951', '5952'], 
+            criacoes: ['01/04/2025', '01/04/2025'],
+            conclusoes: ['22/04/2025', '22/04/2025'],
+            saidas: ['22/04/2025', '28/04/2025'],
+            entregas: ['02/05/2025', '02/05/2025'],
+            clientes: ['João Felipe'],
+            status: [1, calculoStatusPedido()]
+        }),
+        createData({ 
+            remessas: ['5953-1'], 
+            pedidos: ['5953'], 
+            criacoes: ['01/05/2025'],
+            conclusoes: ['22/05/2025'],
+            saidas: ['24/05/2025'],
+            entregas: ['26/05/2025'],
+            clientes: ['Bruno Yoshimura'],
+            status: [1]
+        }),
+        createData({ 
+            remessas: ['5954-1', '5954-2'], 
+            pedidos: ['5954'], 
+            criacoes: ['01/06/2025'],
+            conclusoes: ['22/06/2025'],
+            saidas: ['24/06/2025'],
+            entregas: ['26/06/2025'],
+            clientes: ['Bruno Yoshimura'],
+            status: [2]
+        }),
     ];
     const headCells = [
         {

@@ -19,6 +19,7 @@ import Configuracoes from './pages/Configuracoes';
 import ConficuracaoEtapas from './pages/ConficuracaoEtapas';
 import ConfiguracaoAtividades from './pages/ConfiguracaoAtividades';
 import ConfiguracaoCheckVol from './pages/ConfiguracaoCheckVol';
+import ChecklistOrder from './pages/Checklist';
 
 function App() {
 
@@ -44,7 +45,7 @@ function App() {
           <Route path="/configuracoes/:id/etapa/:id_etapa/atividade/:id_atividade" element={<ConfiguracaoCheckVol />} />
 
           <Route path="/checklists" element={<Checklists />} />
-          <Route path="/checklists/:id" element={<Checklist />} />
+          <Route path="/checklists/:id" element={<ChecklistOrder />} />
 
           <Route path="/equipes" element={<Equipes />} />
           <Route path="/equipes/:id" element={<Equipe />} />

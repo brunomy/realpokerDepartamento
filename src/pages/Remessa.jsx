@@ -44,9 +44,15 @@ export default function Remessa() {
     const [status, setStatus] = useState(1);
 
     const [left, setLeft] = useState([
-        { label: `Pedido: #5951 | Ordem: #3568`, value: 3568},
+        { label: `Pedido: #5951 | Mesa de poker`, value: 1},
+        { label: `Pedido: #5952 | Mesa de poker profissional`, value: 2},
+        { label: `Pedido: #5952 | Futmesa`, value: 3},
     ]);
-    const [right, setRight] = useState([]);
+    const [right, setRight] = useState([
+        { label: `Pedido: #5953 | Cadeira para mesa de poker`, value: 1},
+        { label: `Pedido: #5954 | Mesa de poker`, value: 2},
+        { label: `Pedido: #5954 | Cadeira para mesa de poker`, value: 3},
+    ]);
 
     const handleChange = (event, newTab) => {
       setTab(newTab);

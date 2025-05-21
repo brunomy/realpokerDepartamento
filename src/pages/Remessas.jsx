@@ -12,9 +12,15 @@ import Layout from "~/components/layout/Layout";
 import Title from "~/components/layout/Title";
 import InputAuto from '~/components/InputAuto';
 import InputCalendarRange from '~/components/InputCalendarRange';
+import Status from '~/components/layout/Status';
+
+import { useUser } from '~/context/UserContext';
 
 export default function Remessas() {
     const hoje = dayjs();
+    const { volumes, volumesOP, embalagensOP } = useUser();
+
+    const naoEmbalados = volumesOP.filter(item => item.id_embalagem == null);
 
     const [statusFilter, setStatusFilter] = useState([]);
     const [pedidoFilter, setPedidoFilter] = useState([]);
@@ -43,33 +49,111 @@ export default function Remessas() {
     ]
 
     //dados da tabela
-    const createData = (pedidos, ordens, destino, entrega, status) => {
-        return { pedidos, ordens, destino, entrega, status };
+    const createData = (remessa, pedidos, produtos, disponiveis, volumes, embalagens, destino, entrega, status) => {
+        return { remessa, pedidos, produtos, disponiveis, volumes, embalagens, destino, entrega, status };
     }
     const rows = [
         createData(
-            <Box className="pedidos">
-                <Button component={Link} to="/pedidos/5951" variant="outlined" size="small">#5951</Button>
+            '5951-1',
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
+                <Chip className="stats" size="small" label="5951" />
+                <Chip className="stats" size="small" label="5952" />
             </Box>,
-            <Box className="pedidos">
-                <Button component={Link} to="/ordens/3568" variant="outlined" size="small">#3568</Button>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
+                <Chip className="stats" size="small" label="Mesa de poker" />
+                <Chip className="stats" size="small" label="Mesa de poker profissional" />
+                <Chip className="stats" size="small" label="Futmesa" />
             </Box>,
+            naoEmbalados.length,
+            volumesOP.filter((v) => v.id_embalagem != null).length+'/'+volumes.length,
+            embalagensOP.length,
             'Goiânia/GO',
-            '10/05/2025',
+            '02/05/2025',
             <>
-            <Chip className="stats" size="small" label="Pendente" />
-            <Button className="link" component={Link} to="/remessas/5951" variant="outlined" size="small">Detalhes</Button>
+            <Status status={volumesOP.filter((v) => v.id_embalagem != null).length == 0 ? 0 : 1} size={'small'} />
+            <Button className="link" component={Link} to="/remessas/5951-1" variant="outlined" size="small">Detalhes</Button>
             </>
         ),
+        createData(
+            '5953-1',
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
+                <Chip className="stats" size="small" label="5953" />
+            </Box>,
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
+                <Chip className="stats" size="small" label="Cadeira para mesa de poker" />
+            </Box>,
+            0,
+            "8/10",
+            3,
+            'Goiânia/GO',
+            '26/05/2025',
+            <>
+            <Status status={1} size={'small'} />
+            <Button className="link" component={Link} to="/remessas/5953-1" variant="outlined" size="small">Detalhes</Button>
+            </>
+        ),
+        createData(
+            '5954-1',
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
+                <Chip className="stats" size="small" label="5954" />
+            </Box>,
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
+                <Chip className="stats" size="small" label="Mesa de poker" />
+            </Box>,
+            0,
+            "7/15",
+            2,
+            'Goiânia/GO',
+            '26/06/2025',
+            <>
+            <Status status={1} size={'small'} />
+            <Button className="link" component={Link} to="/remessas/5954-1" variant="outlined" size="small">Detalhes</Button>
+            </>
+        ),
+        createData(
+            '5954-2',
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
+                <Chip className="stats" size="small" label="5954" />
+            </Box>,
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
+                <Chip className="stats" size="small" label="Cadeira para mesa de poker" />
+            </Box>,
+            0,
+            "7/7",
+            2,
+            'Inhumas/GO',
+            '26/06/2025',
+            <>
+            <Status status={4} size={'small'} />
+            <Button className="link" component={Link} to="/remessas/5954-2" variant="outlined" size="small">Detalhes</Button>
+            </>
+        ),
+
     ];
     const headCells = [
+        {
+            id: 'remessa',
+            label: 'Remessa',
+        },
         {
             id: 'pedidos',
             label: 'Pedidos',
         },
         {
-            id: 'ordens',
-            label: 'Ordens',
+            id: 'produtos',
+            label: 'Produtos',
+        },
+        {
+            id: 'disponiveis',
+            label: 'Disponíveis',
+        },
+        {
+            id: 'volumes',
+            label: 'Volumes',
+        },
+        {
+            id: 'embalagens',
+            label: 'Embalagens',
         },
         {
             id: 'destino',
@@ -97,9 +181,6 @@ export default function Remessas() {
                         </Box>
                         <Box className="item">
                             <InputAuto label="Status" list={statusList} setValue={setStatusFilter} width={'100%'} />
-                        </Box>
-                        <Box className="item">
-                            <InputAuto label="Ordem" list={pedidosList} setValue={setPedidoFilter} width={'100%'} />
                         </Box>
                         <Box className="item">
                             <InputAuto label="Destino" list={destinoList} setValue={setDestinoFilter} width={'100%'} />

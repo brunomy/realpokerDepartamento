@@ -160,7 +160,7 @@ export default function Ordem() {
                 { tab == 1 && <Requisitos step_list={step_list} /> }
                 { tab == 2 && <Etapas etapas={etapas.filter(e => e.id_categoria === 1)} atividades={atividades} equipes={equipes} /> }
                 { tab == 3 && <Atividades atividadesOP={atividadesOP.filter((a) => a.ativo == 1)} atividades={atividades} etapas={etapas} equipes={equipes} /> }
-                { tab == 4 && <Checklist etapas={etapas} etapasOP={etapasOP} checklists={checklists} equipes={equipes} /> }
+                { tab == 4 && <Checklist /> }
                 { tab == 5 && <Historico /> }
             </Box>
         </Layout>
@@ -509,10 +509,17 @@ function Atividades({ atividadesOP, atividades, etapas, equipes }) {
         </Box>
     );
 }
-function Checklist({ etapas, etapasOP, checklists, equipes }) {
-    const { checklistOP, setChecklistOP, atividadesOP, setAtividadesOP, setVolumesOP, volumesOP } = useUser();
+export function Checklist() {
+    const { 
+        checklists, checklistOP, setChecklistOP, 
+        atividadesOP, setAtividadesOP, 
+        setVolumesOP, volumesOP, 
+        etapas, etapasOP,
+        equipes
+    } = useUser();
     
     const [openModal, setOpenModal] = useState(false);
+    const [openModalInfo, setOpenModalInfo] = useState(false);
     const [checklistSelecionado, setChecklistSelecionado] = useState(null);
     const [atividadeSelecionada, setAtividadeSelecionada] = useState(null);
 
@@ -609,6 +616,10 @@ function Checklist({ etapas, etapasOP, checklists, equipes }) {
 
     return (
         <Box className="checklist">
+            <Button className="info_produto" variant="contained" size="small" onClick={() => setOpenModalInfo(true)}>
+                <InfoTwoToneIcon />
+                Informaçoes do produto
+            </Button>
             {etapasOP.map((item, index) => (
                 <ChecklistEtapa 
                     key={index}
@@ -620,6 +631,9 @@ function Checklist({ etapas, etapasOP, checklists, equipes }) {
             ))}
             <Modal open={openModal} setOpen={setOpenModal} title="Fazer vistoria" confirm={fazerVistoria}>
                 <VistoriaChecklist setObservacao={setObservacao} setFalha={setFalha} title={checklistSelecionado?.title} />
+            </Modal>
+            <Modal open={openModalInfo} setOpen={setOpenModalInfo} title="Informações do produto" confirmText="Fechar">
+                <InfoProdutoModal />
             </Modal>
         </Box>
     )

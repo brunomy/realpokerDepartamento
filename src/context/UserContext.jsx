@@ -148,6 +148,8 @@ export function UserProvider({ children }) {
     },
     { id: 1,id_categoria: 1, id_etapa: 1, id_atividade: 0, title: 'Suporte da borda',},
     { id: 2, id_categoria: 1, id_etapa: 1, id_atividade: 1, title: 'Tiras de couro' },
+    { id: 3, id_categoria: 1, id_etapa: 1, id_atividade: 2, title: 'Porta copos' },
+    { id: 4, id_categoria: 1, id_etapa: 1, id_atividade: 3, title: 'Suporte para pé de mesa' },
   ])
 
   const [equipes, setEquipes] = useState([

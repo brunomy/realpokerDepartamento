@@ -62,6 +62,14 @@ export default function Footer() {
                 showLabel
             />
             <BottomNavigationAction
+                label="Checklists"
+                value="checklists"
+                icon={<CheckBoxTwoToneIcon />}
+                component={Link}
+                to="/checklists"
+                showLabel
+            />
+            <BottomNavigationAction
                 label="Remessas"
                 value="remessas"
                 icon={<LocalShippingTwoToneIcon />}
