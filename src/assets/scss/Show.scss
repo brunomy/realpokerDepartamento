@@ -246,6 +246,8 @@
     
                             >div{
                                 width: calc(50% - 5px);
+
+                                >div{ max-width: 100%; }
                             }
                         }
                     }

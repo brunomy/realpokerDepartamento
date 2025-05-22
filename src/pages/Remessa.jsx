@@ -79,7 +79,7 @@ export default function Remessa() {
                         <Informacoes 
                             status={status} 
                             setTab={setTab} />
-                        <MudarRemessa left={left} setLeft={setLeft} right={right} setRight={setRight}/>
+                        {/* <MudarRemessa left={left} setLeft={setLeft} right={right} setRight={setRight}/> */}
                     </>
                 }
                 { tab == 1 && <Volumes remessa={true} /> }
