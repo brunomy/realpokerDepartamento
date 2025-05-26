@@ -19,7 +19,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-export default function CustomizedDialogs({ children, open, setOpen, title, confirm, confirmText = 'Salvar alterações' }) {
+export default function CustomizedDialogs({ children, open, setOpen, title, confirm, confirmText = 'Salvar alterações', sx }) {
 
   const handleClose = () => {
     setOpen(false);
@@ -32,6 +32,7 @@ export default function CustomizedDialogs({ children, open, setOpen, title, conf
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
+        sx={sx}
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
           {title}

@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import ReportProblemTwoToneIcon from '@mui/icons-material/ReportProblemTwoTone';
+import TimerTwoToneIcon from '@mui/icons-material/TimerTwoTone';
 
 import dayjs from 'dayjs';
 
@@ -13,6 +15,7 @@ import Title from "~/components/layout/Title";
 import InputAuto from '~/components/InputAuto';
 import InputCalendarRange from '~/components/InputCalendarRange';
 import Status from '~/components/layout/Status';
+
 
 import { useUser } from '~/context/UserContext';
 
@@ -59,16 +62,16 @@ export default function Remessas() {
                 <Chip className="stats" size="small" label="5951" />
                 <Chip className="stats" size="small" label="5952" />
             </Box>,
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
-                <Chip className="stats" size="small" label="Mesa de poker" />
-                <Chip className="stats" size="small" label="Mesa de poker profissional" />
-                <Chip className="stats" size="small" label="Futmesa" />
-            </Box>,
+            // <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
+            //     <Chip className="stats" size="small" label="Mesa de poker" />
+            //     <Chip className="stats" size="small" label="Mesa de poker profissional" />
+            //     <Chip className="stats" size="small" label="Futmesa" />
+            // </Box>,
             naoEmbalados.length,
             volumesOP.filter((v) => v.id_embalagem != null).length+'/'+volumes.length,
             embalagensOP.length,
             'Goiânia/GO',
-            '02/05/2025',
+            <div><Box className="data_late">02/05/2025 <TimerTwoToneIcon color="error"/></Box></div>,
             <>
             <Status status={volumesOP.filter((v) => v.id_embalagem != null).length == 0 ? 0 : 1} size={'small'} />
             <Button className="link" component={Link} to="/remessas/5951-1" variant="outlined" size="small">Detalhes</Button>
@@ -79,14 +82,14 @@ export default function Remessas() {
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
                 <Chip className="stats" size="small" label="5953" />
             </Box>,
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
-                <Chip className="stats" size="small" label="Cadeira para mesa de poker" />
-            </Box>,
+            // <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
+            //     <Chip className="stats" size="small" label="Cadeira para mesa de poker" />
+            // </Box>,
             0,
             "8/10",
             3,
             'Goiânia/GO',
-            '26/05/2025',
+            <div><Box className="data_alert">26/05/2025 <ReportProblemTwoToneIcon color="warning"/></Box></div>,
             <>
             <Status status={1} size={'small'} />
             <Button className="link" component={Link} to="/remessas/5953-1" variant="outlined" size="small">Detalhes</Button>
@@ -97,9 +100,9 @@ export default function Remessas() {
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
                 <Chip className="stats" size="small" label="5954" />
             </Box>,
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
-                <Chip className="stats" size="small" label="Mesa de poker" />
-            </Box>,
+            // <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
+            //     <Chip className="stats" size="small" label="Mesa de poker" />
+            // </Box>,
             0,
             "7/15",
             2,
@@ -115,9 +118,9 @@ export default function Remessas() {
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
                 <Chip className="stats" size="small" label="5954" />
             </Box>,
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
-                <Chip className="stats" size="small" label="Cadeira para mesa de poker" />
-            </Box>,
+            // <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
+            //     <Chip className="stats" size="small" label="Cadeira para mesa de poker" />
+            // </Box>,
             0,
             "7/7",
             2,
@@ -138,10 +141,6 @@ export default function Remessas() {
         {
             id: 'pedidos',
             label: 'Pedidos',
-        },
-        {
-            id: 'produtos',
-            label: 'Produtos',
         },
         {
             id: 'disponiveis',
@@ -189,9 +188,6 @@ export default function Remessas() {
                 </Box>
                 <Box className="table_content">
                     <DataTable headCells={headCells} rows={rows}/>
-                    <div className="buttons">
-                        <Button className="relatorio" variant="contained">Criar remessa</Button>
-                    </div>
                 </Box>
             </Box>
         </Layout>

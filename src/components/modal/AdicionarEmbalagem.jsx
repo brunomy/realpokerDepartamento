@@ -58,18 +58,16 @@ export default function AdicionarEmbalagem({
 
 
     const columns = [
-        { field: "descricao", headerName: "Descrição", width: 340 },
+        { field: "descricao", headerName: "Volume", width: 420 },
         { field: "pedido", headerName: "Pedido", width: 80 },
-        { field: "ordem", headerName: "Ordem", width: 80 },
     ];
 
     const createData = (volume) => {
         const id = volume.id;
         const descricao = volumes.find((v) => v.id == volume.id_volume).title;
         const pedido = "5951";
-        const ordem = "5951-1";
 
-        return { id, descricao, pedido, ordem };
+        return { id, descricao, pedido };
     };
 
     const rows = volumesCheckados.map((volume, index) => createData(volume));

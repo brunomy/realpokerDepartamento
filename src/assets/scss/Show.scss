@@ -256,7 +256,7 @@
         }
     }
     
-    .checklist, .atividades, .table_content, .volumes{
+    .checklist, .atividades, .table_content, .volumes, .produtos_remessa{
         padding: $pagePadding;
     
         button.adicionar{
@@ -393,6 +393,60 @@
             .dataTable_style .MuiPaper-root{
                 margin: 0;
             }
+        }
+    }
+
+    .produtos_remessa{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        padding-bottom: 0;
+        padding-top: 10px;
+
+        .item{
+            border: 2px solid $color1;
+            width: 300px;
+            border-radius: 3px;
+
+            &.finalizado{
+                border-color: $sucess;
+                background: #edffed;
+
+                h2{
+                    background: $sucess;
+                }
+                button{
+                }
+            }
+
+            h2{
+                background: $color1;
+                color: #fff;
+                padding: 5px 10px;
+                font-size: .7em;
+                font-weight: bold;
+                text-transform: uppercase;
+                margin: 0 0 5px;
+            }
+            p{
+                padding: 3px 10px;
+                font-size: .8em;
+
+                span{
+                    font-weight: bold;
+
+                    &.atrasado{
+                        color: $error;
+                    }
+                }
+            }
+            button{
+                padding: 0 10px;
+                font-size: .7em;
+                margin: 5px 10px 8px;
+                background: #fff;
+            }
+
         }
     }
     

@@ -34,55 +34,21 @@ import AddBoxTwoToneIcon from '@mui/icons-material/AddBoxTwoTone';
 import HandymanTwoToneIcon from '@mui/icons-material/HandymanTwoTone';
 import AdicionarEmbalagem from '../components/modal/AdicionarEmbalagem';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
+import MudarRemessaModal from '../components/modal/MudarRemessaModal';
+import EditarRemessa from '../components/modal/EditarRemessa';
 
 export default function Remessa() {
     const { id } = useParams();
 
-    const [tab, setTab] = useState(0);
-
-    const [statusModalChange, setStatusModalChange] = useState(false);
-    const [status, setStatus] = useState(1);
-
-    const [left, setLeft] = useState([
-        { label: `Pedido: #5951 | Mesa de poker`, value: 1},
-        { label: `Pedido: #5952 | Mesa de poker profissional`, value: 2},
-        { label: `Pedido: #5952 | Futmesa`, value: 3},
-    ]);
-    const [right, setRight] = useState([
-        { label: `Pedido: #5953 | Cadeira para mesa de poker`, value: 1},
-        { label: `Pedido: #5954 | Mesa de poker`, value: 2},
-        { label: `Pedido: #5954 | Cadeira para mesa de poker`, value: 3},
-    ]);
-
-    const handleChange = (event, newTab) => {
-      setTab(newTab);
-    };
-
     return (
         <Layout>
             <Title title={"Remessa Nº #"+id} icon={<LocalShippingIcon/>} />
-            <Box className="tabs_content">
-                <Tabs
-                    value={tab}
-                    onChange={handleChange}
-                    variant="scrollable"
-                    scrollButtons
-                    allowScrollButtonsMobile
-                >
-                    <Tab label="Informações" />
-                    <Tab label="Volumes" />
-                </Tabs>
-            </Box>
             <Box className="show_content">
-                { tab == 0 && 
-                    <>
-                        <Informacoes 
-                            status={status} 
-                            setTab={setTab} />
-                        {/* <MudarRemessa left={left} setLeft={setLeft} right={right} setRight={setRight}/> */}
-                    </>
-                }
-                { tab == 1 && <Volumes remessa={true} /> }
+                <EditarRemessaAtual />
+
+                <ProdutosRemessa />
+
+               <Volumes remessa={true} />
             </Box>
         </Layout>
     )
@@ -151,10 +117,67 @@ function Informacoes({ status, setTab }) {
     )
 }
 
+function EditarRemessaAtual() {
+    const [openModal, setOpenModal] = useState(false);
+
+    return (
+        <Box sx={{padding: '20px 20px 0'}}>
+            <Button variant="contained" size="small" onClick={() => setOpenModal(true)}>Editar remessa</Button>
+
+            <Modal 
+                open={openModal}
+                setOpen={setOpenModal}
+                title="Editar remessa">
+
+                <EditarRemessa />
+            </Modal>
+        </Box>
+    )
+}
+
 function MudarRemessa({ left, setLeft, right, setRight }) {
     return (
         <Box className="mudar_remessa">
             <TransferList className="teste" left={left} setLeft={setLeft} right={right} setRight={setRight} />
+        </Box>
+    )
+}
+
+function ProdutosRemessa() {
+    const [openModal, setOpenModal] = useState(false);
+
+    return (
+        <Box className="produtos_remessa">
+            <div className="item finalizado">
+                <h2>Mesa de poker profissional personalizada</h2>
+                <p>Pedido: 5951</p>
+                <p>Porcentagem: 100%</p>
+                <p>Conclusão: 22/04/2025</p>
+                <p>Volumes embalados: 0/5</p>
+                <Button variant="outlined" size="small" onClick={() => setOpenModal(true)}>Mudar remessa</Button>
+            </div>
+
+            <div className="item">
+                <h2>Mesa de poker profissional</h2>
+                <p>Pedido: 5952</p>
+                <p>Porcentagem: 10%</p>
+                <p>Conclusão: 22/04/2025</p>
+                <p>Volumes embalados: 0/6</p>
+                <Button variant="outlined" size="small" onClick={() => setOpenModal(true)}>Mudar remessa</Button>
+            </div>
+
+            <div className="item">
+                <h2>Futmesa</h2>
+                <p>Pedido: 5952</p>
+                <p>Porcentagem: 10%</p>
+                <p>Conclusão: <span className="atrasado">16/04/2025</span></p>
+                <p>Volumes embalados: 0/3</p>
+                <Button variant="outlined" size="small" onClick={() => setOpenModal(true)}>Mudar remessa</Button>
+            </div>
+            
+            <Modal open={openModal} setOpen={setOpenModal} title="Mudar remessa" sx={{'& .MuiDialogContent-root': { paddingTop: '0'}}}>
+                <MudarRemessaModal />
+            </Modal>
         </Box>
     )
 }
@@ -167,10 +190,14 @@ export function Volumes({ remessa = false }) {
     const naoEmbalados = volumesOP.filter(item => item.id_embalagem == null);
     const embalados = volumesOP.filter(item => item.id_embalagem != null);
 
+    
 
     //TABELA NAO EMBALADOS
     const createData = (volume) => {
+        
         const volumeConf = volumesOP.find(item => item.id_volume == volume.id);
+
+        const pedido = "5951";
         const title = volume.title;
         const dimensoes = volumeConf?.comprimento ? `${volumeConf?.comprimento} x ${volumeConf?.largura} x ${volumeConf?.altura}` : ''
         const peso = volumeConf?.peso;
@@ -197,7 +224,7 @@ export function Volumes({ remessa = false }) {
             embalado = <Chip className="stats" size='small' color="success" label={'Sim'} />
         }
         
-        return { title, dimensoes, peso, atividadeStatus, chipStatus, embalado };
+        return { pedido, title, dimensoes, peso, atividadeStatus, chipStatus, embalado };
     }
 
     const volumesPrevistos = volumes.filter(item2 =>
@@ -219,6 +246,10 @@ export function Volumes({ remessa = false }) {
         )
     })
     const headCells = [
+        {
+            id: 'pedido',
+            label: 'Pedido',
+        },
         {
             id: 'volume',
             label: 'Volume',

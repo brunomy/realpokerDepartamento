@@ -1,0 +1,29 @@
+@use '~/assets/scss/Variables.scss' as *;
+
+.mudar_remessa{
+    width: 550px;
+    max-width: 100%;
+
+    .MuiTabScrollButton-horizontal{
+        background: #000;
+        display: none;
+    }
+    
+    .tab_content{
+        padding: 20px 0 10px;
+    }
+    .nova_remessa_form{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 10px;
+
+        .item{
+            width: calc((100% - 10px)/2);
+    
+            &.full{
+                width: 100%;
+            }
+        }
+    }
+}

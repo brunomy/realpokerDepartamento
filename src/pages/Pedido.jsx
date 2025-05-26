@@ -1,7 +1,6 @@
 import '~/assets/scss/Show.scss';
 
 import { useParams } from 'react-router-dom';
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Button, Chip, Tabs, Tab } from '@mui/material';
 
@@ -31,8 +30,6 @@ export default function Pedidos() {
     const { volumesOP } = useUser();
 
     const { id } = useParams();
-
-    const [tab, setTab] = useState(0);
 
     //dados
     const createDataOrdens = ({ id, remessa, categoria, descricao, producao, conclusao, requisitos, status }) => {
@@ -112,40 +109,20 @@ export default function Pedidos() {
         },
     ];
 
-    const handleChange = (event, newTab) => {
-      setTab(newTab);
-    };
-
     return (
         <Layout>
             <Title title={"Pedido Nº #"+id} icon={<ShoppingCartIcon/>} />
-            <Box className="tabs_content">
-                <Tabs
-                    value={tab}
-                    onChange={handleChange}
-                    variant="scrollable"
-                    scrollButtons
-                    allowScrollButtonsMobile
-                >
-                    <Tab label="Informações" />
-                </Tabs>
-            </Box>
             <Box className="show_content">
-                { tab == 0 && 
-                    <>
-                    <Informacoes 
-                        volumesOP={volumesOP}
-                        status={calculoStatusPedido()} 
-                        setTab={setTab} />
-                    <Ordens headCells={headCellsOrdens} rows={rowsOrdens}/>
-                    </>
-                }
+                <Informacoes 
+                    volumesOP={volumesOP}
+                    status={calculoStatusPedido()} />
+                <Ordens headCells={headCellsOrdens} rows={rowsOrdens}/>
             </Box>
         </Layout>
     )
 }
 
-function Informacoes({ setTab, volumesOP}) {
+function Informacoes({ volumesOP}) {
     return (
         <>
         <Box className="informacoes" sx={{paddingBottom: '0 !important'}}>
