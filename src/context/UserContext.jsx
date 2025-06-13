@@ -179,8 +179,7 @@ export function UserProvider({ children }) {
   const [atividadesOP, setAtividadesOP] = useState([
     {
       "id": 1, 
-      "id_ordem": 
-      "5951-1", 
+      "id_ordem": "5951-1", 
       "id_etapa": 1, 
       "id_atividade": 0, 
       "id_equipe": 1, 
