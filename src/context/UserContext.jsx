@@ -39,9 +39,13 @@ export function UserProvider({ children }) {
         carregarDepartamentos(res.user.id);
 
         if (res.user.permissao === "gerente") {
-          navigate("/ordens");
-        } else {
+          navigate("/pedidos");
+        } else if( res.user.permissao === "atividades") {
           navigate("/atividades");
+        } else if( res.user.permissao === "checklists") {
+          navigate("/checklists");
+        } else if( res.user.permissao === "remessas") {
+          navigate("/remessas");
         }
       }
     } catch (err) {

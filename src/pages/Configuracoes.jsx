@@ -1,45 +1,64 @@
 import '~/assets/scss/Index.scss';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Link } from 'react-router-dom';
-import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
-import DeleteIcon from '@mui/icons-material/Delete';
 
 import DataTable from '~/components/DataTable';
 import Layout from "~/components/layout/Layout";
 import Title from "~/components/layout/Title";
-import InputAuto from '~/components/InputAuto';
-import InputCalendarRange from '~/components/InputCalendarRange';
-
-import Modal from '~/components/layout/Modal';
 
 import { useUser } from "~/context/UserContext";
 
+import { config_api } from './../api';
+
 export default function Configuracoes() {
-    const { etapas, atividades, categorias, checklists, volumes } = useUser();
+    const { selectedDepartamento } = useUser();
+    const [error, setError] = useState(null);
+
+    const [rows, setRows] = useState([]);
+
+
+    useEffect(() => {
+        const fetchCategorias = async () => {
+            try {
+                const res = await config_api.getCategorias(selectedDepartamento.id);
+
+                setRows(
+                    res.data?.map((categoria) => {
+                        return createData(
+                            categoria.nome,
+                            categoria.etapas_count,
+                            categoria.atividades_count,
+                            categoria.checklists_count,
+                            <>
+                            {categoria.volumes_count}
+                                <Button className="link" component={Link} to={`/configuracoes/${categoria.id}`} variant="outlined" size="small">
+                                    <EditSquareIcon />
+                                </Button>
+                            </>
+                        );
+                    }) || []
+                );
+            } catch (err) {
+                setRows([]);
+                setError(err.message);
+            }
+        };
+        if (selectedDepartamento?.id) {
+            fetchCategorias();
+        }
+    }, [selectedDepartamento]);
+
+
 
     //dados da tabela
     const createData = (categorias, etapas, atividades, checklists, volumes, acoes) => {
         return { categorias, etapas, atividades, checklists, volumes, acoes};
     }
-    const [rows, setRows] = useState(
-        categorias?.map((categoria) => {
-            return createData(
-                categoria.title,
-                etapas.filter((etapa) => etapa.id_categoria == categoria.id).length,
-                atividades.filter((atividade) => atividade.id_categoria == categoria.id).length,
-                checklists.filter((checklist) => checklist.id_categoria == categoria.id).length,
-                <>
-                    {volumes.filter((volume) => volume.id_categoria == categoria.id).length}
-                    <Button className="link" component={Link} to={`/configuracoes/${categoria.id}`} variant="outlined" size="small">
-                        <EditSquareIcon />
-                    </Button>
-                </>
-            );
-        }) || [] 
-    );
+  
     const headCells = [
         {
             id: 'categoria',

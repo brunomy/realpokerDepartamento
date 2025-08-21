@@ -22,3 +22,7 @@ export const user_api = {
   login: (payload) => http("/api/login", { method: "POST", body: JSON.stringify(payload) }),
   getDepartamentos: (idUser) => http(`/api/getDepartamentos/${idUser}`, { method: "GET" }),
 };
+
+export const config_api = {
+  getCategorias: (idDepartamento) => http(`/api/configuracao/${idDepartamento}`, { method: "GET" }),
+};

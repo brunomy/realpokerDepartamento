@@ -96,6 +96,11 @@ export default function Header() {
             </IconButton>
             <h1>{selectedDepartamento?.nome}</h1>
           </Box>
+          <Box className="right">
+            <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+              {usuarioLogado.nome}
+            </Typography>
+          </Box>
         </Toolbar>
       </AppBar>
       <Box className={"menu "+(active ? 'active' : '') }>

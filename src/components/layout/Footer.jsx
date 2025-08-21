@@ -43,7 +43,7 @@ export default function Footer() {
                 icon={<ShoppingCartTwoToneIcon />}
                 component={Link}
                 to="/pedidos"
-                sx={{ display: usuarioLogado.permission === "admin" ? 'flex' : 'none' }}
+                sx={{ display: usuarioLogado.permissao === "gerente" ? 'flex' : 'none' }}
             />
             <BottomNavigationAction
                 label="Ordens"
@@ -52,6 +52,7 @@ export default function Footer() {
                 component={Link}
                 to="/ordens"
                 showLabel
+                sx={{ display: usuarioLogado.permissao === "gerente" ? 'flex' : 'none' }}
             />
             <BottomNavigationAction
                 label="Atividades"
@@ -60,6 +61,8 @@ export default function Footer() {
                 component={Link}
                 to="/atividades"
                 showLabel
+                sx={{ display: usuarioLogado.permissao === "atividades" ? 'flex' : 'none' }}
+
             />
             <BottomNavigationAction
                 label="Checklists"
@@ -68,6 +71,7 @@ export default function Footer() {
                 component={Link}
                 to="/checklists"
                 showLabel
+                sx={{ display: usuarioLogado.permissao === "checklists" ? 'flex' : 'none' }}
             />
             <BottomNavigationAction
                 label="Remessas"
@@ -76,7 +80,7 @@ export default function Footer() {
                 component={Link}
                 to="/remessas"
                 showLabel
-                sx={{ display: usuarioLogado.permission === "admin" ? 'flex' : 'none' }}
+                sx={{ display: usuarioLogado.permissao === "remessas" ? 'flex' : 'none' }}
             />
             <BottomNavigationAction
                 label="Equipes"
@@ -85,7 +89,7 @@ export default function Footer() {
                 component={Link}
                 to="/equipes"
                 showLabel
-                sx={{ display: usuarioLogado.permission === "admin" ? 'flex' : 'none' }}
+                sx={{ display: usuarioLogado.permissao === "gerente" ? 'flex' : 'none' }}
             />
             <BottomNavigationAction
                 label="Configurações"
@@ -94,6 +98,7 @@ export default function Footer() {
                 component={Link}
                 to="/configuracoes"
                 showLabel
+                sx={{ display: usuarioLogado.permissao === "gerente" ? 'flex' : 'none' }}
             />
         </BottomNavigation>
     )
