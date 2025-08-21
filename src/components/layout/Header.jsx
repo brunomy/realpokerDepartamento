@@ -1,7 +1,7 @@
 import '~/assets/scss/Header.scss';
 
 import * as React from 'react';
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import { Box, Button } from '@mui/material';
@@ -20,6 +20,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import MeetingRoomTwoToneIcon from '@mui/icons-material/MeetingRoomTwoTone';
 import CancelTwoToneIcon from '@mui/icons-material/CancelTwoTone';
+import { useUser } from "~/context/UserContext";
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -62,7 +63,21 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Header() {
+  const { usuarioLogado, departamentos, selectedDepartamento, setSelectedDepartamento, carregarDepartamentos } = useUser();
+
   const [active, setActive] = useState(false)
+
+
+
+  useEffect(() => {
+    carregarDepartamentos(usuarioLogado.id);
+  }, [active]);
+
+  const logout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+    window.location.href = "/";
+  }
 
   return (
     <Box className="header" sx={{ flexGrow: 1 }}>
@@ -79,30 +94,31 @@ export default function Header() {
             >
               <MenuIcon />
             </IconButton>
-            <h1>Fábrica</h1>
+            <h1>{selectedDepartamento?.nome}</h1>
           </Box>
-          {/* <Box className="right">
-            <Search>
-              <SearchIconWrapper>
-                <SearchIcon />
-              </SearchIconWrapper>
-              <StyledInputBase
-                placeholder="Buscar pedido"
-                inputProps={{ 'aria-label': 'search' }}
-              />
-            </Search>
-          </Box> */}
         </Toolbar>
       </AppBar>
       <Box className={"menu "+(active ? 'active' : '') }>
         <Box className="menu_content">
           <Button onClick={() => setActive(false)} className="close" variant="contained"><CancelTwoToneIcon />Fechar</Button>
-
           <div className="links">
-            <Button variant="contained">Fabrica</Button>
-            <Button variant="contained">Fichas</Button>
+            { departamentos && (
+              departamentos.map((departamento) => (
+                <Button
+                  key={departamento.id}
+                  variant="contained"
+                  className={selectedDepartamento.id === departamento.id ? 'active' : ''}
+                  onClick={() => {
+                    setSelectedDepartamento(departamento);
+                    setActive(false);
+                  }}
+                >
+                  {departamento.nome}
+                </Button>
+              ))
+            )}
           </div>
-          <Button className="logout" variant="contained"><MeetingRoomTwoToneIcon /> Logout</Button>
+          <Button className="logout" variant="contained" onClick={logout}><MeetingRoomTwoToneIcon /> Logout</Button>
         </Box>
       </Box>
     </Box>

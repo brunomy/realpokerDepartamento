@@ -1,42 +1,47 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Container, Box, TextField, Button } from '@mui/material';
-import '~/assets/scss/Login.scss';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Container, Box, TextField, Button } from "@mui/material";
+import "~/assets/scss/Login.scss";
 
-import { useUser } from '~/context/UserContext';
+import { useUser } from "~/context/UserContext";
 
 export default function Login() {
-    const { usuarioLogado, setUsuarioLogado } = useUser();
-    const [user, setUser] = useState('admin');
+  const { login } = useUser();
+  const [user, setUser] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
+  return (
+    <Container className="login_content">
+      <Box className="login">
+        <h1>Login departamento</h1>
+        <p>Utilize as credenciais cadastradas no sistema.</p>
 
-    const login = () => {
-        setUsuarioLogado(
-            {
-                id: 1,
-                permission: user,
-                name: 'Bruno'
-            }
-        )
-        if (user === 'admin') {
-            navigate('/pedidos');
-        } else {
-            navigate('/ordens');
-        }
-    }
+        <TextField
+          className="input"
+          label="Usuário"
+          variant="outlined"
+          size="small"
+          value={user}
+          onChange={(e) => setUser(e.target.value)}
+        />
+        <TextField
+          className="input"
+          label="Senha"
+          type="password"
+          variant="outlined"
+          size="small"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-    return (
-        <Container className="login_content">
-            <Box className="login">
-                <h1>Login departamento</h1>
-                <p>Utilize as credenciais cadastrradas no sistema.</p>
-                <TextField className="input" label="User" variant="outlined" size="small" value={user} onChange={
-                    (e) => { setUser(e.target.value) }
-                } />
-                <TextField className="input" label="Password" variant="outlined" size="small" />
-                <Button variant="contained" onClick={login}>Login</Button>
-            </Box>
-        </Container>
-    );
+        <Button variant="contained" onClick={() => login({ user, password, navigate, setError })}>
+          Login
+        </Button>
+
+        {error && <p style={{ color: "red" }}>{error}</p>}
+      </Box>
+    </Container>
+  );
 }

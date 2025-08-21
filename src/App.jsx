@@ -1,5 +1,5 @@
 import './App.scss'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
 
 import Login from './pages/Login'
@@ -22,7 +22,6 @@ import ConfiguracaoCheckVol from './pages/ConfiguracaoCheckVol';
 import ChecklistOrder from './pages/Checklist';
 
 function App() {
-
   return (
     <UserProvider>
     <section className="container">
@@ -30,33 +29,38 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
 
-          <Route path="/pedidos" element={<Pedidos />} />
-          <Route path="/pedidos/:id" element={<Pedido />} />
+          <Route path="/pedidos" element={<PrivateRoute><Pedidos /></PrivateRoute>} />
+          <Route path="/pedidos/:id" element={<PrivateRoute><Pedido /></PrivateRoute>} />
 
-          <Route path="/ordens" element={<Ordens />} />
-          <Route path="/ordens/:id" element={<Ordem />} />
+          <Route path="/ordens" element={<PrivateRoute><Ordens /></PrivateRoute>} />
+          <Route path="/ordens/:id" element={<PrivateRoute><Ordem /></PrivateRoute>} />
 
-          <Route path="/atividades" element={<Atividades />} />
-          <Route path="/atividades/:id" element={<Atividade />} />
+          <Route path="/atividades" element={<PrivateRoute><Atividades /></PrivateRoute>} />
+          <Route path="/atividades/:id" element={<PrivateRoute><Atividade /></PrivateRoute>} />
 
-          <Route path="/configuracoes" element={<Configuracoes />} />
-          <Route path="/configuracoes/:id" element={<ConficuracaoEtapas />} />
-          <Route path="/configuracoes/:id/etapa/:id_etapa" element={<ConfiguracaoAtividades />} />
-          <Route path="/configuracoes/:id/etapa/:id_etapa/atividade/:id_atividade" element={<ConfiguracaoCheckVol />} />
+          <Route path="/configuracoes" element={<PrivateRoute><Configuracoes /></PrivateRoute>} />
+          <Route path="/configuracoes/:id" element={<PrivateRoute><ConficuracaoEtapas /></PrivateRoute>} />
+          <Route path="/configuracoes/:id/etapa/:id_etapa" element={<PrivateRoute><ConfiguracaoAtividades /></PrivateRoute>} />
+          <Route path="/configuracoes/:id/etapa/:id_etapa/atividade/:id_atividade" element={<PrivateRoute><ConfiguracaoCheckVol /></PrivateRoute>} />
 
-          <Route path="/checklists" element={<Checklists />} />
-          <Route path="/checklists/:id" element={<ChecklistOrder />} />
+          <Route path="/checklists" element={<PrivateRoute><Checklists /></PrivateRoute>} />
+          <Route path="/checklists/:id" element={<PrivateRoute><ChecklistOrder /></PrivateRoute>} />
 
-          <Route path="/equipes" element={<Equipes />} />
-          <Route path="/equipes/:id" element={<Equipe />} />
+          <Route path="/equipes" element={<PrivateRoute><Equipes /></PrivateRoute>} />
+          <Route path="/equipes/:id" element={<PrivateRoute><Equipe /></PrivateRoute>} />
 
-          <Route path="/remessas" element={<Remessas />} />
-          <Route path="/remessas/:id" element={<Remessa />} />
+          <Route path="/remessas" element={<PrivateRoute><Remessas /></PrivateRoute>} />
+          <Route path="/remessas/:id" element={<PrivateRoute><Remessa /></PrivateRoute>} />
         </Routes>
       </Router>
     </section>
     </UserProvider>
   )
+}
+
+export function PrivateRoute({ children }) {
+  const token = localStorage.getItem("authToken");
+  return token ? children : <Navigate to="/" />;
 }
 
 export default App

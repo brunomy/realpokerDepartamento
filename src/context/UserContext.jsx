@@ -1,15 +1,54 @@
 import { createContext, useState, useContext } from 'react';
+import { useEffect } from 'react';
+import { user_api } from "./../api";
 
 const UserContext = createContext();
 
 export function UserProvider({ children }) {
-  const [usuarioLogado, setUsuarioLogado] = useState(
-    {
-        id: 1,
-        permission: 'admin',
-        name: 'Bruno'
+
+  const [usuarioLogado, setUsuarioLogado] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+  const [departamentos, setDepartamentos] = useState([]);
+  const [selectedDepartamento, setSelectedDepartamento] = useState(null);
+
+
+  const carregarDepartamentos = async (idUser) => {
+    try {
+      const res = await user_api.getDepartamentos(idUser);
+      setDepartamentos(res.data);
+
+      if(res.data.filter(item => item.id === selectedDepartamento?.id).length === 0 && res.data.length > 0) {
+        setSelectedDepartamento(res.data[0]);
+      }
+    } catch (err) {
+      console.error("Erro:", err.message);
     }
-  );
+  }
+  
+  const login = async ({ user, password, navigate, setError }) => {
+    try {
+      const res = await user_api.login({ user, password });
+      
+      if (res.token) {
+        localStorage.setItem("authToken", res.token);
+        localStorage.setItem("user", JSON.stringify(res.user));
+        setUsuarioLogado(res.user);
+
+        carregarDepartamentos(res.user.id);
+
+        if (res.user.permissao === "gerente") {
+          navigate("/ordens");
+        } else {
+          navigate("/atividades");
+        }
+      }
+    } catch (err) {
+      setError(err.message || "Erro ao fazer login");
+    }
+  };
+
 
   const [categorias, setCategorias] = useState([
     {
@@ -193,9 +232,17 @@ export function UserProvider({ children }) {
   const [volumesOP, setVolumesOP] = useState([])
   const [embalagensOP, setEmbalagensOP] = useState([])
 
+  
+
   return (
     <UserContext.Provider value={{ 
       usuarioLogado, setUsuarioLogado,
+      login,
+
+      departamentos, setDepartamentos,
+      selectedDepartamento, setSelectedDepartamento,
+      carregarDepartamentos,
+
       categorias, setCategorias,
       etapas, setEtapas,
       atividades, setAtividades,

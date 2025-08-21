@@ -59,6 +59,10 @@
                 flex-direction: column;
                 gap: 10px;
 
+                button.active{
+                    background: green
+                }
+
             }
 
             button.logout{
