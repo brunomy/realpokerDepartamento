@@ -20,7 +20,6 @@ export default function Configuracoes() {
 
     const [rows, setRows] = useState([]);
 
-
     useEffect(() => {
         const fetchCategorias = async () => {
             try {
@@ -35,7 +34,7 @@ export default function Configuracoes() {
                             categoria.checklists_count,
                             <>
                             {categoria.volumes_count}
-                                <Button className="link" component={Link} to={`/configuracoes/${categoria.id}`} variant="outlined" size="small">
+                                <Button className="link" component={Link} to={`/configuracoes/${categoria.id}/etapas`} variant="outlined" size="small">
                                     <EditSquareIcon />
                                 </Button>
                             </>

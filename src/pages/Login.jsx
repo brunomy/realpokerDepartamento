@@ -7,8 +7,8 @@ import { useUser } from "~/context/UserContext";
 
 export default function Login() {
   const { login } = useUser();
-  const [user, setUser] = useState("");
-  const [password, setPassword] = useState("");
+  const [user, setUser] = useState("bruno");
+  const [password, setPassword] = useState("123456");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 

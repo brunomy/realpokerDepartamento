@@ -25,4 +25,9 @@ export const user_api = {
 
 export const config_api = {
   getCategorias: (idDepartamento) => http(`/api/configuracao/${idDepartamento}`, { method: "GET" }),
+
+  getEtapas: (idDepartamento, idCategoria) => http(`/api/configuracao/buscarEtapas/${idDepartamento}/categoria/${idCategoria}/etapas`, { method: "GET" }),
+  createEtapa: (payload) => http("/api/configuracao/criarEtapa", { method: "POST", body: JSON.stringify(payload), }),
+  updateEtapa: (id, payload) => http(`/api/configuracao/etapa/${id}`, { method: "PUT", body: JSON.stringify(payload), }),
+  deleteEtapa: (id) => http(`/api/configuracao/deletarEtapa/${id}`, { method: "DELETE", }),
 };
