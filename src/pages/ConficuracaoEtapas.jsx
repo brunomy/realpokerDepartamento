@@ -1,7 +1,7 @@
 import "~/assets/scss/Show.scss";
-import { useParams, Link } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { Box, Button } from "@mui/material";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { Box, Button, TextField } from "@mui/material";
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
 import DataTable from '~/components/DataTable';
@@ -16,27 +16,46 @@ import { useUser } from "~/context/UserContext";
 import Modal from '~/components/layout/Modal';
 import AdicionarString from '~/components/modal/AdicionarString';
 import { config_api } from './../api';
+import SaveIcon from '@mui/icons-material/Save';
 
 export default function ConficuracaoEtapas() {
+    const navigate = useNavigate();
+    const prevDepartamento = useRef(null);
+
     const { selectedDepartamento } = useUser();
     const { id } = useParams();
 
     const [rows, setRows] = useState([]);
     const [error, setError] = useState(null);
 
-    const [novaEtapa, setNovaEtapa] = useState("");
+    const [novo, setNovo] = useState("");
+
+    const [categoria, setCategoria] = useState(null);
 
     const [openModal, setOpenModal] = useState(false);
 
-    const [breadcrumbs, setBreadcrumbs] = useState([]);
+    const [breadcrumbs, setBreadcrumbs] = useState([
+        {
+            label: 'Configurações',
+            url: '/configuracoes'
+        },
+    ]);
 
     useEffect(() => {
-        if (selectedDepartamento?.id) {
-            carregarEtapas();
+        if (prevDepartamento.current !== null && prevDepartamento.current !== selectedDepartamento) {
+            navigate("/configuracoes");
         }
+        if (selectedDepartamento?.id) {
+            carregar();
+        }
+        prevDepartamento.current = selectedDepartamento;
     }, [selectedDepartamento]);
 
-    const carregarEtapas = async () => {
+    useEffect(() => {
+        setNovo('');
+    }, [openModal]);
+
+    const carregar = async () => {
         try {
             const res = await config_api.getEtapas(selectedDepartamento.id, id);
 
@@ -50,6 +69,8 @@ export default function ConficuracaoEtapas() {
                     url: `/configuracoes/${id}/etapas`
                 }
             ]);
+
+            setCategoria(res.data?.categoria);
             
             setRows(
                 res.data?.etapas?.map((etapa) => {
@@ -73,19 +94,19 @@ export default function ConficuracaoEtapas() {
         }
     };
 
-    const adicionarEtapa = async () => {
+    const adicionar = async () => {
         try {
             const payload = {
                 id_categoria: id,
                 id_departamento: selectedDepartamento.id,
-                titulo: novaEtapa,
+                titulo: novo,
             };
 
             const res = await config_api.createEtapa(payload);
 
             console.log("Etapa criada:", res.data);
 
-            carregarEtapas();
+            carregar();
 
             setOpenModal(false);
         } catch (err) {
@@ -100,7 +121,7 @@ export default function ConficuracaoEtapas() {
             const res = await config_api.deleteEtapa(id);
             console.log(res.message);
 
-            carregarEtapas();
+            carregar();
         } catch (err) {
             console.error("Erro ao deletar etapa:", err.message);
         }
@@ -146,13 +167,50 @@ export default function ConficuracaoEtapas() {
             <Title title={`Configuração de etapas`} icon={<SettingsApplicationsIcon />} breadcrumbs={breadcrumbs} />
             <Box className="show_content">
                 <Box className="table_content" sx={{ paddingLeft: '0 !important', paddingRight: '0 !important' }}>
+                    <Box className="actions" sx={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'space-between', pb: 3 }}>
+                        <MudarTitulo objeto={{ titulo: categoria?.nome }} disabled />
+                        <Button className="adicionar" variant="contained" onClick={() => setOpenModal(true)}>Adicionar etapa</Button>
+                    </Box>
                     <DataTable headCells={headCells} rows={rows}/>
-                    <Button className="adicionar" variant="contained" onClick={() => setOpenModal(true)}>Adicionar etapa</Button>
                 </Box>
             </Box>
-            <Modal open={openModal} setOpen={setOpenModal} title="Adicionar etapa" confirm={adicionarEtapa}>
-                <AdicionarString value={novaEtapa} setValue={setNovaEtapa} />
+            <Modal open={openModal} setOpen={setOpenModal} title="Adicionar etapa" confirm={adicionar}>
+                <AdicionarString value={novo} setValue={setNovo} />
             </Modal>
         </Layout>
+    );
+}
+
+export function MudarTitulo({ objeto, onClick, disabled }) {
+    const [novo, setNovo] = useState(objeto?.titulo);
+
+    useEffect(() => {
+        setNovo(objeto?.titulo ?? "");
+    }, [objeto]);
+    
+    const handleClick = () => {
+        onClick(objeto.id, novo);
+    };
+
+    return (
+        <Box className="titulo">
+            <Box sx={{
+                display: "flex",
+                gap: "5px",
+                width: "350px",
+                margin: "0 0 0 auto"
+            }}>
+                <TextField
+                    value={novo}
+                    onChange={(e) => setNovo(e.target.value)}
+                    fullWidth
+                    size="small"
+                    disabled={disabled}
+                />
+                { novo !== objeto?.titulo && novo && (
+                    <Button onClick={handleClick} variant="contained"><SaveIcon /></Button>
+                )}
+            </Box>
+        </Box>
     );
 }

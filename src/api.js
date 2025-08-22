@@ -30,4 +30,8 @@ export const config_api = {
   createEtapa: (payload) => http("/api/configuracao/criarEtapa", { method: "POST", body: JSON.stringify(payload), }),
   updateEtapa: (id, payload) => http(`/api/configuracao/etapa/${id}`, { method: "PUT", body: JSON.stringify(payload), }),
   deleteEtapa: (id) => http(`/api/configuracao/deletarEtapa/${id}`, { method: "DELETE", }),
+  
+  getAtividades: (idEtapa) => http(`/api/configuracao/buscarAtividades/${idEtapa}`, { method: "GET" }),
+  createAtividade: (payload) => http("/api/configuracao/criarAtividade", { method: "POST", body: JSON.stringify(payload), }),
+  deleteAtividade: (id) => http(`/api/configuracao/deletarAtividade/${id}`, { method: "DELETE", }),
 };
