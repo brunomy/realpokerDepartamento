@@ -39,9 +39,9 @@ function App() {
           <Route path="/atividades/:id" element={<PrivateRoute><Atividade /></PrivateRoute>} />
 
           <Route path="/configuracoes" element={<PrivateRoute><Configuracoes /></PrivateRoute>} />
-          <Route path="/configuracoes/:id/etapas" element={<PrivateRoute><ConficuracaoEtapas /></PrivateRoute>} />
-          <Route path="/configuracoes/etapa/:id/atividades" element={<PrivateRoute><ConfiguracaoAtividades /></PrivateRoute>} />
-          <Route path="/configuracoes/:id/etapa/:id_etapa/atividade/:id_atividade" element={<PrivateRoute><ConfiguracaoCheckVol /></PrivateRoute>} />
+          <Route path="/configuracoes/:id" element={<PrivateRoute><ConficuracaoEtapas /></PrivateRoute>} />
+          <Route path="/configuracoes/etapa/:id" element={<PrivateRoute><ConfiguracaoAtividades /></PrivateRoute>} />
+          <Route path="/configuracoes/atividade/:id" element={<PrivateRoute><ConfiguracaoCheckVol /></PrivateRoute>} />
 
           <Route path="/checklists" element={<PrivateRoute><Checklists /></PrivateRoute>} />
           <Route path="/checklists/:id" element={<PrivateRoute><ChecklistOrder /></PrivateRoute>} />

@@ -33,5 +33,12 @@ export const config_api = {
   
   getAtividades: (idEtapa) => http(`/api/configuracao/buscarAtividades/${idEtapa}`, { method: "GET" }),
   createAtividade: (payload) => http("/api/configuracao/criarAtividade", { method: "POST", body: JSON.stringify(payload), }),
+  updateAtividade: (id, payload) => http(`/api/configuracao/atividade/${id}`, { method: "PUT", body: JSON.stringify(payload), }),
   deleteAtividade: (id) => http(`/api/configuracao/deletarAtividade/${id}`, { method: "DELETE", }),
+
+  getChecklistVolumes: (idAtividade) => http(`/api/configuracao/buscarChecklistVolumes/${idAtividade}`, { method: "GET" }),
+  createChecklist: (payload) => http("/api/configuracao/criarChecklist", { method: "POST", body: JSON.stringify(payload), }),
+  deleteChecklist: (id) => http(`/api/configuracao/deletarChecklist/${id}`, { method: "DELETE", }),
+  createVolume: (payload) => http("/api/configuracao/criarVolume", { method: "POST", body: JSON.stringify(payload), }),
+  deleteVolume: (id) => http(`/api/configuracao/deletarVolume/${id}`, { method: "DELETE", }),
 };

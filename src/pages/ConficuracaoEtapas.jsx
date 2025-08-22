@@ -66,7 +66,7 @@ export default function ConficuracaoEtapas() {
                 },
                 {
                     label: res.data?.categoria?.nome || 'Categoria',
-                    url: `/configuracoes/${id}/etapas`
+                    url: `/configuracoes/${id}`
                 }
             ]);
 
@@ -80,7 +80,7 @@ export default function ConficuracaoEtapas() {
                         etapa.checklists_count,
                         etapa.volumes_count,
                         <Box className="acoes">
-                            <Button className="link" component={Link} to={`/configuracoes/etapa/${etapa.id}/atividades`} variant="outlined" size="small">
+                            <Button className="link" component={Link} to={`/configuracoes/etapa/${etapa.id}`} variant="outlined" size="small">
                                 <EditSquareIcon />
                             </Button>
                             <Button onClick={() => {deletar(etapa.id)}} variant="outlined" size="small"><DeleteIcon /></Button>

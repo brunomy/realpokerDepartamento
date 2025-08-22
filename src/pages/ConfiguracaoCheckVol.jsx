@@ -22,37 +22,92 @@ import { useUser } from "~/context/UserContext";
 import Modal from '~/components/layout/Modal';
 import AdicionarString from '~/components/modal/AdicionarString';
 
+import { config_api } from './../api';
+import { MudarTitulo } from "./ConficuracaoEtapas";
+
 export default function ConfiguracaoCheckVol() {
-    const { id, id_etapa, id_atividade } = useParams();
-    const { categorias, etapas, atividades } = useUser();
+    const { selectedDepartamento } = useUser();
+    const navigate = useNavigate();
+    const prevDepartamento = useRef(null);
+
+    const { id } = useParams();
+    
+    const [breadcrumbs, setBreadcrumbs] = useState([
+        {
+            label: 'Configurações',
+            url: '/configuracoes'
+        },
+    ]);
+    const [error, setError] = useState(null);
+    const [atividade, setAtividade] = useState(null);
+    const [checklists, setChecklists] = useState([]);
+    const [volumes, setVolumes] = useState([]);
+
+    useEffect(() => {
+        if (prevDepartamento.current !== null && prevDepartamento.current !== selectedDepartamento) {
+            navigate("/configuracoes");
+        }
+        if (selectedDepartamento?.id) {
+            carregar();
+        }
+        prevDepartamento.current = selectedDepartamento;
+    }, [selectedDepartamento]);
+
+    const carregar = async () => {
+        try {
+            const res = await config_api.getChecklistVolumes(id);
+
+            setBreadcrumbs([
+                {
+                    label: 'Configurações',
+                    url: '/configuracoes'
+                },
+                {
+                    label: res.data?.categoria?.nome || 'Categoria',
+                    url: `/configuracoes/${res.data?.categoria?.id}`
+                },
+                {
+                    label: res.data?.etapa?.titulo || 'Etapa',
+                    url: `/configuracoes/etapa/${res.data?.etapa?.id}`
+                },
+                {
+                    label: res.data?.atividade?.titulo || 'Atividade',
+                    url: `/configuracoes/atividade/${res.data?.atividade?.id}`
+                }
+            ]);
+
+            setAtividade(res.data?.atividade || null);
+            setChecklists(res.data?.checklists || []);
+            setVolumes(res.data?.volumes || []);
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    const editarAtividade = async (id, titulo) => {
+        try {
+            const payload = {
+                titulo: titulo,
+            };
+
+            console.log(id, titulo);
+            
+
+            const res = await config_api.updateAtividade(id, payload);
+            console.log("Atividade atualizada:", res.data);
+
+            carregar();
+        } catch (err) {
+            console.error("Erro ao criar atividade:", err.message);
+        }
+    }
+
 
     const [tab, setTab] = useState(0);
 
     const handleChange = (event, newTab) => {
         setTab(newTab);
     };
-
-    const categoria = categorias.find((item) => item.id == id)
-    const etapa = etapas.find((item) => item.id == id_etapa)
-    const atividade = atividades.find((item) => item.id == id_atividade)
-    const breadcrumbs = [
-        {
-            label: 'Configurações',
-            url: '/configuracoes'
-        },
-        {
-            label: categoria.title,
-            url: `/configuracoes/${id}`
-        },
-        {
-            label: etapa.title,
-            url: `/configuracoes/${id}/etapa/${id_etapa}`
-        },
-        {
-            label: atividade.title,
-            url: `/configuracoes/${id}/etapa/${id_etapa}/atividade/${id_atividade}`
-        }
-    ]
 
     return (
         <Layout>
@@ -73,35 +128,50 @@ export default function ConfiguracaoCheckVol() {
 
             <Box className="show_content">
                 <Box className="table_content" sx={{ paddingLeft: '0 !important', paddingRight: '0 !important' }}>
-                {tab == 0 && <Checklists id={id} id_atividade={id_atividade} id_etapa={id_etapa} />}
-                {tab == 1 && <Volumes id={id} id_atividade={id_atividade} id_etapa={id_etapa} />}
+                {tab == 0 && <Checklists atividade={atividade} editarAtividade={editarAtividade} checklists={checklists} carregar={carregar} />}
+                {tab == 1 && <Volumes atividade={atividade} editarAtividade={editarAtividade} volumes={volumes} carregar={carregar} />}
                 </Box>
             </Box>
         </Layout>
     );
 }
 
-function Checklists({ id, id_atividade, id_etapa }){
-    const { checklists, setChecklists } = useUser();
-    const [openModal, setOpenModal] = useState(false);
-    const [novoChecklist, setNovoChecklist] = useState("");
+function Checklists({ atividade, editarAtividade, checklists, carregar }){
+    const { id } = useParams();
 
-    const adicionarChecklist = () => {
-        setChecklists([
-            ...checklists,
-            {
-                id: checklists.length + 1,
-                id_categoria: id,
-                id_etapa: id_etapa,
-                id_atividade: id_atividade,
-                title: novoChecklist
-            },
-        ]);
-        setNovoChecklist("");
-        setOpenModal(false);
-    }
-    const deletar = (id) => {
-        setChecklists(checklists.filter(item => item.id !== id))
+    const [openModal, setOpenModal] = useState(false);
+    const [rows, setRows] = useState(checklists || []);
+    const [novo, setNovo] = useState("");
+
+    const deletar = async (id) => {
+        if (!window.confirm("Tem certeza que deseja excluir este checklist?")) return;
+
+        try {
+            const res = await config_api.deleteChecklist(id);
+            console.log(res.message);
+
+            carregar();
+        } catch (err) {
+            console.error("Erro ao deletar checklist:", err.message);
+        }
+    };
+    const adicionar = async () => {
+        try {
+            const payload = {
+                id_conf_atividade: id,
+                titulo: novo,
+            };
+
+            const res = await config_api.createChecklist(payload);
+
+            console.log("Checklist criado:", res.data);
+
+            carregar();
+
+            setOpenModal(false);
+        } catch (err) {
+            console.error("Erro ao criar checklist:", err.message);
+        }
     }
 
     const createData = (checklist, acoes) => {
@@ -111,20 +181,23 @@ function Checklists({ id, id_atividade, id_etapa }){
         };
     }
     const createDataItem = () => {
-        return (checklists.filter((item) => item.id_atividade == id_atividade))?.map((checklist) => {
+        return checklists?.map((checklist) => {
             return createData(
-                checklist.title,
+                checklist.titulo,
                 <Box className="acoes">
                     <Button onClick={() => {deletar(checklist.id)}} variant="outlined" size="small"><DeleteIcon /></Button>
                 </Box>
             );
         }) || []
     }
+
     useEffect(() => {
-        setRowsChecklist(createDataItem())
+        setRows(createDataItem())
     },[checklists])
 
-    const [rowsChecklist, setRowsChecklist] = useState(createDataItem());
+    useEffect(() => {
+        setNovo('')
+    },[openModal])
 
     const headCellsChecklist = [
         {
@@ -142,56 +215,77 @@ function Checklists({ id, id_atividade, id_etapa }){
 
     return (
         <>
-        <DataTable headCells={headCellsChecklist} rows={rowsChecklist}/>
-        <Button className="adicionar" variant="contained" onClick={() => setOpenModal(true)}>Adicionar checklist</Button>
-        <Modal open={openModal} setOpen={setOpenModal} title="Adicionar checklist" confirm={adicionarChecklist}>
-            <AdicionarString value={novoChecklist} setValue={setNovoChecklist} />
+        <Box className="actions" sx={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'space-between', pb: 3 }}>
+            <MudarTitulo objeto={atividade}  onClick={editarAtividade} />
+            <Button className="adicionar" variant="contained" onClick={() => setOpenModal(true)}>Adicionar Checklist</Button>
+        </Box>
+        <DataTable headCells={headCellsChecklist} rows={rows}/>
+        <Modal open={openModal} setOpen={setOpenModal} title="Adicionar checklist" confirm={adicionar}>
+            <AdicionarString value={novo} setValue={setNovo} />
         </Modal>
         </>
     )
 }
 
-function Volumes({ id, id_atividade, id_etapa }){
-    const { volumes, setVolumes } = useUser();
-    const [openModal, setOpenModal] = useState(false);
-    const [novoVolume, setNovoVolume] = useState('');
+function Volumes({ atividade, editarAtividade, volumes, carregar }){
+    const { id } = useParams();
 
-    const adicionarVolume = () => {
-        setVolumes([
-            ...volumes,
-            {
-                id: volumes.length + 1,
-                id_categoria: id,
-                id_etapa: id_etapa,
-                id_atividade: id_atividade,
-                title: novoVolume,
-            },
-        ]);
-        setNovoVolume("");
-        setOpenModal(false);
-    }
-    const deletar = (id) => {
-        setVolumes(volumes.filter(item => item.id !== id))
+    const [openModal, setOpenModal] = useState(false);
+    const [rows, setRows] = useState(volumes || []);
+    const [novo, setNovo] = useState("");
+
+    const deletar = async (id) => {
+        if (!window.confirm("Tem certeza que deseja excluir este volume?")) return;
+
+        try {
+            const res = await config_api.deleteVolume(id);
+            console.log(res.message);
+
+            carregar();
+        } catch (err) {
+            console.error("Erro ao deletar volume:", err.message);
+        }
+    };
+    const adicionar = async () => {
+        try {
+            const payload = {
+                id_conf_atividade: id,
+                titulo: novo,
+            };
+
+            const res = await config_api.createVolume(payload);
+
+            console.log("Checklist criado:", res.data);
+
+            carregar();
+
+            setOpenModal(false);
+        } catch (err) {
+            console.error("Erro ao criar checklist:", err.message);
+        }
     }
 
     const createData = (volume, acoes) => {
         return { volume, acoes };
     }
     const createDataItem = () => {
-        return (volumes.filter((item) => item.id_atividade == id_atividade))?.map((volume) => {
+        return volumes?.map((volume) => {
             return createData(
-                volume.title,
+                volume.titulo,
                 <Box className="acoes">
                     <Button onClick={() => {deletar(volume.id)}} variant="outlined" size="small"><DeleteIcon /></Button>
                 </Box>
             );
         }) || []
     }
+
     useEffect(() => {
         setRows(createDataItem())
     },[volumes])
 
-    const [rows, setRows] = useState(createDataItem());
+    useEffect(() => {
+        setNovo('')
+    },[openModal])
 
     const headCells = [
         { id: 'volume', label: 'Volume', },
@@ -204,10 +298,13 @@ function Volumes({ id, id_atividade, id_etapa }){
 
     return (
         <>
+        <Box className="actions" sx={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'space-between', pb: 3 }}>
+            <MudarTitulo objeto={atividade}  onClick={editarAtividade} />
+            <Button className="adicionar" variant="contained" onClick={() => setOpenModal(true)}>Adicionar Volume</Button>
+        </Box>
         <DataTable headCells={headCells} rows={rows}/>
-        <Button className="adicionar" variant="contained" onClick={() => setOpenModal(true)}>Adicionar volume</Button>
-        <Modal open={openModal} setOpen={setOpenModal} title="Adicionar volume" confirm={adicionarVolume}>
-            <AdicionarString value={novoVolume} setValue={setNovoVolume} />
+        <Modal open={openModal} setOpen={setOpenModal} title="Adicionar volume" confirm={adicionar}>
+            <AdicionarString value={novo} setValue={setNovo} />
         </Modal>
         </>
     )

@@ -32,7 +32,7 @@ export default function ConfiguracaoAtividades() {
     const prevDepartamento = useRef(null);
 
     const { id } = useParams();
-    
+
     const [breadcrumbs, setBreadcrumbs] = useState([
         {
             label: 'Configurações',
@@ -70,11 +70,11 @@ export default function ConfiguracaoAtividades() {
                 },
                 {
                     label: res.data?.categoria?.nome || 'Categoria',
-                    url: `/configuracoes/${res.data?.categoria?.id}/etapas`
+                    url: `/configuracoes/${res.data?.categoria?.id}`
                 },
                 {
                     label: res.data?.etapa?.titulo || 'Etapa',
-                    url: `/configuracoes/etapa/${res.data?.etapa?.id}/atividades`
+                    url: `/configuracoes/etapa/${res.data?.etapa?.id}`
                 }
             ]);
 
@@ -100,6 +100,7 @@ export default function ConfiguracaoAtividades() {
             setError(err.message);
         }
     };
+
     const adicionar = async () => {
         try {
             const payload = {

@@ -5,8 +5,6 @@ import '~/assets/scss/Breadcrumbs.scss';
 import KeyboardArrowRightRoundedIcon from '@mui/icons-material/KeyboardArrowRightRounded';
 
 export default function Breadcrumbs({ links }) {
-    console.log(links);
-    
     return (
         <Box className="breadcrumbs">
         {links.length > 0 && 
