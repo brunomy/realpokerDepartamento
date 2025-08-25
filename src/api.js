@@ -52,3 +52,7 @@ export const config_api = {
   createVolume: (payload) => http("/api/configuracao/criarVolume", { method: "POST", body: JSON.stringify(payload), }),
   deleteVolume: (id) => http(`/api/configuracao/deletarVolume/${id}`, { method: "DELETE", }),
 };
+
+export const ordem_api = {
+  getOrdens: (idDepartamento) => http(`/api/getOrdensDepartamento/${idDepartamento}`, { method: "GET" }),
+}

@@ -1,5 +1,5 @@
 import '~/assets/scss/Index.scss';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Link } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
@@ -19,13 +19,23 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import TimerTwoToneIcon from '@mui/icons-material/TimerTwoTone';
 import ReportProblemTwoToneIcon from '@mui/icons-material/ReportProblemTwoTone';
 
+import { ordem_api } from './../api';
+import { formatarData } from '../Utils';
+
+
 export default function Pedidos() {
     const hoje = dayjs();
+    const { selectedDepartamento } = useUser();
 
     const [statusFilter, setStatusFilter] = useState([]);
     const [idFilter, setIdFilter] = useState([]);
     const [dateFilterDe, setDateFilterDe] = useState(hoje.format('YYYY-MM-DD'));
     const [dateFilterAte, setDateFilterAte] = useState(hoje.format('YYYY-MM-DD'));
+
+    const [ordens, setOrdens] = useState([]);
+    const [ordensAgrupado, setOrdensAgrupado] = useState([]);
+
+    const [rows, setRows] = useState([]);
 
     const statusList = [
         { label: 'Pendente', value: 1},
@@ -40,80 +50,86 @@ export default function Pedidos() {
         { label: '#5954', value: 5954},
     ]
 
+    const carregar = async () => {
+        try {
+            const res = await ordem_api.getOrdens(selectedDepartamento.id);
+
+            setOrdens(res.data || []);
+
+            const agrupado = res.data
+                .sort((a, b) => a.titulo_remessa.localeCompare(b.titulo_remessa))
+                .reduce((acc, item) => {
+                    if (!acc[item.titulo_remessa]) {
+                    acc[item.titulo_remessa] = [];
+                    }
+                    acc[item.titulo_remessa].push(item);
+                    return acc;
+            }, {});
+
+            console.log(agrupado);
+
+            setOrdensAgrupado(agrupado);
+
+            setRows(
+                Object.entries(agrupado).map(([titulo_remessa, itens]) => {
+                    return createData({
+                        remessa: itens,
+                        titulo: titulo_remessa
+                    });
+                })
+            );
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    useEffect(() => {
+        carregar();
+    }, [selectedDepartamento]);
+
     //dados da tabela
-    const createData = ({ remessas, pedidos, criacoes, conclusoes, saidas, entregas, clientes, status }) => {
-        const remessa = <Box className="linha_dupla">
-            {remessas.map((r) => <div><Button component={Link} to={"/remessas/"+r} variant="outlined" size="small">{r}</Button></div>)}
+    const createData = ({ remessa, titulo }) => {
+        const unicos = remessa.filter(
+        (item, index, self) =>
+            index === self.findIndex((i) => i.id_pedido === item.id_pedido)
+        );
+
+        const remessa_name = <Box className="linha_dupla">
+            <Button variant="outlined" size="small">{titulo}</Button>
         </Box>
-        const pedido = <Box className="linha_dupla">
-            {pedidos.map((p) => <div><Button component={Link} to={"/pedidos/"+p} variant="outlined" size="small">{p}</Button></div>)}
+        const pedidos = <Box className="linha_dupla">
+            {unicos.map((item) => <div><Button component={Link} to={"/pedidos/"+item.id_pedido} variant="outlined" size="small">{item.id_pedido}</Button></div>)}
         </Box>
         const criacao = <Box className="linha_dupla">
-            {criacoes.map((c) => <div>{c}</div>)}
+            {unicos.map((item) => <div>{formatarData(item.created_at)}</div>)}
         </Box>
         const conclusao = <Box className="linha_dupla">
-            {conclusoes.map((c) => <div>{c}</div>)}
+            {unicos.map((item) => <div>-</div>)}
         </Box>
         const saida = <Box className="linha_dupla">
-            {saidas.map((s, index) => {
-                if(index == 1)
-                    return (<div><Box className="data_late">{s} <TimerTwoToneIcon color="error"/></Box></div>)
-                else
-                    return (<div>{s}</div>)
-            })}
-        </Box>
-        const entrega = <Box className="linha_dupla">
-            {entregas.map((e) => {
-                if(e == '02/05/2025')
-                    return (<div><Box className="data_alert">{e} <ReportProblemTwoToneIcon color="warning"/></Box></div>)
-                else
-                    return (<div>{e}</div>)
-            })}
-        </Box>
-        const comprador = <Box className="linha_dupla">
-            {clientes.map((c) => <div>{c}</div>)}
-        </Box>
-        const status2 = <Box className="linha_dupla">
-            {status.map((s) => <div><Status status={s} size={'small'} /></div>)}
+            {remessa[0].nova_saida
+                ? (<div><Box className={dayjs(remessa[0].nova_saida).isBefore(hoje) ? "data_late" : "data_alert"}>{formatarData(remessa[0].nova_saida)} <ReportProblemTwoToneIcon color="warning"/></Box></div>)
+                : (<div><Box className={dayjs(remessa[0].saida).isBefore(hoje) ? "data_late" : ""}>{formatarData(remessa[0].saida)}</Box></div>)
+            }
         </Box>
 
-        return { remessa, pedido, criacao, conclusao, saida, entrega, comprador, status2 };
+        const entrega = <Box className="linha_dupla">
+            {remessa[0].nova_entrega
+                ? (<div><Box className={dayjs(remessa[0].nova_entrega).isBefore(hoje) ? "data_late" : "data_alert"}>{formatarData(remessa[0].nova_entrega)} <ReportProblemTwoToneIcon color="warning"/></Box></div>)
+                : (<div><Box className={dayjs(remessa[0].entrega).isBefore(hoje) ? "data_late" : ""}>{formatarData(remessa[0].entrega)}</Box></div>)
+            }
+        </Box>
+     
+        const comprador = <Box className="linha_dupla">
+            <div>{remessa[0].nome}</div>
+        </Box>
+
+        return { remessa_name, pedidos, criacao, saida, entrega, comprador };
     }
-    const rows = [
-        createData({ 
-            remessas: ['5951-1'], 
-            pedidos: ['5951', '5952'], 
-            criacoes: ['01/04/2025', '01/04/2025'],
-            conclusoes: ['22/04/2025', '22/04/2025'],
-            saidas: ['22/04/2025', '28/04/2025'],
-            entregas: ['02/05/2025', '02/05/2025'],
-            clientes: ['João Felipe'],
-            status: [1, calculoStatusPedido()]
-        }),
-        createData({ 
-            remessas: ['5953-1'], 
-            pedidos: ['5953'], 
-            criacoes: ['01/05/2025'],
-            conclusoes: ['22/05/2025'],
-            saidas: ['24/05/2025'],
-            entregas: ['26/05/2025'],
-            clientes: ['Bruno Yoshimura'],
-            status: [1]
-        }),
-        createData({ 
-            remessas: ['5954-1', '5954-2'], 
-            pedidos: ['5954'], 
-            criacoes: ['01/06/2025'],
-            conclusoes: ['22/06/2025'],
-            saidas: ['24/06/2025'],
-            entregas: ['26/06/2025'],
-            clientes: ['Bruno Yoshimura'],
-            status: [2]
-        }),
-    ];
+
     const headCells = [
         {
-            id: 'remessa',
+            id: 'remessa_name',
             label: 'Remessa',
         },
         {
@@ -124,10 +140,10 @@ export default function Pedidos() {
             id: 'criacao',
             label: 'Criação',
         },
-        {
-            id: 'conclusao',
-            label: 'Conclusão',
-        },
+        // {
+        //     id: 'conclusao',
+        //     label: 'Conclusão',
+        // },
         {
             id: 'saida',
             label: 'Saída',
@@ -140,10 +156,10 @@ export default function Pedidos() {
             id: 'comprador',
             label: 'Comprador',
         },
-        {
-            id: 'status',
-            label: 'Status',
-        },
+        // {
+        //     id: 'status',
+        //     label: 'Status',
+        // },
         // {
         //     id: 'link',
         //     label: 'Link',

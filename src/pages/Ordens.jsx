@@ -21,6 +21,8 @@ import ReportProblemTwoToneIcon from '@mui/icons-material/ReportProblemTwoTone';
 
 import { useUser } from '~/context/UserContext';
 
+import { ordem_api } from './../api';
+
 export default function Ordens() {
     const hoje = dayjs();
 
