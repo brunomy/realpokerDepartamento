@@ -1,6 +1,6 @@
 import '~/assets/scss/Index.scss';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
 import dayjs from 'dayjs';
 
@@ -23,36 +23,126 @@ import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
 import { useUser } from '~/context/UserContext';
 
+import { user_api } from './../api';
+import { MudarTitulo } from './ConficuracaoEtapas';
+
 
 export default function Equipes() {
+    const { selectedDepartamento } = useUser();
+    const { id } = useParams();
+
+    const navigate = useNavigate();
+    const prevDepartamento = useRef(null);
+
+    const [equipes, setEquipes] = useState([]);
+
+    const [user, setUser] = useState(null);
+
+
     const [openModal, setOpenModal] = useState(false);
-    const { equipes, setEquipes, funcionarios } = useUser();
     const [novaEquipe, setNovaEquipe] = useState();
 
-    const adicionarEquipe = () => setEquipes([...equipes, novaEquipe])
-    const deletarEquipe = (id) => {
-        setEquipes(equipes.filter((equipe) => equipe.id != id))
-    }
+    const [error, setError] = useState(null);
+
+    const [breadcrumbs, setBreadcrumbs] = useState([
+        {
+            label: 'Usuários',
+            url: '/usuarios'
+        },
+    ]);
+
+    const [rows, setRows] = useState([]);
+
+    const carregar = async () => {
+        try {
+            const res = await user_api.getUserEquipes(id, selectedDepartamento.id);
+            
+            setEquipes(res.data?.equipes || []);
+            setUser(res.data?.user || null);
+
+            setBreadcrumbs([
+                {
+                    label: 'Usuários',
+                    url: '/usuarios'
+                },
+                {
+                    label: res.data?.user?.nome || 'Usuário',
+                    url: `/usuario/${id}`
+                }
+            ]);
+
+            
+            setRows(
+                res.data?.equipes?.map((equipe) => {
+                    return createData(equipe);
+                }) || []
+            );
+        } catch (err) {
+            setRows([]);
+            setError(err.message);
+        }
+    };
+
+    const adicionar = async () => {
+        try {
+            const payload = {
+                id_user: id,
+                id_departamento: selectedDepartamento.id,
+                nome: novaEquipe?.nome,
+                descricao: novaEquipe?.descricao
+            };
+
+            const res = await user_api.createEquipe(payload);
+
+            console.log("Equipe criada:", res.data);
+
+            carregar();
+
+            setOpenModal(false);
+        } catch (err) {
+            console.error("Erro ao criar etapa:", err.message);
+        }
+    };
+
+    const deletar = async (id) => {
+        if (!window.confirm("Tem certeza que deseja excluir esta Equipe?")) return;
+
+        try {
+            const res = await user_api.deleteEquipe(id);
+            console.log(res.message);
+
+            carregar();
+        } catch (err) {
+            console.error("Erro ao deletar equipe:", err.message);
+        }
+    };
+
+    useEffect(() => {
+        if (prevDepartamento.current !== null && prevDepartamento.current !== selectedDepartamento) {
+            navigate("/usuarios");
+        }
+        if (selectedDepartamento?.id) {
+            carregar();
+        }
+        prevDepartamento.current = selectedDepartamento;
+    }, [selectedDepartamento]);
+
+
 
     //dados da tabela
-    const createData = (equipe, num_funcionarios) => {
-        const title = equipe.title
+    const createData = (equipe) => {
+        const title = equipe.nome
         const descricao = equipe.descricao
-        const func = num_funcionarios
+        const func = equipe.funcionarios_count
         const excluir = <Box>
             <Button color="error" sx={
                 {float: 'right', minWidth: 0, zIndex: 1}
-            } onClick={() => deletarEquipe(equipe.id)}><DeleteTwoToneIcon /></Button>
-            <Button className="link" component={Link} to={`/equipes/${equipe.id}`} variant="outlined" size="small">Detalhes</Button>
+            } onClick={() => deletar(equipe.id)}><DeleteTwoToneIcon /></Button>
+            <Button className="link" component={Link} to={`/equipe/${equipe.id}`} variant="outlined" size="small">Detalhes</Button>
         </Box>
 
         return { title, descricao, func, excluir };
     }
-    const rows = [];
-    equipes.map((equipe) => {
-        const num_funcionarios = funcionarios.filter((f) => f.id_equipe == equipe.id).length
-        rows.push(createData(equipe, num_funcionarios))
-    })
 
     const headCells = [
         {
@@ -77,16 +167,17 @@ export default function Equipes() {
 
     return (
         <Layout>
-            <Title title="Lista de equipes" icon={<GroupsIcon/>} />
-            <Box className="index_content">
-                <br />
-                <br />
+            <Title title="Lista de equipes" icon={<GroupsIcon/>} breadcrumbs={breadcrumbs}/>
+            <Box className="show_content" sx={{ paddingLeft: '0 !important', paddingRight: '0 !important' }}>
                 <Box className="table_content">
+                    <Box className="actions" sx={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'space-between', pb: 3 }}>
+                        <MudarTitulo objeto={{ titulo: user?.nome }} disabled />
+                        <Button className="adicionar" variant="contained" onClick={() => setOpenModal(true)}>Criar equipe</Button>
+                    </Box>
                     <DataTable headCells={headCells} rows={rows}/>
-                    <Button className="relatorio" variant="contained" onClick={() => setOpenModal(true)}>Criar equipe</Button>
                 </Box>
             </Box>
-            <Modal open={openModal} setOpen={setOpenModal} title="Adicionar equipe" confirm={adicionarEquipe}>
+            <Modal open={openModal} setOpen={setOpenModal} title="Adicionar equipe" confirm={adicionar} disabled={equipes.some((equipe) => equipe.nome === novaEquipe?.nome || !novaEquipe?.nome)}>
                 <AdicionarEquipe setNovaEquipe={setNovaEquipe} equipes={equipes} />
             </Modal>
         </Layout>

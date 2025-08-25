@@ -26,7 +26,7 @@ export default function Footer() {
         if (path.includes('/configuracoes')) return 'configuracoes';
         if (path.includes('/checklists')) return 'checklists';
         if (path.includes('/remessas')) return 'remessas';
-        if (path.includes('/equipes')) return 'equipes';
+        if (path.includes('/usuarios') || path.includes('/usuario') || path.includes('/equipe')) return 'usuarios';
         return 'ordens'; // fallback
     };
 
@@ -84,10 +84,10 @@ export default function Footer() {
             />
             <BottomNavigationAction
                 label="Equipes"
-                value="equipes"
+                value="usuarios"
                 icon={<GroupsTwoToneIcon />}
                 component={Link}
-                to="/equipes"
+                to="/usuarios"
                 showLabel
                 sx={{ display: usuarioLogado.permissao === "gerente" ? 'flex' : 'none' }}
             />

@@ -84,14 +84,11 @@ export default function ConfiguracaoCheckVol() {
         }
     };
 
-    const editarAtividade = async (id, titulo) => {
+    const editar = async (id, titulo) => {
         try {
             const payload = {
                 titulo: titulo,
             };
-
-            console.log(id, titulo);
-            
 
             const res = await config_api.updateAtividade(id, payload);
             console.log("Atividade atualizada:", res.data);
@@ -128,15 +125,15 @@ export default function ConfiguracaoCheckVol() {
 
             <Box className="show_content">
                 <Box className="table_content" sx={{ paddingLeft: '0 !important', paddingRight: '0 !important' }}>
-                {tab == 0 && <Checklists atividade={atividade} editarAtividade={editarAtividade} checklists={checklists} carregar={carregar} />}
-                {tab == 1 && <Volumes atividade={atividade} editarAtividade={editarAtividade} volumes={volumes} carregar={carregar} />}
+                {tab == 0 && <Checklists atividade={atividade} editar={editar} checklists={checklists} carregar={carregar} />}
+                {tab == 1 && <Volumes atividade={atividade} editar={editar} volumes={volumes} carregar={carregar} />}
                 </Box>
             </Box>
         </Layout>
     );
 }
 
-function Checklists({ atividade, editarAtividade, checklists, carregar }){
+function Checklists({ atividade, editar, checklists, carregar }){
     const { id } = useParams();
 
     const [openModal, setOpenModal] = useState(false);
@@ -216,7 +213,7 @@ function Checklists({ atividade, editarAtividade, checklists, carregar }){
     return (
         <>
         <Box className="actions" sx={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'space-between', pb: 3 }}>
-            <MudarTitulo objeto={atividade}  onClick={editarAtividade} />
+            <MudarTitulo objeto={atividade}  onClick={editar} />
             <Button className="adicionar" variant="contained" onClick={() => setOpenModal(true)}>Adicionar Checklist</Button>
         </Box>
         <DataTable headCells={headCellsChecklist} rows={rows}/>
@@ -227,7 +224,7 @@ function Checklists({ atividade, editarAtividade, checklists, carregar }){
     )
 }
 
-function Volumes({ atividade, editarAtividade, volumes, carregar }){
+function Volumes({ atividade, editar, volumes, carregar }){
     const { id } = useParams();
 
     const [openModal, setOpenModal] = useState(false);
@@ -299,7 +296,7 @@ function Volumes({ atividade, editarAtividade, volumes, carregar }){
     return (
         <>
         <Box className="actions" sx={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'space-between', pb: 3 }}>
-            <MudarTitulo objeto={atividade}  onClick={editarAtividade} />
+            <MudarTitulo objeto={atividade}  onClick={editar} />
             <Button className="adicionar" variant="contained" onClick={() => setOpenModal(true)}>Adicionar Volume</Button>
         </Box>
         <DataTable headCells={headCells} rows={rows}/>

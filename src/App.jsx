@@ -20,6 +20,7 @@ import ConficuracaoEtapas from './pages/ConficuracaoEtapas';
 import ConfiguracaoAtividades from './pages/ConfiguracaoAtividades';
 import ConfiguracaoCheckVol from './pages/ConfiguracaoCheckVol';
 import ChecklistOrder from './pages/Checklist';
+import Usuarios from './pages/Usuarios';
 
 function App() {
   return (
@@ -46,8 +47,9 @@ function App() {
           <Route path="/checklists" element={<PrivateRoute><Checklists /></PrivateRoute>} />
           <Route path="/checklists/:id" element={<PrivateRoute><ChecklistOrder /></PrivateRoute>} />
 
-          <Route path="/equipes" element={<PrivateRoute><Equipes /></PrivateRoute>} />
-          <Route path="/equipes/:id" element={<PrivateRoute><Equipe /></PrivateRoute>} />
+          <Route path="/usuarios" element={<PrivateRoute><Usuarios /></PrivateRoute>} />
+          <Route path="/usuario/:id" element={<PrivateRoute><Equipes /></PrivateRoute>} />
+          <Route path="/equipe/:id" element={<PrivateRoute><Equipe /></PrivateRoute>} />
 
           <Route path="/remessas" element={<PrivateRoute><Remessas /></PrivateRoute>} />
           <Route path="/remessas/:id" element={<PrivateRoute><Remessa /></PrivateRoute>} />

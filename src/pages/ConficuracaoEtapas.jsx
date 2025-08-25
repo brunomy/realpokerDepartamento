@@ -185,7 +185,7 @@ export function MudarTitulo({ objeto, onClick, disabled }) {
     const [novo, setNovo] = useState(objeto?.titulo);
 
     useEffect(() => {
-        setNovo(objeto?.titulo ?? "");
+        setNovo(objeto?.titulo ?? '');
     }, [objeto]);
     
     const handleClick = () => {

@@ -119,7 +119,7 @@ export default function ConfiguracaoAtividades() {
             console.error("Erro ao criar etapa:", err.message);
         }
     }
-    const editarEtapa = async (id, titulo) => {
+    const editar = async (id, titulo) => {
         try {
             const payload = {
                 titulo: titulo,
@@ -134,6 +134,7 @@ export default function ConfiguracaoAtividades() {
             console.error("Erro ao criar etapa:", err.message);
         }
     }
+    
     const deletar = async (id) => {
         if (!window.confirm("Tem certeza que deseja excluir esta atividade?")) return;
 
@@ -184,7 +185,7 @@ export default function ConfiguracaoAtividades() {
             <Box className="show_content">
                 <Box className="table_content" sx={{ paddingLeft: '0 !important', paddingRight: '0 !important' }}>
                     <Box className="actions" sx={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'space-between', pb: 3 }}>
-                        <MudarTitulo objeto={etapa}  onClick={editarEtapa} />
+                        <MudarTitulo objeto={etapa} onClick={editar} />
                         <Button className="adicionar" variant="contained" onClick={() => setOpenModal(true)}>Adicionar atividade</Button>
                     </Box>
                     <DataTable headCells={headCells} rows={rows}/>

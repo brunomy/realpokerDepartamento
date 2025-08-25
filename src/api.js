@@ -21,6 +21,16 @@ async function http(path, options = {}) {
 export const user_api = {
   login: (payload) => http("/api/login", { method: "POST", body: JSON.stringify(payload) }),
   getDepartamentos: (idUser) => http(`/api/getDepartamentos/${idUser}`, { method: "GET" }),
+  getUsersDepartamento: (idDepartamento) => http(`/api/getUsersDepartamento/${idDepartamento}`, { method: "GET" }),
+
+  getUserEquipes: (idUser, idDepartamento) => http(`/api/getUserEquipes/${idUser}/${idDepartamento}`, { method: "GET" }),
+  createEquipe: (payload) => http("/api/criarEquipe", { method: "POST", body: JSON.stringify(payload), }),
+  updateEquipe: (id, payload) => http(`/api/updateEquipe/${id}`, { method: "PUT", body: JSON.stringify(payload), }),
+  deleteEquipe: (id) => http(`/api/deletarEquipe/${id}`, { method: "DELETE" }),
+  
+  getFuncionarios: (idEquipe) => http(`/api/getFuncionarios/${idEquipe}`, { method: "GET" }),
+  createFuncionario: (payload) => http("/api/criarFuncionario", { method: "POST", body: JSON.stringify(payload), }),
+  deleteFuncionario: (id) => http(`/api/deletarFuncionario/${id}`, { method: "DELETE" }),
 };
 
 export const config_api = {
