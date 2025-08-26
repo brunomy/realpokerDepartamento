@@ -162,21 +162,39 @@ export default function EditarRemessa({ remessa, setRemessa }) {
     return (
         <Box className="mudar_remessa">
             <Box className="nova_remessa_form">
-                <div className="item">
+                <div className="item" style={{ position: 'relative' }}>
                     <InputCalendar 
                         label="Saída" 
                         width={'100%'} 
                         value={remessa?.nova_saida ? formatarData(remessa?.nova_saida) : formatarData(remessa?.saida)} 
                         setValue={(newValue) => handleDateChange('nova_saida', newValue)} 
                     />
+                    { (remessa?.nova_saida != null) && 
+                        <p style={{
+                            position: 'absolute',
+                            fontSize: 10,
+                            bottom: 2,
+                            right: 12,
+                            pointerEvents: 'none'
+                        }}>Data inicial: <b>{formatarData(remessa?.saida)}</b></p>
+                    }
                 </div>
-                <div className="item">
+                <div className="item" style={{ position: 'relative' }}>
                     <InputCalendar 
                         label="Entrega" 
                         width={'100%'} 
                         value={remessa?.nova_entrega ? formatarData(remessa?.nova_entrega) : formatarData(remessa?.entrega)} 
                         setValue={(newValue) => handleDateChange('nova_entrega', newValue)} 
                     />
+                    { (remessa?.nova_entrega != null) && 
+                        <p style={{
+                            position: 'absolute',
+                            fontSize: 10,
+                            bottom: 2,
+                            right: 12,
+                            pointerEvents: 'none'
+                        }}>Data inicial: <b>{formatarData(remessa?.entrega)}</b></p>
+                    }
                 </div>
                 <div className="item">
                     <TextField
