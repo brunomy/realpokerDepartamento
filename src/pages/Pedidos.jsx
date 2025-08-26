@@ -13,6 +13,8 @@ import InputAuto from '~/components/InputAuto';
 import InputCalendarRange from '~/components/InputCalendarRange';
 import Status from '../components/layout/Status';
 import { useUser } from '~/context/UserContext';
+import Modal from '~/components/layout/Modal';
+import RemessaEdit from '~/components/modal/RemessaEdit';
 
 //icons
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -26,6 +28,9 @@ import { formatarData } from '../Utils';
 export default function Pedidos() {
     const hoje = dayjs();
     const { selectedDepartamento } = useUser();
+    const [openRemessa, setOpenRemessa] = useState(false);
+
+    const [selectedRemessa, setSelectedRemessa] = useState(null);
 
     const [statusFilter, setStatusFilter] = useState([]);
     const [idFilter, setIdFilter] = useState([]);
@@ -66,8 +71,6 @@ export default function Pedidos() {
                     return acc;
             }, {});
 
-            console.log(agrupado);
-
             setOrdensAgrupado(agrupado);
 
             setRows(
@@ -84,8 +87,10 @@ export default function Pedidos() {
     };
 
     useEffect(() => {
-        carregar();
-    }, [selectedDepartamento]);
+        if (!openRemessa && selectedDepartamento?.id) {
+            carregar();
+        }
+    }, [openRemessa, selectedDepartamento]); // Só executa quando openRemessa muda
 
     //dados da tabela
     const createData = ({ remessa, titulo }) => {
@@ -95,7 +100,7 @@ export default function Pedidos() {
         );
 
         const remessa_name = <Box className="linha_dupla">
-            <Button variant="outlined" size="small">{titulo}</Button>
+            <Button variant="outlined" size="small" onClick={() => { setSelectedRemessa({ id: remessa[0]?.id_remessa, titulo: titulo }); setOpenRemessa(true); }}>{titulo}</Button>
         </Box>
         const pedidos = <Box className="linha_dupla">
             {unicos.map((item) => <div><Button component={Link} to={"/pedidos/"+item.id_pedido} variant="outlined" size="small">{item.id_pedido}</Button></div>)}
@@ -124,7 +129,11 @@ export default function Pedidos() {
             <div>{remessa[0].nome}</div>
         </Box>
 
-        return { remessa_name, pedidos, criacao, saida, entrega, comprador };
+        const cidade_uf = <Box className="linha_dupla">
+            <div>{remessa[0].cidade}/{remessa[0].uf}</div>
+        </Box>
+
+        return { remessa_name, pedidos, criacao, saida, entrega, comprador, cidade_uf };
     }
 
     const headCells = [
@@ -155,6 +164,10 @@ export default function Pedidos() {
         {
             id: 'comprador',
             label: 'Comprador',
+        },
+        {
+            id: 'cidade_uf',
+            label: 'Cidade/UF',
         },
         // {
         //     id: 'status',
@@ -189,6 +202,7 @@ export default function Pedidos() {
                     <DataTable headCells={headCells} rows={rows}/>
                 </Box>
             </Box>
+            <RemessaEdit selectedRemessa={selectedRemessa} open={openRemessa} setOpen={setOpenRemessa} />
         </Layout>
     )
 }

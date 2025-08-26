@@ -56,3 +56,11 @@ export const config_api = {
 export const ordem_api = {
   getOrdens: (idDepartamento) => http(`/api/getOrdensDepartamento/${idDepartamento}`, { method: "GET" }),
 }
+
+export const remessa_api = {
+  getEstados: () => http(`/api/getEstados`, { method: "GET" }),
+  getCidades: (idEstado) => http(`/api/getCidades/${idEstado}`, { method: "GET" }),
+  getRemessa: (idRemessa) => http(`/api/getRemessa/${idRemessa}`, { method: "GET" }),
+  updateRemessa: (id, payload) => http(`/api/updateRemessa/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
+}
+

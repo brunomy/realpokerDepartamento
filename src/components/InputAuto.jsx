@@ -63,6 +63,7 @@ export default function InputAuto({ label, list, setValue, width, value = null }
                             hint.current = match ? match.label : '';
                         }}
                         label={label}
+                        size="small"
                     />
                 </Box>
             )}

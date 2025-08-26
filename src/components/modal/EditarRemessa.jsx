@@ -1,73 +1,320 @@
 import '~/assets/scss/MudarRemessaModal.scss'
 import { useState, useEffect } from 'react';
 import InputCalendar from '../InputCalendar';
-import InputAuto from '../InputAuto';
 
-import { Box, Button, Tabs, Tab } from '@mui/material';
+import { Box, Button, Tabs, Tab, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SaveIcon from '@mui/icons-material/Save';
+import { formatarData, formatCEP, formatTelefone, formatCpfCnpj, converterDataParaBanco } from '../../Utils';
+import { remessa_api } from '../../api';
 
-export default function EditarRemessa() {
-    const [estado, setEstado] = useState({ label: 'GO', value: 'GO'});
-    const estados = [
-        { label: 'GO', value: 'GO'},
-        { label: 'MT', value: 'MT'},
-        { label: 'DF', value: 'DF'},
-    ]
-    const [cidade, setCidade] = useState({ label: 'Goiânia', value: 'Goiânia'});
-    const cidades = [
-        { label: 'Goiânia', value: 'Goiânia'},
-        { label: 'Aparecida de Goiânia', value: 'Aparecida de Goiânia'},
-        { label: 'Inhumas', value: 'Inhumas'},
-    ]
+export default function EditarRemessa({ remessa, setRemessa }) {
+    const [estados, setEstados] = useState([]);
+    const [cidades, setCidades] = useState([]);
+    const [initialCep, setInitialCep] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        carregar();
+    }, []);
+
+    useEffect(() => {
+        // Carregar cidades quando remessa carrega e tem estado
+        if (remessa?.id_estado && estados.length > 0) {
+            carregarCidades(remessa.id_estado);
+        }
+    }, [remessa?.id_estado, estados]);
+
+    const carregar = async () => {
+        try {
+            const resEstados = await remessa_api.getEstados();
+            setEstados(resEstados.data || []);
+
+            if (remessa?.id_estado) {
+                const resCidades = await remessa_api.getCidades(remessa.id_estado);
+                setCidades(resCidades.data || []);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const findEstadoIdByUF = (uf) => {
+        const estado = estados.find(e => e.uf === uf);
+        return estado ? estado.id : null;
+    };
+
+    const findCidadeIdByName = (nomeCidade, estadoId) => {
+        const cidade = cidades.find(c => 
+            c.cidade.toLowerCase() === nomeCidade.toLowerCase() && 
+            c.id_estado === estadoId
+        );
+        return cidade ? cidade.id : null;
+    };
+
+    const carregarCidades = async (estadoId) => {
+        if (!estadoId) {
+            setCidades([]);
+            return;
+        }
+        
+        try {
+            const res = await remessa_api.getCidades(estadoId);
+            setCidades(res.data || []);
+        } catch (err) {
+            console.error('Erro ao carregar cidades:', err);
+        }
+    };
+
+    useEffect(() => {
+        if (remessa?.cep && !initialCep) {
+            setInitialCep(remessa.cep);
+        }
+    }, [remessa]);
+
+    const buscarCEP = async (cep) => {
+        try {
+            const cleanCep = cep.replace(/\D/g, '');
+            if (cleanCep.length === 8) {
+                const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+                const data = await response.json();
+                
+                if (!data.erro) {
+                    const estadoId = findEstadoIdByUF(data.uf);
+                    
+                    if (estadoId) {
+                        // Carregar cidades do estado
+                        try {
+                            const resCidades = await remessa_api.getCidades(estadoId);
+                            const cidadesDoEstado = resCidades.data || [];
+                            setCidades(cidadesDoEstado);
+                            
+                            // Buscar ID da cidade após carregar as cidades
+                            const cidade = cidadesDoEstado.find(c => 
+                                c.cidade.toLowerCase() === data.localidade.toLowerCase() && 
+                                c.id_estado === estadoId
+                            );
+                            const cidadeId = cidade ? cidade.id : null;
+                            
+                            setRemessa(prev => ({
+                                ...prev,
+                                endereco: data.logradouro || '',
+                                bairro: data.bairro || '',
+                                id_estado: estadoId,
+                                id_cidade: cidadeId
+                            }));
+                        } catch (cidadeError) {
+                            console.error('Erro ao carregar cidades:', cidadeError);
+                            // Fallback: salvar apenas estado
+                            setRemessa(prev => ({
+                                ...prev,
+                                endereco: data.logradouro || '',
+                                bairro: data.bairro || '',
+                                id_estado: estadoId
+                            }));
+                        }
+                    } else {
+                        setRemessa(prev => ({
+                            ...prev,
+                            endereco: data.logradouro || '',
+                            bairro: data.bairro || '',
+                            cidade: data.localidade || ''
+                        }));
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao buscar CEP:', error);
+        }
+    };
+
+    const handleCEPChange = (e) => {
+        const formatted = formatCEP(e.target.value);
+        setRemessa({ ...remessa, cep: formatted });
+        
+        const cleanCep = formatted.replace(/\D/g, '');
+        if (cleanCep.length === 8) {
+            buscarCEP(formatted);
+        }
+    };
+
+    const handleTelefoneChange = (e) => {
+        const formatted = formatTelefone(e.target.value);
+        setRemessa({ ...remessa, telefone: formatted });
+    };
+
+    const handleCpfCnpjChange = (e) => {
+        const formatted = formatCpfCnpj(e.target.value);
+        setRemessa({ ...remessa, cpf_cnpj: formatted });
+    };
+
+    const handleDateChange = (field, newValue) => {
+        const dataConvertida = converterDataParaBanco(newValue);
+        setRemessa({ ...remessa, [field]: dataConvertida });
+    };
+
+    // Don't render if remessa is not loaded yet
+    if (!remessa) {
+        return <div>Carregando...</div>;
+    }
 
     return (
         <Box className="mudar_remessa">
             <Box className="nova_remessa_form">
-                <div className="item full">
-                    <InputCalendar label="Entrega" width={'100%'} />
-                </div>
                 <div className="item">
-                    <TextField value={'74581-395'} label="CEP" variant="outlined" sx={{width: '100%'}} />
-                </div>
-                <div className="item">
-                    <TextField value={'s/n'} label="Número" variant="outlined" sx={{width: '100%'}} />
-                </div>
-                <div className="item full">
-                    <TextField value={'Rua sp25'} label="Rua" variant="outlined" sx={{width: '100%'}} />
-                </div>
-                <div className="item full">
-                    <TextField value={'Quadra 08, Lote 25'} label="Complemento" variant="outlined" sx={{width: '100%'}} />
-                </div>
-                <div className="item full">
-                    <TextField value={'Setor Perim'} label="Bairro" variant="outlined" sx={{width: '100%'}} />
-                </div>
-                <div className="item">
-                    <InputAuto 
-                        label="estado" 
-                        list={estados}
-                        setValue={setEstado} 
-                        value={estado}
+                    <InputCalendar 
+                        label="Saída" 
                         width={'100%'} 
+                        value={remessa?.nova_saida ? formatarData(remessa?.nova_saida) : formatarData(remessa?.saida)} 
+                        setValue={(newValue) => handleDateChange('nova_saida', newValue)} 
                     />
                 </div>
                 <div className="item">
-                    <InputAuto 
-                        label="cidade" 
-                        list={cidades}
-                        setValue={setCidade} 
-                        value={cidade}
+                    <InputCalendar 
+                        label="Entrega" 
                         width={'100%'} 
+                        value={remessa?.nova_entrega ? formatarData(remessa?.nova_entrega) : formatarData(remessa?.entrega)} 
+                        setValue={(newValue) => handleDateChange('nova_entrega', newValue)} 
+                    />
+                </div>
+                <div className="item">
+                    <TextField
+                        label="CEP"
+                        variant="outlined"
+                        sx={{ width: "100%" }}
+                        size="small"
+                        value={remessa?.cep || ""}
+                        onChange={handleCEPChange}
+                        inputProps={{
+                            maxLength: 10,
+                            placeholder: "00.000-000"
+                        }}
+                    />
+                </div>
+                <div className="item">
+                    <TextField 
+                        value={remessa?.numero || ""} 
+                        label="Número" 
+                        variant="outlined" 
+                        sx={{width: '100%'}} 
+                        size="small"
+                        onChange={(e) => setRemessa({ ...remessa, numero: e.target.value })}
                     />
                 </div>
                 <div className="item full">
-                    <TextField value={'Bruno Yoshimura'} label="Destinatário" variant="outlined" sx={{width: '100%'}} />
+                    <TextField 
+                        value={remessa?.endereco || ""} 
+                        label="Rua" 
+                        variant="outlined" 
+                        sx={{width: '100%'}} 
+                        size="small"
+                        onChange={(e) => setRemessa({ ...remessa, endereco: e.target.value })}
+                    />
                 </div>
                 <div className="item full">
-                    <TextField value={'(62) 99555-4991'} label="Telefone" variant="outlined" sx={{width: '100%'}} />
+                    <TextField 
+                        value={remessa?.complemento || ""} 
+                        label="Complemento" 
+                        variant="outlined" 
+                        sx={{width: '100%'}} 
+                        size="small"
+                        onChange={(e) => setRemessa({ ...remessa, complemento: e.target.value })}
+                    />
                 </div>
                 <div className="item full">
-                    <TextField value={'700.939.789-23'} label="CPF/CNPJ" variant="outlined" sx={{width: '100%'}} />
+                    <TextField 
+                        value={remessa?.bairro || ""} 
+                        label="Bairro" 
+                        variant="outlined" 
+                        sx={{width: '100%'}} 
+                        size="small"
+                        onChange={(e) => setRemessa({ ...remessa, bairro: e.target.value })}
+                    />
+                </div>
+                <div className="item">
+                    <FormControl fullWidth size="small">
+                        <InputLabel>Estado</InputLabel>
+                        <Select
+                            value={remessa?.id_estado || ''}
+                            label="Estado"
+                            onChange={(e) => {
+                                const estadoId = e.target.value;
+                                setRemessa({ ...remessa, id_estado: estadoId, id_cidade: '' });
+                                carregarCidades(estadoId);
+                            }}
+                        >
+                            {estados.map((estado) => (
+                                <MenuItem key={estado.id} value={estado.id}>
+                                    {estado.estado} - {estado.uf}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </div>
+                <div className="item">
+                    <FormControl fullWidth size="small">
+                        <InputLabel>Cidade</InputLabel>
+                        <Select
+                            value={remessa?.id_cidade || ''}
+                            label="Cidade"
+                            onChange={(e) => setRemessa({ ...remessa, id_cidade: e.target.value })}
+                            disabled={!remessa?.id_estado}
+                        >
+                            {cidades.length === 0 && remessa?.id_estado && (
+                                <MenuItem disabled value="">
+                                    Carregando cidades...
+                                </MenuItem>
+                            )}
+                            {cidades.map((cidade) => (
+                                <MenuItem key={cidade.id} value={cidade.id}>
+                                    {cidade.cidade}
+                                </MenuItem>
+                            ))}
+                            {cidades.length === 0 && !remessa?.id_estado && (
+                                <MenuItem disabled value="">
+                                    Selecione um estado primeiro
+                                </MenuItem>
+                            )}
+                        </Select>
+                    </FormControl>
+                </div>
+                <div className="item full">
+                    <TextField 
+                        value={remessa?.nome || ""} 
+                        label="Destinatário" 
+                        variant="outlined" 
+                        sx={{width: '100%'}} 
+                        size="small"
+                        onChange={(e) => setRemessa({ ...remessa, nome: e.target.value })}
+                    />
+                </div>
+                <div className="item full">
+                    <TextField 
+                        value={remessa?.telefone || ""} 
+                        label="Telefone" 
+                        variant="outlined" 
+                        sx={{width: '100%'}} 
+                        size="small"
+                        onChange={handleTelefoneChange}
+                        inputProps={{
+                            maxLength: 15,
+                            placeholder: "(00) 00000-0000"
+                        }}
+                    />
+                </div>
+                <div className="item full">
+                    <TextField 
+                        value={remessa?.cpf_cnpj || ""} 
+                        label="CPF/CNPJ" 
+                        variant="outlined" 
+                        sx={{width: '100%'}} 
+                        size="small"
+                        onChange={handleCpfCnpjChange}
+                        inputProps={{
+                            maxLength: 18,
+                        }}
+                    />
                 </div>
             </Box>
         </Box>
