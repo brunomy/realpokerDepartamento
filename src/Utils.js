@@ -79,3 +79,99 @@ export function formatCpfCnpj(value) {
     }
   }
 };
+
+// Funções de validação
+export function validarCEP(cep) {
+  if (!cep) return false;
+  const cleanCEP = cep.replace(/\D/g, '');
+  return cleanCEP.length === 8 && /^\d{8}$/.test(cleanCEP);
+}
+
+export function validarTelefone(telefone) {
+  if (!telefone) return false;
+  const cleanTelefone = telefone.replace(/\D/g, '');
+  // Aceita telefone fixo (10 dígitos) ou celular (11 dígitos)
+  return cleanTelefone.length === 10 || cleanTelefone.length === 11;
+}
+
+export function validarCPF(cpf) {
+  if (!cpf) return false;
+  const cleanCPF = cpf.replace(/\D/g, '');
+  
+  if (cleanCPF.length !== 11) return false;
+  
+  // Verifica se todos os dígitos são iguais
+  if (/^(\d)\1{10}$/.test(cleanCPF)) return false;
+  
+  // Validação do primeiro dígito verificador
+  let soma = 0;
+  for (let i = 0; i < 9; i++) {
+    soma += parseInt(cleanCPF.charAt(i)) * (10 - i);
+  }
+  let resto = 11 - (soma % 11);
+  let digito1 = resto < 2 ? 0 : resto;
+  
+  if (parseInt(cleanCPF.charAt(9)) !== digito1) return false;
+  
+  // Validação do segundo dígito verificador
+  soma = 0;
+  for (let i = 0; i < 10; i++) {
+    soma += parseInt(cleanCPF.charAt(i)) * (11 - i);
+  }
+  resto = 11 - (soma % 11);
+  let digito2 = resto < 2 ? 0 : resto;
+  
+  return parseInt(cleanCPF.charAt(10)) === digito2;
+}
+
+export function validarCNPJ(cnpj) {
+  if (!cnpj) return false;
+  const cleanCNPJ = cnpj.replace(/\D/g, '');
+  
+  if (cleanCNPJ.length !== 14) return false;
+  
+  // Verifica se todos os dígitos são iguais
+  if (/^(\d)\1{13}$/.test(cleanCNPJ)) return false;
+  
+  // Validação do primeiro dígito verificador
+  let tamanho = cleanCNPJ.length - 2;
+  let numeros = cleanCNPJ.substring(0, tamanho);
+  let digitos = cleanCNPJ.substring(tamanho);
+  let soma = 0;
+  let pos = tamanho - 7;
+  
+  for (let i = tamanho; i >= 1; i--) {
+    soma += numeros.charAt(tamanho - i) * pos--;
+    if (pos < 2) pos = 9;
+  }
+  
+  let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+  if (resultado !== parseInt(digitos.charAt(0))) return false;
+  
+  // Validação do segundo dígito verificador
+  tamanho = tamanho + 1;
+  numeros = cleanCNPJ.substring(0, tamanho);
+  soma = 0;
+  pos = tamanho - 7;
+  
+  for (let i = tamanho; i >= 1; i--) {
+    soma += numeros.charAt(tamanho - i) * pos--;
+    if (pos < 2) pos = 9;
+  }
+  
+  resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+  return resultado === parseInt(digitos.charAt(1));
+}
+
+export function validarCpfCnpj(documento) {
+  if (!documento) return false;
+  const cleanDoc = documento.replace(/\D/g, '');
+  
+  if (cleanDoc.length === 11) {
+    return validarCPF(documento);
+  } else if (cleanDoc.length === 14) {
+    return validarCNPJ(documento);
+  }
+  
+  return false;
+}

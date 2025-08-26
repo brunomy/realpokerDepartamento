@@ -6,8 +6,9 @@ import { Box, Button, Tabs, Tab, Select, MenuItem, FormControl, InputLabel } fro
 import TextField from '@mui/material/TextField';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import { formatarData, formatCEP, formatTelefone, formatCpfCnpj, converterDataParaBanco } from '../../Utils';
+import { formatarData, formatCEP, formatTelefone, formatCpfCnpj, converterDataParaBanco, validarCEP, validarTelefone, validarCpfCnpj } from '../../Utils';
 import { remessa_api } from '../../api';
+import Loading from '../Loading';
 
 export default function EditarRemessa({ remessa, setRemessa }) {
     const [estados, setEstados] = useState([]);
@@ -156,7 +157,7 @@ export default function EditarRemessa({ remessa, setRemessa }) {
 
     // Don't render if remessa is not loaded yet
     if (!remessa) {
-        return <div>Carregando...</div>;
+        return <Loading />;
     }
 
     return (
@@ -175,7 +176,8 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                             fontSize: 10,
                             bottom: 2,
                             right: 12,
-                            pointerEvents: 'none'
+                            pointerEvents: 'none',
+                            color: '#ed6c02'
                         }}>Data inicial: <b>{formatarData(remessa?.saida)}</b></p>
                     }
                 </div>
@@ -192,7 +194,8 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                             fontSize: 10,
                             bottom: 2,
                             right: 12,
-                            pointerEvents: 'none'
+                            pointerEvents: 'none',
+                            color: '#ed6c02'
                         }}>Data inicial: <b>{formatarData(remessa?.entrega)}</b></p>
                     }
                 </div>
@@ -204,6 +207,7 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                         size="small"
                         value={remessa?.cep || ""}
                         onChange={handleCEPChange}
+                        error={(remessa?.cep && !validarCEP(remessa.cep) || !remessa?.cep)}
                         inputProps={{
                             maxLength: 10,
                             placeholder: "00.000-000"
@@ -218,6 +222,7 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                         sx={{width: '100%'}} 
                         size="small"
                         onChange={(e) => setRemessa({ ...remessa, numero: e.target.value })}
+                        error={!remessa?.numero}
                     />
                 </div>
                 <div className="item full">
@@ -228,6 +233,7 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                         sx={{width: '100%'}} 
                         size="small"
                         onChange={(e) => setRemessa({ ...remessa, endereco: e.target.value })}
+                        error={!remessa?.endereco}
                     />
                 </div>
                 <div className="item full">
@@ -248,6 +254,7 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                         sx={{width: '100%'}} 
                         size="small"
                         onChange={(e) => setRemessa({ ...remessa, bairro: e.target.value })}
+                        error={!remessa?.bairro}
                     />
                 </div>
                 <div className="item">
@@ -278,6 +285,7 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                             label="Cidade"
                             onChange={(e) => setRemessa({ ...remessa, id_cidade: e.target.value })}
                             disabled={!remessa?.id_estado}
+                            error={!remessa?.id_cidade}
                         >
                             {cidades.length === 0 && remessa?.id_estado && (
                                 <MenuItem disabled value="">
@@ -305,9 +313,10 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                         sx={{width: '100%'}} 
                         size="small"
                         onChange={(e) => setRemessa({ ...remessa, nome: e.target.value })}
+                        error={!remessa?.nome}
                     />
                 </div>
-                <div className="item full">
+                <div className="item">
                     <TextField 
                         value={remessa?.telefone || ""} 
                         label="Telefone" 
@@ -315,13 +324,14 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                         sx={{width: '100%'}} 
                         size="small"
                         onChange={handleTelefoneChange}
+                        error={(remessa?.telefone && !validarTelefone(remessa.telefone)) || !remessa?.telefone}
                         inputProps={{
                             maxLength: 15,
                             placeholder: "(00) 00000-0000"
                         }}
                     />
                 </div>
-                <div className="item full">
+                <div className="item">
                     <TextField 
                         value={remessa?.cpf_cnpj || ""} 
                         label="CPF/CNPJ" 
@@ -329,6 +339,7 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                         sx={{width: '100%'}} 
                         size="small"
                         onChange={handleCpfCnpjChange}
+                        error={(remessa?.cpf_cnpj && !validarCpfCnpj(remessa.cpf_cnpj)) || !remessa?.cpf_cnpj}
                         inputProps={{
                             maxLength: 18,
                         }}

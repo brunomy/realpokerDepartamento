@@ -108,9 +108,6 @@ export default function Pedidos() {
         const criacao = <Box className="linha_dupla">
             {unicos.map((item) => <div>{formatarData(item.created_at)}</div>)}
         </Box>
-        const conclusao = <Box className="linha_dupla">
-            {unicos.map((item) => <div>-</div>)}
-        </Box>
         const saida = <Box className="linha_dupla">
             {remessa[0].nova_saida
                 ? (<div><Box className={dayjs(remessa[0].nova_saida).isBefore(hoje) ? "data_late" : "data_alert"}>{formatarData(remessa[0].nova_saida)} <ReportProblemTwoToneIcon color="warning"/></Box></div>)
