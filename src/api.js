@@ -54,7 +54,7 @@ export const config_api = {
 };
 
 export const ordem_api = {
-  getOrdens: (idDepartamento) => http(`/api/getOrdensDepartamento/${idDepartamento}`, { method: "GET" }),
+  getOrdens: (id) => http(`/api/getOrdensDepartamento/${id}`, { method: "GET" }),
 }
 
 export const remessa_api = {

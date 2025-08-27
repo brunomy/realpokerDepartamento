@@ -1,5 +1,5 @@
 import '~/assets/scss/Index.scss';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Link } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
@@ -22,11 +22,16 @@ import ReportProblemTwoToneIcon from '@mui/icons-material/ReportProblemTwoTone';
 import { useUser } from '~/context/UserContext';
 
 import { ordem_api } from './../api';
+import { formatarData } from '../Utils';
+import RemessaEditModal from '../components/modal/RemessaEditModal';
 
 export default function Ordens() {
+    const { selectedDepartamento } = useUser();
     const hoje = dayjs();
 
-    const { volumes, volumesOP, checklistOP, atividadesOP } = useUser();
+    const [ordens, setOrdens] = useState([]);
+    const [selectedRemessa, setSelectedRemessa] = useState(null);
+    const [openRemessa, setOpenRemessa] = useState(false);
 
     const [statusFilter, setStatusFilter] = useState([]);
     const [teamFilter, setTeamFilter] = useState([]);
@@ -52,101 +57,90 @@ export default function Ordens() {
         { label: '#5954', value: 5954},
     ]
 
-    //dados da tabela
-    const createDataOrdens = ({ id, remessa, pedido, categoria, descricao, producao, conclusao, requisitos, status }) => {
-        const rem = <Button component={Link} to={"/remessas/"+remessa} variant="outlined" size="small">{remessa}</Button>;
-        const ped = <Button component={Link} to={"/pedidos/"+pedido} variant="outlined" size="small">{pedido}</Button>;
-        const cat = <Chip className="stats" size="small" label={categoria} />;
-        const desc = descricao;
-        const prod = producao;
-        var conc;
-        if(conclusao == '22/04/2025'){
-            conc = <Box className="data_late">{conclusao} <TimerTwoToneIcon color="error"/></Box>;
-            
-        } else {
-            conc = conclusao;
+    const [rows, setRows] = useState([]);
+    const [tab, setTab] = useState(0);
+
+    const carregar = async () => {
+        try {
+            const res = await ordem_api.getOrdens(selectedDepartamento.id);
+
+            setOrdens(res.data || []);
+
+            setRows(
+                res.data.map(item => {
+                    return createData({
+                        id: item.id,
+                        remessa: { id: item.id_remessa, titulo: item.titulo_remessa },
+                        pedido: item.id_pedido,
+                        categoria: item.nome_categoria,
+                        nome: item.nome_produto,
+                        quantidade: item.agrupavel ? item.quantidade : 1,
+                        producao: item.created_at, //alterar esses valores
+                        conclusao: item.created_at, // <-
+                        requisitos: item.requisitos,
+                        status: item.id_status
+                    });
+                })
+            );
+        } catch (err) {
+            console.log(err);
         }
+    };
+
+    useEffect(() => {
+        carregar();
+    }, [selectedDepartamento]); 
+
+
+    //dados da tabela
+    const createData = ({ id, remessa, pedido, categoria, nome, quantidade, producao, conclusao, requisitos, status }) => {
+        const rem = <Button variant="outlined" size="small" onClick={() => { setSelectedRemessa({ id: remessa.id, titulo: remessa.titulo }); setOpenRemessa(true); setTab(0); }}>{remessa.titulo}</Button>
+        const ped = <Button variant="outlined" size="small" onClick={() => { setSelectedRemessa({ id: remessa.id, titulo: remessa.titulo }); setOpenRemessa(true); setTab(1); }}>{pedido}</Button>
+        
+        const cat = <Chip className="stats" size="small" label={categoria} />;
+        const desc = nome;
+        const prod = formatarData(producao);
+        const conc = formatarData(conclusao);
+        const qtd = quantidade;
+        // if(conclusao == '22/04/2025'){
+        //     conc = <Box className="data_late">{conclusao} <TimerTwoToneIcon color="error"/></Box>;
+            
+        // } else {
+        //     conc = conclusao;
+        // }
+
+        let requisitos_array = [];
+        
+        try {
+            if (requisitos && typeof requisitos === 'string') {
+                requisitos_array = JSON.parse(requisitos);
+            } else if (Array.isArray(requisitos)) {
+                requisitos_array = [];
+            }
+        } catch (error) {
+            console.error('Erro ao parsear requisitos:', error);
+            requisitos = [];
+        }
+
         const req = <Box sx={{display: 'flex', flexDirection: 'column', gap: '2px'}}>
-            {(requisitos == 3 || requisitos == 2 || requisitos == 1) && <Chip size="small" color="success" label="Router" />}
-            {(requisitos == 3 || requisitos == 2) && <Chip size="small" label="Adesivo" />}
-            {(requisitos == 3) && <Chip size="small" label="Tecido" />}
+           { requisitos_array?.map((req, index) => {
+                if(req.nome){
+                    return (
+                        <Chip key={index} size="small" label={req.nome} color={ req.status === 1 ? "success" : "default" } />
+                    )
+                }
+            })}
+          
         </Box>;
         const stats = <>
             <Status status={status} size={'small'} />
             <Button className="link" component={Link} to={"/ordens/"+id} variant="outlined" size="small">Detalhes</Button>
         </>
 
-        return { rem, ped, cat, desc, prod, conc, req, stats};
+        return { rem, ped, cat, desc, qtd, prod, conc, req, stats};
     }
-    const rowsOrdens = [
-        createDataOrdens({ 
-            id: 3,
-            remessa: '5951-1',
-            pedido: '5951',
-            categoria: 'Mesa de poker',
-            descricao: 'Mesa de poker',
-            producao: '04/05/2025',
-            conclusao: '22/05/2025',
-            requisitos: 2,
-            status: 1,
-        }),
-        createDataOrdens({ 
-            id: 1,
-            remessa: '5951-1',
-            pedido: '5952',
-            categoria: 'Mesa de poker',
-            descricao: 'Mesa de poker profissional',
-            producao: '03/04/2025',
-            conclusao: '22/04/2025',
-            requisitos: 3,
-            status: calculoStatusPedido(),
-        }),
-        createDataOrdens({ 
-            id: 2,
-            remessa: '5951-1',
-            pedido: '5952',
-            categoria: 'Futmesa',
-            descricao: 'Futmesa',
-            producao: '04/04/2025',
-            conclusao: '22/04/2025',
-            requisitos: 1,
-            status: 4,
-        }),
-        createDataOrdens({ 
-            id: 4,
-            remessa: '5953-1',
-            pedido: '5953',
-            categoria: 'Cadeira',
-            descricao: 'Cadeira para mesa de poker',
-            producao: '04/05/2025',
-            conclusao: '22/05/2025',
-            requisitos: 1,
-            status: 1,
-        }),
-        createDataOrdens({ 
-            id: 5,
-            remessa: '5954-1',
-            pedido: '5954',
-            categoria: 'Mesa de poker',
-            descricao: 'Mesa de poker',
-            producao: '04/06/2025',
-            conclusao: '22/06/2025',
-            requisitos: 1,
-            status: 2,
-        }),
-        createDataOrdens({ 
-            id: 6,
-            remessa: '5954-2',
-            pedido: '5954',
-            categoria: 'Cadeira',
-            descricao: 'Cadeira para mesa de poker',
-            producao: '06/06/2025',
-            conclusao: '22/06/2025',
-            requisitos: 1,
-            status: 4,
-        }),
-    ];
-    const headCellsOrdens = [
+
+    const headCells = [
         {
             id: 'remessa',
             label: 'Remessa',
@@ -161,7 +155,11 @@ export default function Ordens() {
         },
         {
             id: 'descricao',
-            label: 'Descrição',
+            label: 'Produto',
+        },
+        {
+            id: 'qtd',
+            label: 'Qtd.',
         },
         {
             id: 'producao',
@@ -186,7 +184,7 @@ export default function Ordens() {
         <Layout>
             <Title title="Lista de ordens" icon={<FactoryIcon/>} />
             <Box className="index_content atividades_list">
-                <Box className="filtros">
+                {/* <Box className="filtros">
                     <h2>Filtros:</h2>
                     <Box className="filter_list">
                         <Box className="item">
@@ -202,11 +200,12 @@ export default function Ordens() {
                             <InputCalendarRange setFunctionDe={setDateFilterDe} setFunctionAte={setDateFilterAte} />
                         </Box>
                     </Box>
-                </Box>
+                </Box> */}
                 <Box className="table_content">
-                    <DataTable headCells={headCellsOrdens} rows={rowsOrdens}/>
+                    <DataTable headCells={headCells} rows={rows}/>
                 </Box>
             </Box>
+            <RemessaEditModal selectedRemessa={selectedRemessa} open={openRemessa} setOpen={setOpenRemessa} tab={tab} setTab={setTab} />
         </Layout>
     )
 }
