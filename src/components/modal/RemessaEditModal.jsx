@@ -10,6 +10,7 @@ import { remessa_api } from '../../api';
 import { converterDataParaBanco, validarCEP, validarTelefone, validarCpfCnpj } from '../../Utils';
 import Status from '~/components/layout/Status';
 import { useUser } from '~/context/UserContext';
+import { Link } from 'react-router-dom';
 
 export default function RemessaEditModal({ selectedRemessa, open, setOpen, tab, setTab }) {
     const handleChange = (event, newTab) => {
@@ -262,7 +263,9 @@ function ListaOrdensRemessa({ idRemessa }){
                                     padding: 1.5,
                                     borderBottom: index < ordensGrupo.length - 1 ? '1px solid #e0e0e0' : 'none',
                                     cursor: 'pointer',
+                                    position: 'relative'
                                 }}>
+                                    <Button component={Link} to={`/ordem/`+ordem.id} sx={{ position: 'absolute', left: 0, top: 0, background: 'transparent', width: '100%', height: '100%' }}></Button>
                                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#333' }}>
                                         {ordem.nome_produto}
                                     </Typography>

@@ -1,11 +1,10 @@
 import '~/assets/scss/Show.scss';
 
 import { useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, memo } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Box, Button, Chip, Tabs, Tab, Typography, Switch } from '@mui/material';
-
 
 import Accordion from "@mui/material/Accordion";
 import AccordionActions from "@mui/material/AccordionActions";
@@ -19,7 +18,6 @@ import Stepper from "~/components/Stepper";
 import InputCalendar from '~/components/InputCalendar';
 import InputAuto from '~/components/InputAuto';
 import DataTable from '~/components/DataTable';
-
 
 import { useUser } from '~/context/UserContext';
 import SelecionarEtapa from '~/components/SelecionarEtapa';
@@ -153,15 +151,15 @@ export default function Ordem() {
                 </Tabs>
             </Box>
             <Box className="show_content">
-                { tab == 0 && <Informacoes 
+                { tab === 0 && <Informacoes 
                     setTab={setTab} 
                     status={status} 
                 /> }
-                { tab == 1 && <Requisitos step_list={step_list} /> }
-                { tab == 2 && <Etapas etapas={etapas.filter(e => e.id_categoria === 1)} atividades={atividades} equipes={equipes} /> }
-                { tab == 3 && <Atividades atividadesOP={atividadesOP.filter((a) => a.ativo == 1)} atividades={atividades} etapas={etapas} equipes={equipes} /> }
-                { tab == 4 && <Checklist /> }
-                { tab == 5 && <Historico /> }
+                { tab === 1 && <Requisitos step_list={step_list} /> }
+                { tab === 2 && <Etapas etapas={etapas.filter(e => e.id_categoria === 1)} atividades={atividades} equipes={equipes} /> }
+                { tab === 3 && <Atividades atividadesOP={atividadesOP.filter((a) => a.ativo === 1)} atividades={atividades} etapas={etapas} equipes={equipes} /> }
+                { tab === 4 && <Checklist /> }
+                { tab === 5 && <Historico /> }
             </Box>
         </Layout>
     )
@@ -332,6 +330,20 @@ function Etapas({ etapas = [], atividades = [], equipes = [] }) {
         setEtapasOP(selecionadasModal);
     };
 
+    const [expandedId, setExpandedId] = useState(null);
+    const handleExpanded = (id) => (event, isExpanded) => {
+        setExpandedId(isExpanded ? id : null);
+    };
+
+    const atividadesPorEtapa = useMemo(() => {
+        const map = new Map();
+        for (const a of atividades) {
+            if (!map.has(a.id_etapa)) map.set(a.id_etapa, []);
+            map.get(a.id_etapa).push(a);
+        }
+        return map;
+    }, [atividades]);
+
     return (
         <Box className="ordem_etapas">
             <Box className="selecionar_etapas">
@@ -364,29 +376,38 @@ function Etapas({ etapas = [], atividades = [], equipes = [] }) {
             <Box className="etapas">
             {etapas
                 .filter(etapa => etapasOP.includes(etapa.id))
-                .map((item, index) => (
-                <Accordion className="accordion_item" key={index} >
-                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography className="titulo" component="span" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span>{item.title}</span>
-                    </Typography>
-                    </AccordionSummary>
-                    <AccordionDetails className="accordion_details">
-                    {atividades.filter(atividade => atividade.id_etapa === item.id).map(atividade => (
-                        <AtividadeItem
-                            atividade={atividade}
-                            equipes={equipes}
-                            key={atividade.id}
-                        />
-                    ))}
-                    </AccordionDetails>
-                </Accordion>
-            ))}
+                .map((item) => {
+                    const lista = atividadesPorEtapa.get(item.id) ?? [];
+                    return (
+                        <Accordion 
+                            className="accordion_item" 
+                            key={item.id} 
+                            expanded={expandedId === item.id}
+                            onChange={handleExpanded(item.id)}
+                            TransitionProps={{ unmountOnExit: true }}
+                        >
+                            <AccordionSummary expandIcon={<ExpandMoreIcon />}> 
+                                <Typography className="titulo" component="span" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                                    <span>{item.title}</span>
+                                </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails className="accordion_details">
+                                {lista.map((atividade) => (
+                                    <AtividadeItem
+                                        atividade={atividade}
+                                        equipes={equipes}
+                                        key={atividade.id}
+                                    />
+                                ))}
+                            </AccordionDetails>
+                        </Accordion>
+                    );
+                })}
             </Box>
         </Box>
     )
 }
-function AtividadeItem({ atividade, equipes }) {
+const AtividadeItem = memo(function AtividadeItem({ atividade, equipes }) {
     const { atividadesOP, setAtividadesOP, volumes, volumesOP, setVolumesOP } = useUser();
     const { id } = useParams();
 
@@ -396,24 +417,24 @@ function AtividadeItem({ atividade, equipes }) {
             label: equipe.title
         }));
     };
-    const atualizarAtividade = (id, novoValor) => {
+    const atualizarAtividade = (idAtv, novoValor) => {
         setAtividadesOP((prevAtividades) =>
-            prevAtividades.map((atividade) =>
-                atividade.id === id
-                ? { ...atividade, ...novoValor } // Atualiza os campos desejados
-                : atividade
+            prevAtividades.map((atividadeItem) =>
+                atividadeItem.id === idAtv
+                ? { ...atividadeItem, ...novoValor }
+                : atividadeItem
             )
         );
     };
 
-    var find = atividadesOP.find(item => item.id_atividade == atividade.id && item.status != -1);
+    let find = atividadesOP.find(item => item.id_atividade === atividade.id && item.status !== -1);
 
     const [checked, setChecked] = useState(find?.ativo);
     const [equipeSelecionada, setEquipeSelecionada] = useState(formatarArray().find(item => item.id === find?.id_equipe) || null);
     const [dataSelecionada, setDataSelecionada] = useState(find?.data || dayjs().format('DD/MM/YYYY'));
 
     useEffect(() => {
-        if(checked && equipeSelecionada && dataSelecionada && dataSelecionada != "Invalid Date" && !find){
+        if(checked && equipeSelecionada && dataSelecionada && dataSelecionada !== "Invalid Date" && !find){
 
             setAtividadesOP((prev) => [
                 ...prev,
@@ -428,9 +449,9 @@ function AtividadeItem({ atividade, equipes }) {
                     status: 0,
                 },
             ]);
-            find = atividadesOP.find(item => item.id_atividade == atividade.id && item.status != -1);
+            find = atividadesOP.find(item => item.id_atividade === atividade.id && item.status !== -1);
         }
-        else if(find?.status == 0 && dataSelecionada && dataSelecionada != "Invalid Date" && equipeSelecionada){
+        else if(find?.status === 0 && dataSelecionada && dataSelecionada !== "Invalid Date" && equipeSelecionada){
             atualizarAtividade(find.id, {
                 id_equipe: equipeSelecionada?.id,
                 data: dataSelecionada,
@@ -441,16 +462,8 @@ function AtividadeItem({ atividade, equipes }) {
     }, [checked, equipeSelecionada, dataSelecionada]);
 
     return (
-        <Box className={`atividade_etapa ${checked ? 'checked' : ''} ${(find != undefined && find.status != 0) ? 'disabled' : ''}`}>
-            <h2>{atividade.title} <Switch checked={checked} onChange={(e) => {setChecked(e.target.checked)}}  /></h2>
-            { find != undefined && 
-                <Box className='running'>
-                    <Button component={Link} to={`/atividades/${find?.id}`} variant="outlined" size="small">Detalhes</Button>
-                    <span className="stats">
-                        <Status status={find?.status} />
-                    </span>
-                </Box>
-            }
+        <Box className={`atividade_etapa ${checked ? 'checked' : ''} ${(find !== undefined && find.status !== 0) ? 'disabled' : ''}`}>
+            <h2 style={{ color: checked ? '#000' : '#999999', marginBottom: 10 }}>{atividade.title} <Switch checked={!!checked} onChange={(e) => {setChecked(e.target.checked)}}  /></h2>
             <div>
                 <div className="item">
                     <InputCalendar
@@ -458,6 +471,7 @@ function AtividadeItem({ atividade, equipes }) {
                         width={'100%'}
                         value={dataSelecionada}
                         setValue={setDataSelecionada}
+                        disabled={!checked}
                     />
                 </div>
                 <div className="item">
@@ -466,25 +480,25 @@ function AtividadeItem({ atividade, equipes }) {
                         list={formatarArray()}
                         value={equipeSelecionada}
                         setValue={setEquipeSelecionada}
+                        disabled={!checked}
                     />
                 </div>
             </div>
         </Box>
     );
-}
+});
 function Atividades({ atividadesOP, atividades, etapas, equipes }) {
     const createData = (item) => {
-        
-        const id = item.id
-        const equipe = equipes.find(e => e.id == item.id_equipe).title
-        const producao = item.data
-        const titulo = atividades.find(a => a.id == item.id_atividade).title
-        const etapa = etapas.find(e => e.id == item.id_etapa).title
+        const id = item.id;
+        const equipe = (equipes.find(e => e.id === item.id_equipe) || {}).title || '-';
+        const producao = item.data;
+        const titulo = (atividades.find(a => a.id === item.id_atividade) || {}).title || '-';
+        const etapa = (etapas.find(e => e.id === item.id_etapa) || {}).title || '-';
         
         const status = <>
             <Status status={item.status} size='small' />
             <Button className="link" component={Link} to={`/atividades/${item.id}`} variant="outlined" size="small">Detalhes</Button>
-        </>
+        </>;
         
         return { id, equipe, producao, titulo, etapa, status };
     }
@@ -497,11 +511,8 @@ function Atividades({ atividadesOP, atividades, etapas, equipes }) {
         {id: 'etapa', label: 'Etapa'},
         {id: 'status', label: 'Status'},
     ];
-    const rows = [];
 
-    atividadesOP.map((item) => {
-        rows.push(createData(item))
-    })
+    const rows = atividadesOP.map((item) => createData(item));
 
     return (
         <Box className="atividades">
@@ -553,10 +564,10 @@ export function Checklist() {
     const fazerVistoria = () => {
         if(falha){
             const cadastrados = checklistOP
-            .filter(item => item.id_ativ == atividadeSelecionada.id && item.id_atividade == checklistSelecionado.id_atividade)
+            .filter(item => item.id_ativ === atividadeSelecionada.id && item.id_atividade === checklistSelecionado.id_atividade)
             .map(item => item.id_checklist);
     
-            const todosCheckAtv = checklists.filter(item => item.id_atividade == checklistSelecionado.id_atividade);
+            const todosCheckAtv = checklists.filter(item => item.id_atividade === checklistSelecionado.id_atividade);
         
             const naoCadastrados = todosCheckAtv.filter(item2 =>
                 !cadastrados.includes(item2.id) && item2.id !== checklistSelecionado.id
@@ -576,7 +587,7 @@ export function Checklist() {
             };
         
             const novosItens = naoCadastrados.map((item, i) => ({
-                id: checklistOP.length + 2 + i, // evita conflito de ID
+                id: checklistOP.length + 2 + i, 
                 id_ordem: atividadeSelecionada.id_ordem,
                 id_ativ: atividadeSelecionada.id,
                 id_checklist: item.id,
@@ -596,7 +607,7 @@ export function Checklist() {
                 )
             );
 
-            setVolumesOP(prev => prev.filter(item => item.id_ativ != atividadeSelecionada.id));
+            setVolumesOP(prev => prev.filter(item => item.id_ativ !== atividadeSelecionada.id));
             atualizarStatusAtividade(atividadeSelecionada, -1);
         } else {
             setChecklistOP([...checklistOP, {
@@ -623,9 +634,9 @@ export function Checklist() {
             {etapasOP.map((item, index) => (
                 <ChecklistEtapa 
                     key={index}
-                    atividadesOP={atividadesOP.filter((a) => a.id_etapa == item && a.ativo == 1)} 
+                    atividadesOP={atividadesOP.filter((a) => a.id_etapa === item && a.ativo === 1)} 
                     checklists={checklists} 
-                    etapa={etapas.find((e) => e.id == item)} 
+                    etapa={etapas.find((e) => e.id === item)} 
                     equipes={equipes}
                     openModal={abrirModalVistoria}/> 
             ))}
@@ -648,16 +659,16 @@ function ChecklistEtapa({ etapa, atividadesOP, checklists, equipes, openModal })
                     <h3>{etapa.title}</h3>
                     <div className="checklist_itens">
                         {atividadesOP.map((atividade, index) => {
-                            const equipe = equipes.find(e => e.id == atividade.id_equipe);
+                            const equipe = equipes.find(e => e.id === atividade.id_equipe);
 
-                            const atividadeData = atividades.find(item => item.id == atividade.id_atividade);
+                            const atividadeData = atividades.find(item => item.id === atividade.id_atividade);
 
                             return (
                                 <>
                                 <h4><span>{equipe.title}</span> {atividadeData.title}</h4>
                                 <ChecklistAtividade 
                                     key={index} 
-                                    checklists={checklists.filter((c) => c.id_atividade == atividade.id_atividade)} 
+                                    checklists={checklists.filter((c) => c.id_atividade === atividade.id_atividade)} 
                                     atividade={atividade} 
                                     openModal={openModal}/>
                                 </>
@@ -679,8 +690,8 @@ function ChecklistAtividade({ checklists, atividade, openModal }) {
 
             return (
                 <Box className={"item "+
-                    (checklistData?.status == 1 ? 'success' : '')+
-                    (checklistData?.status == 0 ? 'error' : '')
+                    (checklistData?.status === 1 ? 'success' : '')+
+                    (checklistData?.status === 0 ? 'error' : '')
                 } key={index}>
                     <div className="text">
                         <h5>{checklist.title}</h5>

@@ -206,13 +206,15 @@
                         border: 2px solid #ebebeb;
                         padding: 10px 15px 15px;
                         border-radius: 5px;
+                        transition: all .3s;
+                        &.checked{
+                            border-color: $color1;
+                            filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, .1))
+                        }
 
                         &:not(.checked){
                             background: $grey;
 
-                            >div{
-                                display: none;
-                            }
                         }
                         &.disabled{
                             pointer-events: none;

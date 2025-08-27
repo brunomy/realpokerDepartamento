@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Box, Autocomplete, Typography, TextField } from '@mui/material';
 
-export default function InputAuto({ label, list, setValue, width, value = null }) {
+export default function InputAuto({ label, list, setValue, width, value = null, disabled }) {
     const hint = useRef('');
     const [inputValue, setInputValue] = useState('');
 
@@ -32,6 +32,7 @@ export default function InputAuto({ label, list, setValue, width, value = null }
                     event.preventDefault();
                 }
             }}
+            disabled={disabled}
             onClose={() => (hint.current = '')}
             options={list}
             isOptionEqualToValue={(option, val) => option?.id === val?.id}

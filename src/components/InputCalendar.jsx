@@ -5,7 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 
-export default function BasicDatePicker({ label, width, value = dayjs(), setValue }) {
+export default function BasicDatePicker({ label, width, value = dayjs(), setValue, disabled }) {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -13,6 +13,7 @@ export default function BasicDatePicker({ label, width, value = dayjs(), setValu
         <DatePicker 
             label={label} 
             format="DD/MM/YYYY"
+            size="small"
             sx={{ width: width || 300 }}
             value={dayjs(value, "DD/MM/YYYY")}
             onChange={(novaData) => {
@@ -20,6 +21,12 @@ export default function BasicDatePicker({ label, width, value = dayjs(), setValu
             }}
             onChange={(novaData) => {
               setValue(novaData.format('DD/MM/YYYY'));
+            }}
+            disabled={disabled}
+            slotProps={{
+              textField: {
+                size: "small",
+              },
             }}
         />
       </DemoContainer>

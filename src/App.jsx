@@ -34,7 +34,7 @@ function App() {
           <Route path="/pedidos/:id" element={<PrivateRoute><Pedido /></PrivateRoute>} />
 
           <Route path="/ordens" element={<PrivateRoute><Ordens /></PrivateRoute>} />
-          <Route path="/ordens/:id" element={<PrivateRoute><Ordem /></PrivateRoute>} />
+          <Route path="/ordem/:id" element={<PrivateRoute><Ordem /></PrivateRoute>} />
 
           <Route path="/atividades" element={<PrivateRoute><Atividades /></PrivateRoute>} />
           <Route path="/atividades/:id" element={<PrivateRoute><Atividade /></PrivateRoute>} />

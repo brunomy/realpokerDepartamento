@@ -134,7 +134,7 @@ export default function Ordens() {
         </Box>;
         const stats = <>
             <Status status={status} size={'small'} />
-            <Button className="link" component={Link} to={"/ordens/"+id} variant="outlined" size="small">Detalhes</Button>
+            <Button className="link" component={Link} to={"/ordem/"+id} variant="outlined" size="small">Detalhes</Button>
         </>
 
         return { rem, ped, cat, desc, qtd, prod, conc, req, stats};
