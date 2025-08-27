@@ -14,7 +14,7 @@ import InputCalendarRange from '~/components/InputCalendarRange';
 import Status from '../components/layout/Status';
 import { useUser } from '~/context/UserContext';
 import Modal from '~/components/layout/Modal';
-import RemessaEdit from '~/components/modal/RemessaEdit';
+import RemessaEditModal from '~/components/modal/RemessaEditModal';
 
 //icons
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -29,6 +29,7 @@ export default function Pedidos() {
     const hoje = dayjs();
     const { selectedDepartamento } = useUser();
     const [openRemessa, setOpenRemessa] = useState(false);
+    const [tab, setTab] = useState(0);
 
     const [selectedRemessa, setSelectedRemessa] = useState(null);
 
@@ -100,10 +101,10 @@ export default function Pedidos() {
         );
 
         const remessa_name = <Box className="linha_dupla">
-            <Button variant="outlined" size="small" onClick={() => { setSelectedRemessa({ id: remessa[0]?.id_remessa, titulo: titulo }); setOpenRemessa(true); }}>{titulo}</Button>
+            <Button variant="outlined" size="small" onClick={() => { setSelectedRemessa({ id: remessa[0]?.id_remessa, titulo: titulo }); setOpenRemessa(true); setTab(0); }}>{titulo}</Button>
         </Box>
         const pedidos = <Box className="linha_dupla">
-            {unicos.map((item) => <div><Button component={Link} to={"/pedidos/"+item.id_pedido} variant="outlined" size="small">{item.id_pedido}</Button></div>)}
+            {unicos.map((item) => <div><Button onClick={() => { setSelectedRemessa({ id: remessa[0]?.id_remessa, titulo: titulo }); setOpenRemessa(true); setTab(1); }} variant="outlined" size="small">{item.id_pedido}</Button></div>)}
         </Box>
         const criacao = <Box className="linha_dupla">
             {unicos.map((item) => <div>{formatarData(item.created_at)}</div>)}
@@ -181,7 +182,7 @@ export default function Pedidos() {
             <Title title="Lista de pedidos" icon={<ShoppingCartIcon/>} />
       
             <Box className="index_content">
-                <Box className="filtros">
+                {/* <Box className="filtros">
                     <h2>Filtros:</h2>
                     <Box className="filter_list">
                         <Box className="item">
@@ -194,12 +195,12 @@ export default function Pedidos() {
                             <InputCalendarRange setFunctionDe={setDateFilterDe} setFunctionAte={setDateFilterAte} />
                         </Box>
                     </Box>
-                </Box>
+                </Box> */}
                 <Box className="table_content">
                     <DataTable headCells={headCells} rows={rows}/>
                 </Box>
             </Box>
-            <RemessaEdit selectedRemessa={selectedRemessa} open={openRemessa} setOpen={setOpenRemessa} />
+            <RemessaEditModal selectedRemessa={selectedRemessa} open={openRemessa} setOpen={setOpenRemessa} tab={tab} setTab={setTab} />
         </Layout>
     )
 }

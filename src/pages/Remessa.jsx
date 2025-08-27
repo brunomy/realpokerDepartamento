@@ -35,7 +35,7 @@ import HandymanTwoToneIcon from '@mui/icons-material/HandymanTwoTone';
 import AdicionarEmbalagem from '../components/modal/AdicionarEmbalagem';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import MudarRemessaModal from '../components/modal/MudarRemessaModal';
-import EditarRemessa from '../components/modal/EditarRemessa';
+import EditarRemessa from '../components/EditarRemessa';
 
 export default function Remessa() {
     const { id } = useParams();
