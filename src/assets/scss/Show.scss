@@ -234,20 +234,13 @@
         .selecionar_etapas{
             margin: 0 0 30px;
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
             gap: 10px;
         }
 
         .etapas{
             .accordion_item{
                 background: $grey;
-    
-                // &:nth-child(2){
-                //     border-top-left-radius: 4px;
-                //     border-top-right-radius: 4px;
-    
-                //     &::before{display: none;}
-                // }
     
                 .titulo{
                     width: 100%;
@@ -279,7 +272,7 @@
                         &.disabled{
                             pointer-events: none;
 
-                            .MuiSwitch-root{ opacity: .5; }
+                            .MuiSwitch-root{ opacity: .5; pointer-events: all; }
                             .running{
                             
                             }

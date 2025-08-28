@@ -51,6 +51,9 @@ export const config_api = {
   deleteChecklist: (id) => http(`/api/configuracao/deletarChecklist/${id}`, { method: "DELETE", }),
   createVolume: (payload) => http("/api/configuracao/criarVolume", { method: "POST", body: JSON.stringify(payload), }),
   deleteVolume: (id) => http(`/api/configuracao/deletarVolume/${id}`, { method: "DELETE", }),
+
+  getEtapasAtividadesByCategory: (id) => http(`/api/configuracao/getEtapasAtividadesByCategory/${id}`, { method: "GET" }),
+  getEquipesAtividade: (id) => http(`/api/configuracao/getEquipesAtividade/${id}`, { method: "GET" }),
 };
 
 export const ordem_api = {
@@ -67,4 +70,9 @@ export const remessa_api = {
   getOrdensRemessa: (id) => http(`/api/getOrdensRemessa/${id}`, { method: "GET" }),
   getOrdensRemessaDepartamento: (id_departamento, id) => http(`/api/getOrdensRemessaDepartamento/${id_departamento}/${id}`, { method: "GET" }),
 }
+
+export const atividade_api = {
+  createAtividade: (payload) => http("/api/criarAtividade", { method: "POST", body: JSON.stringify(payload), }),
+  getAtividadesOrdem: (id) => http(`/api/getAtividadesOrdem/${id}`, { method: "GET" }),
+};
 

@@ -46,8 +46,8 @@ import EventAvailableTwoToneIcon from '@mui/icons-material/EventAvailableTwoTone
 import HandymanTwoToneIcon from '@mui/icons-material/HandymanTwoTone';
 import InfoProdutoModal from '../components/modal/InfoProdutoModal';
 import { Historico } from './Atividade';
-import { ordem_api } from './../api';
-import { formatarData } from '../Utils';
+import { ordem_api, config_api, atividade_api } from './../api';
+import { converterDataParaBanco, formatarData } from '../Utils';
 
 export default function Ordem() {
     const { selectedDepartamento } = useUser();
@@ -197,8 +197,8 @@ export default function Ordem() {
                     status={status} 
                 /> }
                 { tab === 1 && <Requisitos step_list={step_list} /> }
-                { tab === 2 && <Etapas etapas={etapas.filter(e => e.id_categoria === 1)} atividades={atividades} equipes={equipes} /> }
-                { tab === 3 && <Atividades atividadesOP={atividadesOP.filter((a) => a.ativo === 1)} atividades={atividades} etapas={etapas} equipes={equipes} /> }
+                { tab === 2 && <Etapas ordem={ordem} etapasOld={etapas.filter(e => e.id_categoria === 1)} atividades={atividades} equipes={equipes} /> }
+                { tab === 3 && <Atividades ordem={ordem} atividadesOP={atividadesOP.filter((a) => a.ativo === 1)} atividades={atividades} etapas={etapas} equipes={equipes} /> }
                 { tab === 4 && <Checklist /> }
                 { tab === 5 && <Historico /> }
             </Box>
@@ -286,7 +286,7 @@ export function InfoProduto({ ordem_id }) {
     return (
         <Box className="info_produto">
             <h3>
-                <b>PRODUTO: </b>{produto?.nome_produto}<br/>
+                <b>{produto?.nome_produto}</b><br/>
                 <Box sx={{ mt: .5 }}>{produto?.nome_categoria}</Box>
                 { produto?.agrupavel == 1 && 
                     <Box sx={{ mt: 1 }}>Qtd: {produto?.quantidade}</Box>
@@ -384,6 +384,7 @@ export function InfoProduto({ ordem_id }) {
         </Box>
     )
 }
+
 function Requisitos({ step_list }) {
     return (
         <Box className="requisitos">
@@ -410,151 +411,181 @@ function RequisitoItem({ step }) {
         </div>
     )
 }
-function Etapas({ etapas = [], atividades = [], equipes = [] }) {
-    const { etapasOP, setEtapasOP } = useUser();    
 
-    const [openModal, setOpenModal] = useState(false);
-    const [openModalInfo, setOpenModalInfo] = useState(false);
-    const [selecionadasModal, setSelecionadasModal] = useState(etapasOP ? etapasOP : []);
+function Etapas({ ordem }) {
+    const { selectedDepartamento } = useUser();
+    const [etapas, setEtapas] = useState([]);
+    const [atividades, setAtividades] = useState([]);
 
-    const salvarSelecionadas = () => {
-        setEtapasOP(selecionadasModal);
+    const [equipes, setEquipes] = useState([]);
+
+    const carregar = async () => {
+        try {
+            const res = await config_api.getEtapasAtividadesByCategory(ordem?.id_categoria);
+
+            const etapasArray = [];
+            
+            Object.keys(res.data).forEach(key => {
+                if (key !== 'atividades' && !isNaN(key)) {
+                    const etapa = res.data[key];
+                    etapasArray.push({
+                        ...etapa,
+                        atividades: etapa.atividades ? JSON.parse(etapa.atividades) : []
+                    });
+                }
+            });
+
+            setEtapas(etapasArray);
+
+            const res2 = await config_api.getEquipesAtividade(selectedDepartamento?.id);
+            setEquipes(res2.data);
+
+            const res3 = await atividade_api.getAtividadesOrdem(ordem?.id);
+            setAtividades(res3.data);
+        } catch (err) {
+            console.log(err.message);
+        }
     };
+
+    useEffect(() => {
+        if (ordem?.id){
+            carregar();
+        }
+    }, [ordem]);
+
+    const [openModalInfo, setOpenModalInfo] = useState(false);
 
     const [expandedId, setExpandedId] = useState(null);
     const handleExpanded = (id) => (event, isExpanded) => {
         setExpandedId(isExpanded ? id : null);
     };
 
-    const atividadesPorEtapa = useMemo(() => {
-        const map = new Map();
-        for (const a of atividades) {
-            if (!map.has(a.id_etapa)) map.set(a.id_etapa, []);
-            map.get(a.id_etapa).push(a);
-        }
-        return map;
-    }, [atividades]);
-
     return (
         <Box className="ordem_etapas">
             <Box className="selecionar_etapas">
-                <Button variant="contained" size="small" onClick={() => setOpenModalInfo(true)}>Produto</Button>
-                <Button variant="contained" size="small" onClick={() => setOpenModal(true)}>Selecionar Etapa</Button>
-
-                <Modal
-                    open={openModal}
-                    setOpen={setOpenModal}
-                    title="Selecionar Etapa"
-                    confirm={salvarSelecionadas}
-                >
-                    <SelecionarEtapa
-                        etapas={etapas}
-                        selecionadas={selecionadasModal}
-                        setSelecionadasModal={setSelecionadasModal}
-                    />
-                </Modal>
+                <Button variant="contained" color="warning" onClick={() => setOpenModalInfo(true)}>Informações do Produto</Button>
+                <Button variant="contained" onClick={() => setOpenModalInfo(true)}>Enviar para produção</Button>
                 <Modal
                     open={openModalInfo}
                     setOpen={setOpenModalInfo}
-                    title="Mesa de poker profissional"
+                    title={ordem.nome_categoria}
                     confirmText='Fechar'
                 >
-                    <InfoProdutoModal />
+                    <InfoProdutoModal ordem={ordem} />
                 </Modal>
-                
             </Box>
-
-            <Box className="etapas">
-            {etapas
-                .filter(etapa => etapasOP.includes(etapa.id))
-                .map((item) => {
-                    const lista = atividadesPorEtapa.get(item.id) ?? [];
-                    return (
-                        <Accordion 
-                            className="accordion_item" 
-                            key={item.id} 
-                            expanded={expandedId === item.id}
-                            onChange={handleExpanded(item.id)}
-                            TransitionProps={{ unmountOnExit: true }}
-                        >
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />}> 
-                                <Typography className="titulo" component="span" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                                    <span>{item.title}</span>
-                                </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails className="accordion_details">
-                                {lista.map((atividade) => (
-                                    <AtividadeItem
-                                        atividade={atividade}
-                                        equipes={equipes}
-                                        key={atividade.id}
-                                    />
-                                ))}
-                            </AccordionDetails>
-                        </Accordion>
-                    );
-                })}
-            </Box>
+            { etapas.length > 0 &&
+                <Box className="etapas">
+                    { etapas?.map((etapa, index) => {
+                        return (
+                            <Accordion 
+                                className="accordion_item" 
+                                key={etapa.id} 
+                                expanded={expandedId === etapa.id}
+                                onChange={handleExpanded(etapa.id)}
+                                TransitionProps={{ unmountOnExit: true }}
+                            >
+                                <AccordionSummary expandIcon={<ExpandMoreIcon />}> 
+                                    <Typography className="titulo" component="span" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                                        <span>{etapa.titulo}</span>
+                                    </Typography>
+                                </AccordionSummary>
+                                <AccordionDetails className="accordion_details">
+                                    {etapa.atividades?.map((atividade) => (
+                                        <AtividadeItem
+                                            etapa={etapa}
+                                            ordem={ordem}
+                                            atividade={atividade}
+                                            equipes={equipes}
+                                            atividade_criada={atividades?.find(a => a.id_conf_atividade === atividade.id)}
+                                            key={atividade.id}
+                                        />
+                                    ))}
+                                </AccordionDetails>
+                            </Accordion>
+                        );
+                    })}
+                </Box>
+            }
         </Box>
     )
 }
-const AtividadeItem = memo(function AtividadeItem({ atividade, equipes }) {
-    const { atividadesOP, setAtividadesOP, volumes, volumesOP, setVolumesOP } = useUser();
+const AtividadeItem = memo(function AtividadeItem({ ordem, etapa, atividade, equipes, atividade_criada }) {
     const { id } = useParams();
+    const isFirstRun = useRef(true);
+    const [idAtividade, setIdAtividade] = useState(atividade_criada ? atividade_criada.id : null);
 
     const formatarArray = () => {
         return equipes.map((equipe) => ({
             id: equipe.id,
-            label: equipe.title
+            label: equipe.nome
         }));
     };
-    const atualizarAtividade = (idAtv, novoValor) => {
-        setAtividadesOP((prevAtividades) =>
-            prevAtividades.map((atividadeItem) =>
-                atividadeItem.id === idAtv
-                ? { ...atividadeItem, ...novoValor }
-                : atividadeItem
-            )
-        );
-    };
 
-    let find = atividadesOP.find(item => item.id_atividade === atividade.id && item.status !== -1);
+    const [checked, setChecked] = useState(false);
+    const [equipeSelecionada, setEquipeSelecionada] = useState(null);
+    const [dataSelecionada, setDataSelecionada] = useState(dayjs().format('DD/MM/YYYY'));
 
-    const [checked, setChecked] = useState(find?.ativo);
-    const [equipeSelecionada, setEquipeSelecionada] = useState(formatarArray().find(item => item.id === find?.id_equipe) || null);
-    const [dataSelecionada, setDataSelecionada] = useState(find?.data || dayjs().format('DD/MM/YYYY'));
+    // Inicializa os valores quando atividade_criada estiver disponível
+    useEffect(() => {
+        if (atividade_criada) {
+            setChecked(true);
+            setIdAtividade(atividade_criada.id);
+            
+            const equipe_cadastrada = equipes.find(e => e.id === atividade_criada.id_equipe);
+            if (equipe_cadastrada) {
+                setEquipeSelecionada({
+                    id: equipe_cadastrada.id,
+                    label: equipe_cadastrada.nome
+                });
+            }
+            
+            const dataFormatada = formatarData(atividade_criada.data);
+            if (dataFormatada && dataFormatada !== "Invalid Date") {
+                setDataSelecionada(dataFormatada);
+            }
+        } else {
+            setChecked(false);
+            setEquipeSelecionada(null);
+            setDataSelecionada(dayjs().format('DD/MM/YYYY'));
+        }
+    }, [atividade_criada, equipes]);
 
     useEffect(() => {
-        if(checked && equipeSelecionada && dataSelecionada && dataSelecionada !== "Invalid Date" && !find){
+        // Pula a primeira execução
+        if (isFirstRun.current) {
+            isFirstRun.current = false;
+            return;
+        }
 
-            setAtividadesOP((prev) => [
-                ...prev,
-                {
-                    id: atividadesOP.length + 1,
-                    id_ordem: id,
-                    id_etapa: atividade.id_etapa,
-                    id_atividade: atividade.id,
-                    id_equipe: equipeSelecionada.id,
-                    data: dataSelecionada,
-                    ativo: 1,
-                    status: 0,
-                },
-            ]);
-            find = atividadesOP.find(item => item.id_atividade === atividade.id && item.status !== -1);
-        }
-        else if(find?.status === 0 && dataSelecionada && dataSelecionada !== "Invalid Date" && equipeSelecionada){
-            atualizarAtividade(find.id, {
-                id_equipe: equipeSelecionada?.id,
-                data: dataSelecionada,
-                ativo: checked ? 1 : 0,
-            });
-        }
-        
+        const criarAtividade = async () => {
+            if(checked && equipeSelecionada && dataSelecionada && dataSelecionada !== "Invalid Date"){
+                try {
+                    const response = await atividade_api.createAtividade({
+                        id: idAtividade,
+                        id_ordem: ordem.id,
+                        id_conf_etapa: atividade.id_conf_etapa,
+                        etapa: etapa.titulo,
+                        id_conf_atividade: atividade.id,
+                        atividade: atividade.titulo,
+                        id_equipe: equipeSelecionada?.id || equipeSelecionada,
+                        id_status: 0,
+                        data: converterDataParaBanco(dataSelecionada)
+                    });
+                    
+                    setIdAtividade(response.data);
+                } catch (error) {
+                    console.error('Erro ao criar atividade:', error);
+                }
+            }
+        };
+
+        criarAtividade();
     }, [checked, equipeSelecionada, dataSelecionada]);
 
     return (
-        <Box className={`atividade_etapa ${checked ? 'checked' : ''} ${(find !== undefined && find.status !== 0) ? 'disabled' : ''}`}>
-            <h2 style={{ color: checked ? '#000' : '#999999', marginBottom: 10 }}>{atividade.title} <Switch checked={!!checked} onChange={(e) => {setChecked(e.target.checked)}}  /></h2>
+        <Box className={`atividade_etapa ${checked ? 'checked' : 'disabled'}`}>
+            <h2 style={{ color: checked ? '#000' : '#999999', marginBottom: 10 }}>{atividade.titulo} <Switch checked={checked} onChange={(e) => {setChecked(e.target.checked)}}  /></h2>
             <div>
                 <div className="item">
                     <InputCalendar
@@ -578,6 +609,7 @@ const AtividadeItem = memo(function AtividadeItem({ atividade, equipes }) {
         </Box>
     );
 });
+
 function Atividades({ atividadesOP, atividades, etapas, equipes }) {
     const createData = (item) => {
         const id = item.id;
@@ -611,6 +643,7 @@ function Atividades({ atividadesOP, atividades, etapas, equipes }) {
         </Box>
     );
 }
+
 export function Checklist() {
     const { 
         checklists, checklistOP, setChecklistOP, 
