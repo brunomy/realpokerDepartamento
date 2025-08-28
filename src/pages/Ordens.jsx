@@ -75,8 +75,8 @@ export default function Ordens() {
                         categoria: item.nome_categoria,
                         nome: item.nome_produto,
                         quantidade: item.agrupavel ? item.quantidade : 1,
-                        producao: item.created_at, //alterar esses valores
-                        conclusao: item.created_at, // <-
+                        producao: item.data_producao,
+                        conclusao: item.data_conclusao,
                         requisitos: item.requisitos,
                         status: item.id_status
                     });

@@ -1,7 +1,7 @@
 import '~/assets/scss/Show.scss';
 
-import { useParams } from 'react-router-dom';
-import { useState, useEffect, useMemo, memo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useMemo, memo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Box, Button, Chip, Tabs, Tab, Typography, Switch } from '@mui/material';
@@ -46,8 +46,60 @@ import EventAvailableTwoToneIcon from '@mui/icons-material/EventAvailableTwoTone
 import HandymanTwoToneIcon from '@mui/icons-material/HandymanTwoTone';
 import InfoProdutoModal from '../components/modal/InfoProdutoModal';
 import { Historico } from './Atividade';
+import { ordem_api } from './../api';
+import { formatarData } from '../Utils';
 
 export default function Ordem() {
+    const { selectedDepartamento } = useUser();
+    const navigate = useNavigate();
+    const prevDepartamento = useRef(null);
+
+    const [ordem, setOrdem] = useState(null);
+
+    const [breadcrumbs, setBreadcrumbs] = useState([
+        {
+            label: 'Ordens',
+            url: '/ordens'
+        },
+    ]);
+
+    const [error, setError] = useState(null);
+
+
+    useEffect(() => {
+        if (prevDepartamento.current !== null && prevDepartamento.current !== selectedDepartamento) {
+            navigate("/ordens");
+        }
+        if (selectedDepartamento?.id) {
+            carregar();
+        }
+        prevDepartamento.current = selectedDepartamento;
+    }, [selectedDepartamento]);
+
+    const carregar = async () => {
+        try {
+            const res = await ordem_api.getOrdem(id);
+
+            setOrdem({
+                ...res.data,
+                requisitos: res.data.requisitos ? JSON.parse(res.data.requisitos) : []
+            });
+            
+            setBreadcrumbs([
+                {
+                    label: 'Ordens',
+                    url: '/ordens'
+                },
+                {
+                    label: res.data?.nome_produto,
+                    url: `/ordem/${res.data?.id}`
+                },
+            ]);
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
     const { 
         atividadesOP, etapasOP, volumesOP,
         etapas,
@@ -120,17 +172,6 @@ export default function Ordem() {
         },
     ];
 
-    const breadcrumbs = [
-        {
-            label: 'Pedido #5951',
-            url: '/pedidos/5951'
-        },
-        {
-            label: `Ordem #${id}`,
-            url: `/ordens/${id}`
-        },
-    ]
-
     return (
         <Layout>
             <Title title={"Ordem Nº #"+id} icon={<FactoryIcon/>} breadcrumbs={breadcrumbs} />
@@ -151,7 +192,7 @@ export default function Ordem() {
                 </Tabs>
             </Box>
             <Box className="show_content">
-                { tab === 0 && <Informacoes 
+                { tab === 0 && <Informacoes ordem={ordem}
                     setTab={setTab} 
                     status={status} 
                 /> }
@@ -165,7 +206,7 @@ export default function Ordem() {
     )
 }
 
-function Informacoes({ setTab, status }) {
+function Informacoes({ ordem, setTab, status }) {
     const { volumesOP } = useUser();
 
     return (
@@ -176,121 +217,171 @@ function Informacoes({ setTab, status }) {
                 <Box className="info">
                     <p>
                         <span className="icon"><CalendarMonthTwoToneIcon/></span>
-                        <b>PRODUÇÃO: </b>03/04/2024
+                        <b>PRODUÇÃO: </b>{formatarData(ordem?.data_producao)}
                     </p>
                     <p>
                         <span className="icon"><EventAvailableTwoToneIcon/></span>
-                        <b>CONCLUSÃO: </b>22/04/2025
+                        <b>CONCLUSÃO: </b>{formatarData(ordem?.data_conclusao)}
                     </p>
                     <p>
                         <span className="icon"><CheckBoxTwoToneIcon/></span>
-                        <b>REQUISITOS: </b> 0/3
+                        <b>REQUISITOS: </b> {ordem?.requisitos?.filter(r => r.status === 1).length}/{ordem?.requisitos?.length}
                     </p>
                     <p>
                         <span className="icon"><MoveToInboxTwoToneIcon/></span>
-                        <b>VOLUMES: </b> {volumesOP.length}
+                        <b>VOLUMES: </b> 
                     </p>
                     <p>
                         <span className="icon"><TurnedInTwoToneIcon/></span>
-                        <b>CATEGORIA: </b>Mesa de Poker
+                        <b>CATEGORIA: </b>{ordem?.nome_categoria || ''}
                     </p>
                 
                     <p className="full">
                         <span className="icon"><InfoTwoToneIcon/></span>
-                        <b>PRODUTO: </b>Mesa de poker profissional
+                        <b>PRODUTO: </b>{ordem?.nome_produto}
                     </p>
                     <p className="full">
                         <span className="icon"><HandymanTwoToneIcon/></span>
-                        <b>STATUS: </b><Status status={status} />
+                        <b>STATUS: </b><Status status={ordem?.id_status} />
                     </p>
                     
                 </Box>
             </Box>
-            <InfoProduto />
-
+            { ordem && <InfoProduto ordem_id={ordem.id} /> }
         </Box>
         </>
     )
 }
-export function InfoProduto(){
+export function InfoProduto({ ordem_id }) {
+    const [error, setError] = useState(null);
+    const [produto, setProduto] = useState(null);
+    const [id, setId] = useState(ordem_id);
+    const [zoomImage, setZoomImage] = useState(null);
+    const [openZoom, setOpenZoom] = useState(false);
+
+    const handleImageClick = (imageSrc, title) => {
+        setZoomImage({ src: imageSrc, title });
+        setOpenZoom(true);
+    };
+
+    const carregar = async () => {
+        try {
+            const res = await ordem_api.getProduto(id);
+
+            setProduto({
+                ...res.data,
+                atributos: res.data.atributos ? JSON.parse(res.data.atributos) : []
+            });
+
+        } catch (err) {
+            console.log(err.message);
+            setError(err.message);
+        }
+    };
+
+    useEffect(() => {
+        carregar();
+    }, [id]);
+
     return (
-    <Box className="info_produto">
-        <h3>
-            <b>PRODUTO: </b>Mesa de poker profissional
-        </h3>
+        <Box className="info_produto">
+            <h3>
+                <b>PRODUTO: </b>{produto?.nome_produto}<br/>
+                <Box sx={{ mt: .5 }}>{produto?.nome_categoria}</Box>
+                { produto?.agrupavel == 1 && 
+                    <Box sx={{ mt: 1 }}>Qtd: {produto?.quantidade}</Box>
+                }
+            </h3>
+            <div className={"obs_anexo "+(produto?.anexo || produto?.foto_final ? 'hasPhoto' : '')}>
+                <div className="obs">
+                    <h4>OBSERVAÇÕES:</h4>
+                    <p>{produto?.observacao}</p>
+                </div>
+
+                { (produto?.anexo || produto?.foto_final) &&
+                    <div className="anexo">
+                        { produto?.anexo && 
+                        <div>
+                            <h4>ANEXO:</h4>
+                            <div className="image">
+                                <img 
+                                    src={'https://realpoker.com.br/uploads/'+produto?.anexo} 
+                                    alt="Anexo" 
+                                    onClick={() => handleImageClick('https://realpoker.com.br/uploads/'+produto?.anexo, 'Anexo')}
+                                    style={{ cursor: 'pointer' }}
+                                />
+                            </div>
+                        </div>
+                        }
+
+                        { produto?.foto_final &&
+                        <div>
+                            <h4>FINAL:</h4>
+                            <div className="image">
+                                <img 
+                                    src={'https://realpoker.com.br/uploads/'+produto?.foto_final} 
+                                    alt="Foto Final" 
+                                    onClick={() => handleImageClick('https://realpoker.com.br/uploads/'+produto?.foto_final, 'Foto Final')}
+                                    style={{ cursor: 'pointer' }}
+                                />
+                            </div>
+                        </div>
+                        }
+                    </div>
+                }
+            </div>
+            
         
-        <div className="obs">
-            <h4>OBSERVAÇÕES:</h4>
-            <p>A mesa precisa ter detalhes na pintura em vermelho</p>
-        </div>
-      
-        <Box className="info_table">
-            <div>
-                <h4>TAMANHO DA MESA:</h4>
-                <p>9 (2,40 x 1,10M)</p>
-            </div>
-            <div>
-                <h4>EMBARALHADOR AUTOMÁTICO:</h4>
-                <p>Sem embaralhador</p>
-            </div>
-            <div>
-                <h4>TIPO DA COLUNA DA MESA:</h4>
-                <p>Retangular</p>
-            </div>
-            <div>
-                <h4>TEXTURA DA COLUNA DA MESA:</h4>
-                <p>Branco Fosco</p>
-            </div>
-            <div>
-                <h4>PISTA PARA FICHAS:</h4>
-                <p>Sem embaralhador</p>
-            </div>
-            <div>
-                <h4>EMBARALHADOR AUTOMÁTICO:</h4>
-                <p>Sem pista</p>
-            </div>
-            <div>
-                <h4>PORTA COPOS:</h4>
-                <p>Sem Porta Copos</p>
-            </div>
-            <div>
-                <h4>COURÍSSIMO DA BORDA:</h4>
-                <p>Preto</p>
-            </div>
-            <div>
-                <h4>COR DO TECIDO DA MESA:</h4>
-                <p>Preto</p>
-            </div>
-            <div>
-                <h4>PERSONALIZE COM SUA MARCA:</h4>
-                <p>Sem Logo ou Escrita</p>
-            </div>
-            <div>
-                <h4>DESENHO DE FUNDO:</h4>
-                <p>Sem Personalização</p>
-            </div>
-            <div>
-                <h4>TAMPÃO DE JANTAR / TÊNIS DE MESA:</h4>
-                <p>Sem tampão</p>
-            </div>
-            <div>
-                <h4>TIPO DE BORDA:</h4>
-                <p>Borda Baixa</p>
-            </div>
-            <div>
-                <h4>COR DO LED:</h4>
-                <p>Sem LED</p>
-            </div>
-            <div>
-                <h4>GAVETA E RACK PARA FICHAS:</h4>
-                <p>Para Cash Game + Rack METAL 500 Fichas (39mm)</p>
-            </div>
-            <div>
-                <h4>CONFIGURAÇÃO DO TAMPÃO:</h4>
-                <p>Configuração do Tampão</p>
-            </div>
+            <Box className="info_table">
+                { produto?.atributos?.map((attr, index) => (
+                    <div key={index}>
+                        <h4>{attr?.nome_conjunto}:</h4>
+                        <p>
+                            <span className="nome">{attr?.nome_atributo}</span>
+                            { attr?.cor ? <span className="color" style={{ background: attr.cor }}></span> : null }
+                            { attr?.texto ? <span className="texto">{attr.texto}</span> : null }
+                        </p>
+                    </div>
+                ))}
+            </Box>
+
+            {/* Modal de Zoom */}
+            <Modal 
+                open={openZoom} 
+                setOpen={setOpenZoom} 
+                title={zoomImage?.title || 'Imagem'} 
+                confirmText="Fechar"
+                confirm={() => {}}
+                sx={{
+                    '& .MuiDialogContent-root': { 
+                        textAlign: 'center',
+                        padding: '20px'
+                    }
+                }}
+            >
+                {zoomImage && (
+                    <Box sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'center', 
+                        alignItems: 'center',
+                        maxHeight: '70vh',
+                        overflow: 'hidden'
+                    }}>
+                        <img 
+                            src={zoomImage.src} 
+                            alt={zoomImage.title}
+                            style={{
+                                maxWidth: '100%',
+                                maxHeight: '100%',
+                                objectFit: 'contain',
+                                borderRadius: '8px',
+                                boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+                            }}
+                        />
+                    </Box>
+                )}
+            </Modal>
         </Box>
-    </Box>
     )
 }
 function Requisitos({ step_list }) {
