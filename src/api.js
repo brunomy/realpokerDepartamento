@@ -72,7 +72,9 @@ export const remessa_api = {
 }
 
 export const atividade_api = {
-  createAtividade: (payload) => http("/api/criarAtividade", { method: "POST", body: JSON.stringify(payload), }),
   getAtividadesOrdem: (id) => http(`/api/getAtividadesOrdem/${id}`, { method: "GET" }),
+  createAtividade: (payload) => http("/api/criarAtividade", { method: "POST", body: JSON.stringify(payload), }),
+  updateAtividade: (id, payload) => http(`/api/updateAtividade/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
+  deleteAtividade: (id) => http(`/api/deletarAtividade/${id}`, { method: "DELETE" }),
 };
 

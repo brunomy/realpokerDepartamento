@@ -186,9 +186,9 @@ export default function Ordem() {
                     <Tab label="Informações" />
                     <Tab label="Requisitos" />
                     <Tab label="Etapas " />
-                    <Tab label="Atividades" disabled={!atividadesOP.find(item => item.ativo === 1)} />
-                    <Tab label="Checklist" disabled={!atividadesOP.find(item => item.ativo === 1)} />
-                    <Tab label="Histórico"  />
+                    <Tab label="Atividades" disabled={ordem?.id_status === 0 || ordem?.id_status === null} />
+                    <Tab label="Checklist" disabled={ordem?.id_status === 0 || ordem?.id_status === null} />
+                    <Tab label="Histórico" disabled={ordem?.id_status === 0 || ordem?.id_status === null} />
                 </Tabs>
             </Box>
             <Box className="show_content">
@@ -447,6 +447,10 @@ function Etapas({ ordem }) {
         }
     };
 
+    const enviarProducao = async () => {
+        alert("Enviar para produção");
+    }
+
     useEffect(() => {
         if (ordem?.id){
             carregar();
@@ -464,7 +468,7 @@ function Etapas({ ordem }) {
         <Box className="ordem_etapas">
             <Box className="selecionar_etapas">
                 <Button variant="contained" color="warning" onClick={() => setOpenModalInfo(true)}>Informações do Produto</Button>
-                <Button variant="contained" onClick={() => setOpenModalInfo(true)}>Enviar para produção</Button>
+                <Button variant="contained" onClick={() => enviarProducao()}>Enviar para produção</Button>
                 <Modal
                     open={openModalInfo}
                     setOpen={setOpenModalInfo}
@@ -498,6 +502,7 @@ function Etapas({ ordem }) {
                                             atividade={atividade}
                                             equipes={equipes}
                                             atividade_criada={atividades?.find(a => a.id_conf_atividade === atividade.id)}
+                                            carregar={carregar}
                                             key={atividade.id}
                                         />
                                     ))}
@@ -510,7 +515,7 @@ function Etapas({ ordem }) {
         </Box>
     )
 }
-const AtividadeItem = memo(function AtividadeItem({ ordem, etapa, atividade, equipes, atividade_criada }) {
+const AtividadeItem = memo(function AtividadeItem({ ordem, etapa, atividade, equipes, atividade_criada, carregar }) {
     const { id } = useParams();
     const isFirstRun = useRef(true);
     const [idAtividade, setIdAtividade] = useState(atividade_criada ? atividade_criada.id : null);
@@ -522,70 +527,88 @@ const AtividadeItem = memo(function AtividadeItem({ ordem, etapa, atividade, equ
         }));
     };
 
-    const [checked, setChecked] = useState(false);
-    const [equipeSelecionada, setEquipeSelecionada] = useState(null);
-    const [dataSelecionada, setDataSelecionada] = useState(dayjs().format('DD/MM/YYYY'));
+    const [checked, setChecked] = useState(atividade_criada ? true : false);
+    const [equipeSelecionada, setEquipeSelecionada] = useState(atividade_criada ? {
+        id: atividade_criada.id_equipe,
+        label: equipes.find(e => e.id === atividade_criada.id_equipe)?.nome
+    } : null);
+    const [dataSelecionada, setDataSelecionada] = useState(atividade_criada ? formatarData(atividade_criada.data) : dayjs().format('DD/MM/YYYY'));
 
-    // Inicializa os valores quando atividade_criada estiver disponível
-    useEffect(() => {
-        if (atividade_criada) {
-            setChecked(true);
-            setIdAtividade(atividade_criada.id);
+    const criarAtividade = async () => {
+        try {
+            const response = await atividade_api.createAtividade({
+                id: idAtividade,
+                id_ordem: ordem.id,
+                id_conf_etapa: atividade.id_conf_etapa,
+                etapa: etapa.titulo,
+                id_conf_atividade: atividade.id,
+                atividade: atividade.titulo,
+                id_equipe: equipeSelecionada?.id || equipeSelecionada,
+                id_status: ordem.id_status !== 0 || ordem.id_status !== null ? 1 : 0, // Se a ordem estiver em produção, iniciar a atividade como "Em produção"
+                data: converterDataParaBanco(dataSelecionada)
+            });
             
-            const equipe_cadastrada = equipes.find(e => e.id === atividade_criada.id_equipe);
-            if (equipe_cadastrada) {
-                setEquipeSelecionada({
-                    id: equipe_cadastrada.id,
-                    label: equipe_cadastrada.nome
-                });
-            }
-            
-            const dataFormatada = formatarData(atividade_criada.data);
-            if (dataFormatada && dataFormatada !== "Invalid Date") {
-                setDataSelecionada(dataFormatada);
-            }
-        } else {
-            setChecked(false);
-            setEquipeSelecionada(null);
-            setDataSelecionada(dayjs().format('DD/MM/YYYY'));
+            setIdAtividade(response.data);
+        } catch (error) {
+            console.error('Erro ao criar atividade:', error);
         }
-    }, [atividade_criada, equipes]);
+        carregar();
+    };
+
+    const editarAtividade = async () => {
+        try {
+            const payload = {
+                "id_equipe": equipeSelecionada?.id || equipeSelecionada,
+                "id_status": ordem.id_status !== 0 || ordem.id_status !== null ? 1 : 0,
+                "data": converterDataParaBanco(dataSelecionada)
+            };
+
+            const res = await atividade_api.updateAtividade(idAtividade, payload);
+        } catch (err) {
+            console.error("Erro ao atualizar atividade:", err.message);
+        }
+        carregar();
+    }
+
+    const deletarAtividade = async () => {
+        try {
+            const res = await atividade_api.deleteAtividade(idAtividade);
+        } catch (err) {
+            console.error("Erro ao deletar atividade:", err.message);
+        }
+        setIdAtividade(null);
+        carregar();
+    };
 
     useEffect(() => {
-        // Pula a primeira execução
         if (isFirstRun.current) {
             isFirstRun.current = false;
             return;
         }
+        carregar();
 
-        const criarAtividade = async () => {
-            if(checked && equipeSelecionada && dataSelecionada && dataSelecionada !== "Invalid Date"){
-                try {
-                    const response = await atividade_api.createAtividade({
-                        id: idAtividade,
-                        id_ordem: ordem.id,
-                        id_conf_etapa: atividade.id_conf_etapa,
-                        etapa: etapa.titulo,
-                        id_conf_atividade: atividade.id,
-                        atividade: atividade.titulo,
-                        id_equipe: equipeSelecionada?.id || equipeSelecionada,
-                        id_status: 0,
-                        data: converterDataParaBanco(dataSelecionada)
-                    });
-                    
-                    setIdAtividade(response.data);
-                } catch (error) {
-                    console.error('Erro ao criar atividade:', error);
-                }
+        if(checked && equipeSelecionada && dataSelecionada && dataSelecionada !== "Invalid Date"){
+            if(!idAtividade){
+                criarAtividade();
+            } else if(atividade_criada.id_status <= 1 && (
+                atividade_criada.id_equipe !== equipeSelecionada?.id ||
+                atividade_criada.data !== converterDataParaBanco(dataSelecionada)
+            )){
+                editarAtividade();
             }
-        };
-
-        criarAtividade();
+        } else if(idAtividade){
+            deletarAtividade();
+        }
     }, [checked, equipeSelecionada, dataSelecionada]);
 
     return (
         <Box className={`atividade_etapa ${checked ? 'checked' : 'disabled'}`}>
-            <h2 style={{ color: checked ? '#000' : '#999999', marginBottom: 10 }}>{atividade.titulo} <Switch checked={checked} onChange={(e) => {setChecked(e.target.checked)}}  /></h2>
+            <h2 style={{ color: checked ? '#000' : '#999999', marginBottom: 10 }}>{atividade.titulo} 
+                { atividade_criada && atividade_criada.id_status > 1 ? 
+                    <Status status={atividade_criada ? atividade_criada.id_status : 0} size='small' />
+                    : <Switch checked={checked} onChange={(e) => {setChecked(e.target.checked)}}  />
+                }
+            </h2>
             <div>
                 <div className="item">
                     <InputCalendar
@@ -593,7 +616,7 @@ const AtividadeItem = memo(function AtividadeItem({ ordem, etapa, atividade, equ
                         width={'100%'}
                         value={dataSelecionada}
                         setValue={setDataSelecionada}
-                        disabled={!checked}
+                        disabled={!checked || (atividade_criada && atividade_criada.id_status > 1)}
                     />
                 </div>
                 <div className="item">
@@ -602,7 +625,7 @@ const AtividadeItem = memo(function AtividadeItem({ ordem, etapa, atividade, equ
                         list={formatarArray()}
                         value={equipeSelecionada}
                         setValue={setEquipeSelecionada}
-                        disabled={!checked}
+                        disabled={!checked || (atividade_criada && atividade_criada.id_status > 1)}
                     />
                 </div>
             </div>
