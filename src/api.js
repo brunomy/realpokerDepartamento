@@ -60,6 +60,7 @@ export const ordem_api = {
   getOrdens: (id) => http(`/api/getOrdensDepartamento/${id}`, { method: "GET" }),
   getOrdem: (id) => http(`/api/getOrdem/${id}`, { method: "GET" }),
   getProduto: (ordem_id) => http(`/api/getProduto/${ordem_id}`, { method: "GET" }),
+  enviarProducao: (id) => http(`/api/enviarProducao/${id}`, { method: "PUT" }),
 }
 
 export const remessa_api = {

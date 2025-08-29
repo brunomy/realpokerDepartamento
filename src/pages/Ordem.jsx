@@ -197,7 +197,7 @@ export default function Ordem() {
                     status={status} 
                 /> }
                 { tab === 1 && <Requisitos step_list={step_list} /> }
-                { tab === 2 && <Etapas ordem={ordem} etapasOld={etapas.filter(e => e.id_categoria === 1)} atividades={atividades} equipes={equipes} /> }
+                { tab === 2 && <Etapas atualizarOrdem={carregar} ordem={ordem} atividades={atividades} equipes={equipes} /> }
                 { tab === 3 && <Atividades ordem={ordem} atividadesOP={atividadesOP.filter((a) => a.ativo === 1)} atividades={atividades} etapas={etapas} equipes={equipes} /> }
                 { tab === 4 && <Checklist /> }
                 { tab === 5 && <Historico /> }
@@ -412,7 +412,7 @@ function RequisitoItem({ step }) {
     )
 }
 
-function Etapas({ ordem }) {
+function Etapas({ ordem, atualizarOrdem }) {
     const { selectedDepartamento } = useUser();
     const [etapas, setEtapas] = useState([]);
     const [atividades, setAtividades] = useState([]);
@@ -448,7 +448,9 @@ function Etapas({ ordem }) {
     };
 
     const enviarProducao = async () => {
-        alert("Enviar para produção");
+        if (!window.confirm("Tem certeza que deseja enviar esta ordem para produção?")) return;
+        ordem_api.enviarProducao(ordem.id);
+        atualizarOrdem();
     }
 
     useEffect(() => {
@@ -468,7 +470,7 @@ function Etapas({ ordem }) {
         <Box className="ordem_etapas">
             <Box className="selecionar_etapas">
                 <Button variant="contained" color="warning" onClick={() => setOpenModalInfo(true)}>Informações do Produto</Button>
-                <Button variant="contained" onClick={() => enviarProducao()}>Enviar para produção</Button>
+                <Button disabled={ordem.id_status != 0} variant="contained" onClick={() => enviarProducao()}>Enviar para produção</Button>
                 <Modal
                     open={openModalInfo}
                     setOpen={setOpenModalInfo}
@@ -544,7 +546,7 @@ const AtividadeItem = memo(function AtividadeItem({ ordem, etapa, atividade, equ
                 id_conf_atividade: atividade.id,
                 atividade: atividade.titulo,
                 id_equipe: equipeSelecionada?.id || equipeSelecionada,
-                id_status: ordem.id_status !== 0 || ordem.id_status !== null ? 1 : 0, // Se a ordem estiver em produção, iniciar a atividade como "Em produção"
+                id_status: (ordem.id_status === 0 || ordem.id_status === null) ? 0 : 1, // Se a ordem estiver em produção, iniciar a atividade como "Em produção"
                 data: converterDataParaBanco(dataSelecionada)
             });
             
@@ -600,7 +602,7 @@ const AtividadeItem = memo(function AtividadeItem({ ordem, etapa, atividade, equ
             deletarAtividade();
         }
     }, [checked, equipeSelecionada, dataSelecionada]);
-
+    
     return (
         <Box className={`atividade_etapa ${checked ? 'checked' : 'disabled'}`}>
             <h2 style={{ color: checked ? '#000' : '#999999', marginBottom: 10 }}>{atividade.titulo} 
