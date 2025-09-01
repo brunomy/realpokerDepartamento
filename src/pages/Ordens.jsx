@@ -76,9 +76,11 @@ export default function Ordens() {
                         nome: item.nome_produto,
                         quantidade: item.agrupavel ? item.quantidade : 1,
                         producao: item.data_producao,
-                        conclusao: item.data_conclusao,
+                        conclusao: item.maior_data_atividade,
                         requisitos: item.requisitos,
-                        status: item.id_status
+                        status: item.id_status,
+                        atividades: item.atividades,
+                        atividades_finalizadas: item.atividades_finalizadas
                     });
                 })
             );
@@ -93,7 +95,7 @@ export default function Ordens() {
 
 
     //dados da tabela
-    const createData = ({ id, remessa, pedido, categoria, nome, quantidade, producao, conclusao, requisitos, status }) => {
+    const createData = ({ id, remessa, pedido, categoria, nome, quantidade, producao, conclusao, requisitos, status, atividades, atividades_finalizadas }) => {
         const rem = <Button variant="outlined" size="small" onClick={() => { setSelectedRemessa({ id: remessa.id, titulo: remessa.titulo }); setOpenRemessa(true); setTab(0); }}>{remessa.titulo}</Button>
         const ped = <Button variant="outlined" size="small" onClick={() => { setSelectedRemessa({ id: remessa.id, titulo: remessa.titulo }); setOpenRemessa(true); setTab(1); }}>{pedido}</Button>
         
@@ -102,13 +104,7 @@ export default function Ordens() {
         const prod = formatarData(producao);
         const conc = formatarData(conclusao);
         const qtd = quantidade;
-        // if(conclusao == '22/04/2025'){
-        //     conc = <Box className="data_late">{conclusao} <TimerTwoToneIcon color="error"/></Box>;
-            
-        // } else {
-        //     conc = conclusao;
-        // }
-
+  
         let requisitos_array = [];
         
         try {
@@ -132,8 +128,10 @@ export default function Ordens() {
             })}
           
         </Box>;
+        const porcentagem = atividades ? (atividades_finalizadas / atividades) * 100 : 0;
+
         const stats = <>
-            <Status status={status} size={'small'} />
+            <Status status={status} porcentagem={porcentagem} size={'small'} />
             <Button className="link" component={Link} to={"/ordem/"+id} variant="outlined" size="small">Detalhes</Button>
         </>
 

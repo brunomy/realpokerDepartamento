@@ -8,6 +8,24 @@ export function formatarData(dataString) {
   return `${dia}/${mes}/${ano}`;
 }
 
+export function formatarDataHora(dataString) {
+  if (!dataString) return "";
+
+  // separa a data e hora
+  const [data, hora] = dataString.split(" ");
+  const [ano, mes, dia] = data.split("-");
+  
+  // Se não tem hora, retorna só a data
+  if (!hora) {
+    return `${dia}/${mes}/${ano}`;
+  }
+  
+  // pega apenas horas e minutos (ignora segundos)
+  const [horas, minutos] = hora.split(":");
+  
+  return `${dia}/${mes}/${ano} ${horas}:${minutos}`;
+}
+
 // Função para converter data de dd/mm/yyyy para yyyy-mm-dd
 export function converterDataParaBanco(dataString) {
   if (!dataString) return "";

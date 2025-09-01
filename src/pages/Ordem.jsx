@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useMemo, memo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
-import { Box, Button, Chip, Tabs, Tab, Typography, Switch } from '@mui/material';
+import { Box, Button, Chip, Tabs, Tab, Typography, Switch, Card, CardContent, CardActions } from '@mui/material';
 
 import Accordion from "@mui/material/Accordion";
 import AccordionActions from "@mui/material/AccordionActions";
@@ -46,10 +46,12 @@ import EventAvailableTwoToneIcon from '@mui/icons-material/EventAvailableTwoTone
 import HandymanTwoToneIcon from '@mui/icons-material/HandymanTwoTone';
 import InfoProdutoModal from '../components/modal/InfoProdutoModal';
 import { Historico } from './Atividade';
-import { ordem_api, config_api, atividade_api } from './../api';
-import { converterDataParaBanco, formatarData } from '../Utils';
+import { ordem_api, config_api, atividade_api, checklist_api } from './../api';
+import { converterDataParaBanco, formatarData, formatarDataHora } from '../Utils';
+import { StatusChecklist } from '../components/layout/Status';
 
-export default function Ordem() {
+export default function Ordem({resetOrdem = false}) {
+    const { id } = useParams();
     const { selectedDepartamento } = useUser();
     const navigate = useNavigate();
     const prevDepartamento = useRef(null);
@@ -65,26 +67,44 @@ export default function Ordem() {
 
     const [error, setError] = useState(null);
 
-
     useEffect(() => {
         if (prevDepartamento.current !== null && prevDepartamento.current !== selectedDepartamento) {
             navigate("/ordens");
+            return;
         }
-        if (selectedDepartamento?.id) {
+
+        if (selectedDepartamento?.id && !ordem) {
             carregar();
         }
+
         prevDepartamento.current = selectedDepartamento;
-    }, [selectedDepartamento]);
+    }, [selectedDepartamento, ordem, navigate]);
+
 
     const carregar = async () => {
+        if (!id) return;
+        
         try {
             const res = await ordem_api.getOrdem(id);
 
+            let requisitos = [];
+            if (res.data.requisitos) {
+                try {
+                    requisitos = JSON.parse(res.data.requisitos);
+                } catch (error) {
+                    console.error('Erro ao fazer parse dos requisitos:', error);
+                    requisitos = [];
+                }
+            }
+
             setOrdem({
                 ...res.data,
-                requisitos: res.data.requisitos ? JSON.parse(res.data.requisitos) : []
+                requisitos: requisitos
             });
-            
+
+            console.log('Dados carregados da API:', res.data);
+            console.log('Requisitos recebidos:', res.data.requisitos);
+
             setBreadcrumbs([
                 {
                     label: 'Ordens',
@@ -100,16 +120,6 @@ export default function Ordem() {
         }
     };
 
-    const { 
-        atividadesOP, etapasOP, volumesOP,
-        etapas,
-        atividades,
-        checklists,
-        equipes
-    } = useUser();
-
-    const { id } = useParams();
-
     const [tab, setTab] = useState(0);
 
     const [status, setStatus] = useState(calculoStatusPedido());
@@ -117,60 +127,6 @@ export default function Ordem() {
     const handleChange = (event, newTab) => {
       setTab(newTab);
     };
-
-    const step_list = [
-        {
-            title: 'Router',
-            steps: [
-                {
-                    label: 'Pendente',
-                    description: 'Ainda não iniciado'
-                },
-                {
-                    label: 'Concluído',
-                    description: 'Finalizar este requisito (não é possível reverter este estado)'
-                },
-            ]
-        },
-        {
-            title: 'Adesivo',
-            steps: [
-                {
-                    label: 'Pendente',
-                    description: 'Ainda não iniciado'
-                },
-                {
-                    label: 'Cliente',
-                    description: 'Aguardando aprovação do cliente'
-                },
-                {
-                    label: 'Concluído',
-                    description: 'Finalizar este requisito (não é possível reverter este estado)'
-                },
-            ]
-        },
-        {
-            title: 'Tecido',
-            steps: [
-                {
-                    label: 'Pendente',
-                    description: 'Ainda não iniciado'
-                },
-                {
-                    label: 'Cliente',
-                    description: 'Aguardando aprovação do cliente'
-                },
-                {
-                    label: 'Impermeabilização',
-                    description: 'O tecido precisa ser impermeabilizado'
-                },
-                {
-                    label: 'Concluído',
-                    description: 'Finalizar este requisito (não é possível reverter este estado)'
-                },
-            ]
-        },
-    ];
 
     return (
         <Layout>
@@ -186,9 +142,10 @@ export default function Ordem() {
                     <Tab label="Informações" />
                     <Tab label="Requisitos" />
                     <Tab label="Etapas " />
-                    <Tab label="Atividades" disabled={ordem?.id_status === 0 || ordem?.id_status === null} />
-                    <Tab label="Checklist" disabled={ordem?.id_status === 0 || ordem?.id_status === null} />
-                    <Tab label="Histórico" disabled={ordem?.id_status === 0 || ordem?.id_status === null} />
+                    <Tab label="Atividades" disabled={!ordem?.id_status} />
+                    <Tab label="Checklist" disabled={!ordem?.id_status} />
+                    <Tab label="Volumes" disabled={!ordem?.id_status} />
+                    <Tab label="Histórico" disabled={!ordem?.id_status} />
                 </Tabs>
             </Box>
             <Box className="show_content">
@@ -196,19 +153,18 @@ export default function Ordem() {
                     setTab={setTab} 
                     status={status} 
                 /> }
-                { tab === 1 && <Requisitos step_list={step_list} /> }
-                { tab === 2 && <Etapas atualizarOrdem={carregar} ordem={ordem} atividades={atividades} equipes={equipes} /> }
-                { tab === 3 && <Atividades ordem={ordem} atividadesOP={atividadesOP.filter((a) => a.ativo === 1)} atividades={atividades} etapas={etapas} equipes={equipes} /> }
+                { tab === 1 && <Requisitos atualizarOrdem={carregar} requisitos_ordem={ordem?.requisitos} /> }
+                { tab === 2 && <Etapas atualizarOrdem={carregar} ordem={ordem} /> }
+                { tab === 3 && <Atividades /> }
                 { tab === 4 && <Checklist /> }
                 { tab === 5 && <Historico /> }
+                { tab === 6 && <Historico /> }
             </Box>
         </Layout>
     )
 }
 
 function Informacoes({ ordem, setTab, status }) {
-    const { volumesOP } = useUser();
-
     return (
         <>
         <Box className="informacoes">
@@ -221,15 +177,23 @@ function Informacoes({ ordem, setTab, status }) {
                     </p>
                     <p>
                         <span className="icon"><EventAvailableTwoToneIcon/></span>
-                        <b>CONCLUSÃO: </b>{formatarData(ordem?.data_conclusao)}
+                        <b>CONCLUSÃO: </b>{formatarData(ordem?.maior_data_atividade)}
                     </p>
                     <p>
                         <span className="icon"><CheckBoxTwoToneIcon/></span>
-                        <b>REQUISITOS: </b> {ordem?.requisitos?.filter(r => r.status === 1).length}/{ordem?.requisitos?.length}
+                        <b>REQUISITOS: </b> {Array.isArray(ordem?.requisitos) ? ordem.requisitos.filter(r => r.status === 1).length : 0}/{Array.isArray(ordem?.requisitos) ? ordem.requisitos.length : 0}
+                    </p>
+                    <p>
+                        <span className="icon"><CheckBoxTwoToneIcon/></span>
+                        <b>ATIVIDADES: </b> {ordem?.atividades_finalizadas}/{ordem?.atividades}
+                    </p>
+                    <p>
+                        <span className="icon"><CheckBoxTwoToneIcon/></span>
+                        <b>CHECKLISTS: </b> {ordem?.checklists_finalizados}/{ordem?.checklists}
                     </p>
                     <p>
                         <span className="icon"><MoveToInboxTwoToneIcon/></span>
-                        <b>VOLUMES: </b> 
+                        <b>VOLUMES: </b>{ordem?.volumes_embalados}/{ordem?.volumes || 0}
                     </p>
                     <p>
                         <span className="icon"><TurnedInTwoToneIcon/></span>
@@ -385,28 +349,76 @@ export function InfoProduto({ ordem_id }) {
     )
 }
 
-function Requisitos({ step_list }) {
+function Requisitos({ atualizarOrdem, requisitos_ordem }) {
+    const [requisitos, setRequisitos] = useState([]);
+    
+    useEffect(() => {
+        setRequisitos(requisitos_ordem);
+    }, [requisitos_ordem]);
+
     return (
         <Box className="requisitos">
             { 
-                step_list.map((step, index) => (
-                    <RequisitoItem step={step} key={index} />
+                requisitos.map((item, index) => (
+                    <RequisitoItem atualizarOrdem={atualizarOrdem} requisito={item} key={index} />
                 ))
             }
         </Box>
     )
 }
-function RequisitoItem({ step }) {
+function RequisitoItem({ requisito, atualizarOrdem }) {
+    const concluirDependencia = async (dependenciaId) => {
+        if (!window.confirm("Tem certeza que deseja concluir esta dependência?")) return;
+        
+        try {
+            const response = await ordem_api.concluirDependencia(dependenciaId);
+            atualizarOrdem();
+        } catch (error) {
+            console.error('Erro ao concluir dependência:', error);
+            alert('Erro ao concluir dependência. Verifique sua conexão e tente novamente.');
+        }
+    };
+
+    const concluirRequisito = async () => {
+        if (!window.confirm("Tem certeza que deseja concluir este requisito?")) return;
+        
+        try {
+            const response = await ordem_api.concluirRequisito(requisito.id);
+            atualizarOrdem();
+        } catch (error) {
+            console.error('Erro ao concluir requisito:', error);
+            alert('Erro ao concluir requisito. Verifique sua conexão e tente novamente.');
+        }
+    };
+
+    
     return (
         <div className="requisito_item">
             <h3>
                 <span className="icon">
                     <ChecklistIcon />
                 </span>
-                {step.title}
+                {requisito.nome}
             </h3>
             <div className="step_content">
-                <Stepper steps={step.steps} />
+                {requisito.dependencias?.map((dependencia) => (
+                    <div className={`dependencia ${dependencia.status ? 'concluida' : ''}`}>
+                        <h4>
+                            {dependencia?.nome}
+                        </h4>
+
+                        { dependencia.status ? 
+                            <Button variant="contained" color="success" size="small">{ formatarDataHora(dependencia?.updated_at) }</Button> : 
+                            <Button variant="contained"size="small" onClick={() => concluirDependencia(dependencia.id)}>Concluir</Button>
+                        }
+                    </div>
+                ))}
+
+                { (requisito.dependencias?.filter(item => item.status == 0).length === 0 &&
+                    requisito.status == 0) &&
+                    <Button variant="contained" onClick={concluirRequisito}>Concluir Requisito</Button>
+                }
+                { requisito.status == 1 && <Button variant="contained" color="success">{formatarDataHora(requisito.updated_at)}</Button> }
             </div>
         </div>
     )
@@ -449,8 +461,14 @@ function Etapas({ ordem, atualizarOrdem }) {
 
     const enviarProducao = async () => {
         if (!window.confirm("Tem certeza que deseja enviar esta ordem para produção?")) return;
-        ordem_api.enviarProducao(ordem.id);
-        atualizarOrdem();
+
+        try {
+            const response = await ordem_api.enviarProducao(ordem.id);
+            atualizarOrdem();
+        } catch (error) {
+            console.error('Erro ao concluir dependência:', error);
+            alert('Erro ao concluir dependência. Verifique sua conexão e tente novamente.');
+        }
     }
 
     useEffect(() => {
@@ -470,7 +488,7 @@ function Etapas({ ordem, atualizarOrdem }) {
         <Box className="ordem_etapas">
             <Box className="selecionar_etapas">
                 <Button variant="contained" color="warning" onClick={() => setOpenModalInfo(true)}>Informações do Produto</Button>
-                <Button disabled={ordem.id_status != 0} variant="contained" onClick={() => enviarProducao()}>Enviar para produção</Button>
+                <Button disabled={(ordem.id_status != 0 && ordem.id_status != null) || !atividades} variant="contained" onClick={() => enviarProducao()}>Enviar para produção</Button>
                 <Modal
                     open={openModalInfo}
                     setOpen={setOpenModalInfo}
@@ -482,7 +500,7 @@ function Etapas({ ordem, atualizarOrdem }) {
             </Box>
             { etapas.length > 0 &&
                 <Box className="etapas">
-                    { etapas?.map((etapa, index) => {
+                    { etapas?.filter(etapa => etapa.atividades.length > 0).map((etapa, index) => {
                         return (
                             <Accordion 
                                 className="accordion_item" 
@@ -505,7 +523,8 @@ function Etapas({ ordem, atualizarOrdem }) {
                                             equipes={equipes}
                                             atividade_criada={atividades?.find(a => a.id_conf_atividade === atividade.id)}
                                             carregar={carregar}
-                                            key={atividade.id}
+                                            atualizarOrdem={atualizarOrdem}
+                                            key={atividade?.id}
                                         />
                                     ))}
                                 </AccordionDetails>
@@ -517,7 +536,7 @@ function Etapas({ ordem, atualizarOrdem }) {
         </Box>
     )
 }
-const AtividadeItem = memo(function AtividadeItem({ ordem, etapa, atividade, equipes, atividade_criada, carregar }) {
+const AtividadeItem = memo(function AtividadeItem({ ordem, etapa, atividade, equipes, atividade_criada, carregar, atualizarOrdem }) {
     const { id } = useParams();
     const isFirstRun = useRef(true);
     const [idAtividade, setIdAtividade] = useState(atividade_criada ? atividade_criada.id : null);
@@ -551,10 +570,10 @@ const AtividadeItem = memo(function AtividadeItem({ ordem, etapa, atividade, equ
             });
             
             setIdAtividade(response.data);
+            atualizarOrdem();
         } catch (error) {
             console.error('Erro ao criar atividade:', error);
         }
-        carregar();
     };
 
     const editarAtividade = async () => {
@@ -569,17 +588,18 @@ const AtividadeItem = memo(function AtividadeItem({ ordem, etapa, atividade, equ
         } catch (err) {
             console.error("Erro ao atualizar atividade:", err.message);
         }
-        carregar();
     }
 
     const deletarAtividade = async () => {
         try {
-            const res = await atividade_api.deleteAtividade(idAtividade);
+            if(idAtividade){
+                const res = await atividade_api.deleteAtividade(idAtividade);
+                setIdAtividade(null);
+                atualizarOrdem();
+            }
         } catch (err) {
             console.error("Erro ao deletar atividade:", err.message);
         }
-        setIdAtividade(null);
-        carregar();
     };
 
     useEffect(() => {
@@ -587,7 +607,6 @@ const AtividadeItem = memo(function AtividadeItem({ ordem, etapa, atividade, equ
             isFirstRun.current = false;
             return;
         }
-        carregar();
 
         if(checked && equipeSelecionada && dataSelecionada && dataSelecionada !== "Invalid Date"){
             if(!idAtividade){
@@ -601,13 +620,15 @@ const AtividadeItem = memo(function AtividadeItem({ ordem, etapa, atividade, equ
         } else if(idAtividade){
             deletarAtividade();
         }
+        carregar();
     }, [checked, equipeSelecionada, dataSelecionada]);
     
     return (
+        atividade ? 
         <Box className={`atividade_etapa ${checked ? 'checked' : 'disabled'}`}>
-            <h2 style={{ color: checked ? '#000' : '#999999', marginBottom: 10 }}>{atividade.titulo} 
-                { atividade_criada && atividade_criada.id_status > 1 ? 
-                    <Status status={atividade_criada ? atividade_criada.id_status : 0} size='small' />
+            <h2 style={{ color: checked ? '#000' : '#999999', marginBottom: 10 }}>{atividade?.titulo} 
+                { atividade_criada && atividade_criada?.id_status > 1 ? 
+                    <Status status={atividade_criada ? atividade_criada?.id_status : 0} size='small' />
                     : <Switch checked={checked} onChange={(e) => {setChecked(e.target.checked)}}  />
                 }
             </h2>
@@ -618,7 +639,7 @@ const AtividadeItem = memo(function AtividadeItem({ ordem, etapa, atividade, equ
                         width={'100%'}
                         value={dataSelecionada}
                         setValue={setDataSelecionada}
-                        disabled={!checked || (atividade_criada && atividade_criada.id_status > 1)}
+                        disabled={!checked || (atividade_criada && atividade_criada?.id_status > 1)}
                     />
                 </div>
                 <div className="item">
@@ -627,40 +648,72 @@ const AtividadeItem = memo(function AtividadeItem({ ordem, etapa, atividade, equ
                         list={formatarArray()}
                         value={equipeSelecionada}
                         setValue={setEquipeSelecionada}
-                        disabled={!checked || (atividade_criada && atividade_criada.id_status > 1)}
+                        disabled={!checked || (atividade_criada && atividade_criada?.id_status > 1)}
                     />
                 </div>
             </div>
-        </Box>
+        </Box> : null
     );
 });
 
-function Atividades({ atividadesOP, atividades, etapas, equipes }) {
-    const createData = (item) => {
-        const id = item.id;
-        const equipe = (equipes.find(e => e.id === item.id_equipe) || {}).title || '-';
-        const producao = item.data;
-        const titulo = (atividades.find(a => a.id === item.id_atividade) || {}).title || '-';
-        const etapa = (etapas.find(e => e.id === item.id_etapa) || {}).title || '-';
+function Atividades() {
+    const { id } = useParams();
+    const [error, setError] = useState(null);
+    const [atividades, setAtividades] = useState([]);
+    const [rows, setRows] = useState([]);
+
+    const carregar = async () => {
+        if (!id) return;
         
+        try {
+            const res = await atividade_api.getAtividadesOrdem(id);
+
+            setAtividades(res.data);
+
+            setRows(
+                res.data.map((item) => createData(item))
+            );
+            
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    useEffect(() => {
+        setRows(
+            atividades.map((item) => createData(item))
+        );
+    }, [atividades]);
+
+    useEffect(() => {
+        carregar();
+    }, [id]);
+
+    const createData = (item) => {
+        const equipe = item?.nome_equipe;
+        const etapa = item?.etapa;
+        const atividade_name = item?.atividade;
+        const producao = formatarData(item?.data);
+        const tempo = item?.tempo ? item.tempo : '00:00';
+        const fim = item?.fim ? item.fim : '-';
+
         const status = <>
-            <Status status={item.status} size='small' />
-            <Button className="link" component={Link} to={`/atividades/${item.id}`} variant="outlined" size="small">Detalhes</Button>
+            <Status status={item.id_status} size='small' />
+            <Button className="link" variant="outlined" size="small">Detalhes</Button>
         </>;
         
-        return { id, equipe, producao, titulo, etapa, status };
+        return { equipe, etapa, atividade_name, producao, tempo, fim, status };
     }
 
     const headCells = [
-        {id: 'id', label: 'Id'},
         {id: 'equipe', label: 'Equipe'},
-        {id: 'producao', label: 'Produção'},
-        {id: 'titulo', label: 'Título'},
         {id: 'etapa', label: 'Etapa'},
+        {id: 'atividade', label: 'Atividade'},
+        {id: 'producao', label: 'Produção'},
+        {id: 'tempo', label: 'Tempo'},
+        {id: 'fim', label: 'Fim'},
         {id: 'status', label: 'Status'},
     ];
-
-    const rows = atividadesOP.map((item) => createData(item));
 
     return (
         <Box className="atividades">
@@ -669,196 +722,102 @@ function Atividades({ atividadesOP, atividades, etapas, equipes }) {
     );
 }
 
-export function Checklist() {
-    const { 
-        checklists, checklistOP, setChecklistOP, 
-        atividadesOP, setAtividadesOP, 
-        setVolumesOP, volumesOP, 
-        etapas, etapasOP,
-        equipes
-    } = useUser();
-    
-    const [openModal, setOpenModal] = useState(false);
-    const [openModalInfo, setOpenModalInfo] = useState(false);
-    const [checklistSelecionado, setChecklistSelecionado] = useState(null);
-    const [atividadeSelecionada, setAtividadeSelecionada] = useState(null);
+function Checklist() {
+    const { id } = useParams();
+    const [error, setError] = useState(null);
+    const [checklists, setChecklists] = useState([]);
+    const [rows, setRows] = useState([]);
+    const [openObservacaoModal, setOpenObservacaoModal] = useState(false);
+    const [observacaoSelecionada, setObservacaoSelecionada] = useState('');
 
-    const [observacao, setObservacao] = useState('');
-    const [falha, setFalha] = useState(0);
-
-
-    const atualizarStatusAtividade = (atividade, novoStatus) => {
-        const prevAtividades = atividadesOP.map(item =>
-            item.id === atividade.id ? { ...item, status: novoStatus } : item
-        )
-        setAtividadesOP([...prevAtividades, {
-            id: atividadesOP.length + 1,
-            id_ordem: atividade.id_ordem,
-            id_etapa: atividade.id_etapa,
-            id_atividade: atividade.id_atividade,
-            id_equipe: atividade.id_equipe,
-            ativo: 1,
-            data: atividade.data,
-            status: 0
-        }])
+    const abrirModalObservacao = (observacao) => {
+        setObservacaoSelecionada(observacao);
+        setOpenObservacaoModal(true);
     };
-    const abrirModalVistoria = (checklist , atividade) => {
-        setChecklistSelecionado(checklist)
-        setAtividadeSelecionada(atividade)
-        setFalha(0)
-        setObservacao('')
 
-        setOpenModal(true)
-    }
-    const fazerVistoria = () => {
-        if(falha){
-            const cadastrados = checklistOP
-            .filter(item => item.id_ativ === atividadeSelecionada.id && item.id_atividade === checklistSelecionado.id_atividade)
-            .map(item => item.id_checklist);
-    
-            const todosCheckAtv = checklists.filter(item => item.id_atividade === checklistSelecionado.id_atividade);
+    const carregar = async () => {
+        if (!id) return;
         
-            const naoCadastrados = todosCheckAtv.filter(item2 =>
-                !cadastrados.includes(item2.id) && item2.id !== checklistSelecionado.id
-            );
-        
-            const novoItem = {
-                id: checklistOP.length + 1,
-                id_ordem: atividadeSelecionada.id_ordem,
-                id_ativ: atividadeSelecionada.id,
-                id_checklist: checklistSelecionado.id,
-                id_atividade: checklistSelecionado.id_atividade,
-                id_etapa: checklistSelecionado.id_etapa,
-                id_equipe: atividadeSelecionada.id_equipe,
-                observacao: observacao,
-                data: dayjs().format('DD/MM/YYYY HH:mm:ss'),
-                status: 0
-            };
-        
-            const novosItens = naoCadastrados.map((item, i) => ({
-                id: checklistOP.length + 2 + i, 
-                id_ordem: atividadeSelecionada.id_ordem,
-                id_ativ: atividadeSelecionada.id,
-                id_checklist: item.id,
-                id_atividade: checklistSelecionado.id_atividade,
-                id_etapa: checklistSelecionado.id_etapa,
-                id_equipe: atividadeSelecionada.id_equipe,
-                observacao: 'Falha no checklist: ' + checklistSelecionado.title,
-                data: dayjs().format('DD/MM/YYYY HH:mm:ss'),
-                status: 0
-            }));
-        
-            setChecklistOP(prev => [...prev, novoItem, ...novosItens]);
-        
-            setChecklistOP(prev =>
-                prev.map(item =>
-                    item.id_ativ === atividadeSelecionada.id ? { ...item, status: 0 } : item
-                )
-            );
+        try {
+            const res = await checklist_api.getChecklistOrdem(id);
 
-            setVolumesOP(prev => prev.filter(item => item.id_ativ !== atividadeSelecionada.id));
-            atualizarStatusAtividade(atividadeSelecionada, -1);
-        } else {
-            setChecklistOP([...checklistOP, {
-                id: checklistOP.length + 1,
-                id_ordem: atividadeSelecionada.id_ordem,
-                id_ativ: atividadeSelecionada.id,
-                id_checklist: checklistSelecionado.id,
-                id_atividade: checklistSelecionado.id_atividade,
-                id_etapa: checklistSelecionado.id_etapa,
-                id_equipe: atividadeSelecionada.id_equipe,
-                observacao: observacao,
-                data: dayjs().format('DD/MM/YYYY HH:mm:ss'),
-                status: 1
-            }])
+            setChecklists(res.data);
+
+            setRows(
+                res.data.map((item) => createData(item))
+            );
+        } catch (err) {
+            setError(err.message);
         }
+    };
+
+    useEffect(() => {
+        setRows(
+            checklists.map((item) => createData(item))
+        );
+    }, [checklists]);
+
+    useEffect(() => {
+        carregar();
+    }, [id]);
+
+    const createData = (item) => {
+        const equipe = item?.nome_equipe;
+        const etapa = item?.etapa;
+        const checagem = item?.checklist;
+
+        const status_atividade = <>
+            <Status status={item.status_atividade} size='small' />
+        </>;
+
+        const observacao = item?.observacao ? 
+            <Button 
+                variant="outlined" 
+                size="small" 
+                onClick={() => abrirModalObservacao(item.observacao)}
+            >
+                Observação
+            </Button> : null;
+
+        const status = <>
+            <StatusChecklist status={item.status} size='small' />
+            <Button className="link" variant="outlined" size="small">Detalhes</Button>
+        </>;
+        
+        return { equipe, etapa, checagem, observacao, status_atividade, status };
     }
+
+    const headCells = [
+        {id: 'equipe', label: 'Equipe'},
+        {id: 'etapa', label: 'Etapa'},
+        {id: 'checagem', label: 'Checagem'},
+        {id: 'observacao', label: 'Observação'},
+        {id: 'status_atividade', label: 'Atividade'},
+        {id: 'status', label: 'Status'},
+    ];
 
     return (
-        <Box className="checklist">
-            <Button className="info_produto" variant="contained" size="small" onClick={() => setOpenModalInfo(true)}>
-                <InfoTwoToneIcon />
-                Informaçoes do produto
-            </Button>
-            {etapasOP.map((item, index) => (
-                <ChecklistEtapa 
-                    key={index}
-                    atividadesOP={atividadesOP.filter((a) => a.id_etapa === item && a.ativo === 1)} 
-                    checklists={checklists} 
-                    etapa={etapas.find((e) => e.id === item)} 
-                    equipes={equipes}
-                    openModal={abrirModalVistoria}/> 
-            ))}
-            <Modal open={openModal} setOpen={setOpenModal} title="Fazer vistoria" confirm={fazerVistoria}>
-                <VistoriaChecklist setObservacao={setObservacao} setFalha={setFalha} title={checklistSelecionado?.title} />
-            </Modal>
-            <Modal open={openModalInfo} setOpen={setOpenModalInfo} title="Informações do produto" confirmText="Fechar">
-                <InfoProdutoModal />
+        <Box className="atividades">
+            <DataTable headCells={headCells} rows={rows}/>
+            
+            <Modal 
+                open={openObservacaoModal} setOpen={setOpenObservacaoModal} 
+                title={`Observação`} 
+                confirmText='Fechar'
+                sx={{'& .MuiDialogContent-root': { paddingTop: '0'}}}>
+
+                <Box sx={{
+                    minWidth: 500,
+                    p: '10px 0 0',
+                }}>
+                    <Typography variant="body1" sx={{
+                        fontSize: '18px',
+                        color: '#373737',
+                    }}>
+                        {observacaoSelecionada}
+                    </Typography>
+                </Box>
             </Modal>
         </Box>
-    )
-}
-function ChecklistEtapa({ etapa, atividadesOP, checklists, equipes, openModal }) {
-    const { atividades } = useUser();
-
-    return (
-        <>
-            {atividadesOP.length > 0 && 
-                <Box className="checklist_etapa">
-                    <h3>{etapa.title}</h3>
-                    <div className="checklist_itens">
-                        {atividadesOP.map((atividade, index) => {
-                            const equipe = equipes.find(e => e.id === atividade.id_equipe);
-
-                            const atividadeData = atividades.find(item => item.id === atividade.id_atividade);
-
-                            return (
-                                <>
-                                <h4><span>{equipe.title}</span> {atividadeData.title}</h4>
-                                <ChecklistAtividade 
-                                    key={index} 
-                                    checklists={checklists.filter((c) => c.id_atividade === atividade.id_atividade)} 
-                                    atividade={atividade} 
-                                    openModal={openModal}/>
-                                </>
-                            )
-                        })}
-                    </div>
-                </Box>
-            }
-        </>
-    )
-}
-function ChecklistAtividade({ checklists, atividade, openModal }) {
-    const { checklistOP } = useUser();
-    
-    return (
-        <>
-        {checklists.map((checklist, index) => {
-            const checklistData = checklistOP.find(item => item.id_ativ === atividade.id && item.id_checklist === checklist.id);
-
-            return (
-                <Box className={"item "+
-                    (checklistData?.status === 1 ? 'success' : '')+
-                    (checklistData?.status === 0 ? 'error' : '')
-                } key={index}>
-                    <div className="text">
-                        <h5>{checklist.title}</h5>
-                        {checklistData?.observacao && 
-                            <p className="observacoes">Observações: {checklistData?.observacao || 'Nenhuma'}</p>
-                        }
-                        {(atividade.status < 4 && atividade.status !== -1) &&
-                            <p className="observacoes">Aguardando a atividade ser finalizada!</p>
-                        }
-                    </div>
-                    {(atividade.status === 4 && !checklistData) &&
-                        <Button variant="outlined" size="small" onClick={() => openModal(checklist, atividade)}>
-                            Fazer vistoria
-                        </Button>
-                    }
-                </Box>
-            );
-        })}
-        </>
     );
 }

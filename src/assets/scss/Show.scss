@@ -527,25 +527,33 @@
         }
         .step_content{
             padding: 15px 20px;
-    
-            p{
-                color: $color2;
-                font-size: 0.8em;
-                line-height: 1.3em;
-            }
-            .finalizado{
-                background: #2e7d32;
-                padding: 15px 15px 14px;
-                border-radius: 50PX;
-    
-                p{
-                    color: #fff;
-                    display: flex;
-                    align-items: center;
-                    text-transform: uppercase;
-                    gap: 10px;
-                    font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+
+            .dependencia{
+                padding: 12px 12px;
+                border-radius: 5px;
+                background: rgba($color1, 0.15);
+
+                &.concluida{
+                    background: rgba($sucess, 0.15);
                 }
+
+                h4{
+                    text-align: center;
+                    margin: 0 0 15px;
+                    font-weight: bold;
+                    font-size: 14px;
+                }
+                button{
+                    width: 150px;
+                    margin: 0 auto;
+                    display: block;
+                }
+            }
+            >button{
+                margin: 10px 0 0;
             }
         }
     }

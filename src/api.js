@@ -61,6 +61,8 @@ export const ordem_api = {
   getOrdem: (id) => http(`/api/getOrdem/${id}`, { method: "GET" }),
   getProduto: (ordem_id) => http(`/api/getProduto/${ordem_id}`, { method: "GET" }),
   enviarProducao: (id) => http(`/api/enviarProducao/${id}`, { method: "PUT" }),
+  concluirDependencia: (id) => http(`/api/concluirDependencia/${id}`, { method: "PUT" }),
+  concluirRequisito: (id) => http(`/api/concluirRequisito/${id}`, { method: "PUT" }),
 }
 
 export const remessa_api = {
@@ -77,5 +79,9 @@ export const atividade_api = {
   createAtividade: (payload) => http("/api/criarAtividade", { method: "POST", body: JSON.stringify(payload), }),
   updateAtividade: (id, payload) => http(`/api/updateAtividade/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
   deleteAtividade: (id) => http(`/api/deletarAtividade/${id}`, { method: "DELETE" }),
+};
+
+export const checklist_api = {
+  getChecklistOrdem: (id) => http(`/api/getChecklistOrdem/${id}`, { method: "GET" }),
 };
 
