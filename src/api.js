@@ -52,15 +52,15 @@ export const config_api = {
   createVolume: (payload) => http("/api/configuracao/criarVolume", { method: "POST", body: JSON.stringify(payload), }),
   deleteVolume: (id) => http(`/api/configuracao/deletarVolume/${id}`, { method: "DELETE", }),
 
-  getEtapasAtividadesByCategory: (id) => http(`/api/configuracao/getEtapasAtividadesByCategory/${id}`, { method: "GET" }),
+  getEtapasAtividadesByCategory: (id_departamento, id) => http(`/api/configuracao/getEtapasAtividadesByCategory/${id_departamento}/${id}`, { method: "GET" }),
   getEquipesAtividade: (id) => http(`/api/configuracao/getEquipesAtividade/${id}`, { method: "GET" }),
 };
 
 export const ordem_api = {
   getOrdens: (id) => http(`/api/getOrdensDepartamento/${id}`, { method: "GET" }),
-  getOrdem: (id) => http(`/api/getOrdem/${id}`, { method: "GET" }),
+  getOrdem: (id_departamento, id) => http(`/api/getOrdem/${id_departamento}/${id}`, { method: "GET" }),
   getProduto: (ordem_id) => http(`/api/getProduto/${ordem_id}`, { method: "GET" }),
-  enviarProducao: (id) => http(`/api/enviarProducao/${id}`, { method: "PUT" }),
+  enviarProducao: (id_departamento, id) => http(`/api/enviarProducao/${id_departamento}/${id}`, { method: "PUT" }),
   concluirDependencia: (id) => http(`/api/concluirDependencia/${id}`, { method: "PUT" }),
   concluirRequisito: (id) => http(`/api/concluirRequisito/${id}`, { method: "PUT" }),
 }
@@ -75,16 +75,16 @@ export const remessa_api = {
 }
 
 export const atividade_api = {
-  getAtividadesOrdem: (id) => http(`/api/getAtividadesOrdem/${id}`, { method: "GET" }),
+  getAtividadesOrdem: (id_departamento, id) => http(`/api/getAtividadesOrdem/${id_departamento}/${id}`, { method: "GET" }),
   createAtividade: (payload) => http("/api/criarAtividade", { method: "POST", body: JSON.stringify(payload), }),
   updateAtividade: (id, payload) => http(`/api/updateAtividade/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
   deleteAtividade: (id) => http(`/api/deletarAtividade/${id}`, { method: "DELETE" }),
 };
 
 export const checklist_api = {
-  getChecklistOrdem: (id) => http(`/api/getChecklistOrdem/${id}`, { method: "GET" }),
+  getChecklistOrdem: (id_departamento, id) => http(`/api/getChecklistOrdem/${id_departamento}/${id}`, { method: "GET" }),
 };
 
 export const volumes_api = {
-  getVolumesOrdem: (id) => http(`/api/getVolumesOrdem/${id}`, { method: "GET" }),
+  getVolumesOrdem: (id_departamento, id) => http(`/api/getVolumesOrdem/${id_departamento}/${id}`, { method: "GET" }),
 };

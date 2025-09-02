@@ -119,14 +119,14 @@ export default function Atividades() {
                     scrollButtons
                     allowScrollButtonsMobile
                 >
-                    <Tab label="Todas" />
+                    <Tab label="Lista" />
                     <Tab label="Semana" />
                 </Tabs>
             </Box>
                 <Box className="index_content atividades_list">
                 { tab == 0 &&
                     <>
-                    <Box className="filtros">
+                    {/* <Box className="filtros">
                         <h2>Filtros:</h2>
                         <Box className="filter_list">
                             <Box className="item">
@@ -142,7 +142,7 @@ export default function Atividades() {
                                 <InputCalendarRange setFunctionDe={setDateFilterDe} setFunctionAte={setDateFilterAte} />
                             </Box>
                         </Box>
-                    </Box>
+                    </Box> */}
                     <Box className="table_content">
                         <DataTable headCells={headCells} rows={rows} buttons={true}/>
                     </Box>

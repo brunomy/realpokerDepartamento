@@ -79,12 +79,11 @@ export default function Ordem({resetOrdem = false}) {
         prevDepartamento.current = selectedDepartamento;
     }, [selectedDepartamento, ordem, navigate]);
 
-
     const carregar = async () => {
         if (!id) return;
         
         try {
-            const res = await ordem_api.getOrdem(id);
+            const res = await ordem_api.getOrdem(selectedDepartamento.id, id);
 
             let requisitos = [];
             if (res.data.requisitos) {
@@ -100,9 +99,6 @@ export default function Ordem({resetOrdem = false}) {
                 ...res.data,
                 requisitos: requisitos
             });
-
-            console.log('Dados carregados da API:', res.data);
-            console.log('Requisitos recebidos:', res.data.requisitos);
 
             setBreadcrumbs([
                 {
@@ -432,7 +428,7 @@ function Etapas({ ordem, atualizarOrdem }) {
 
     const carregar = async () => {
         try {
-            const res = await config_api.getEtapasAtividadesByCategory(ordem?.id_categoria);
+            const res = await config_api.getEtapasAtividadesByCategory(selectedDepartamento.id, ordem?.id_categoria);
 
             const etapasArray = [];
             
@@ -451,7 +447,7 @@ function Etapas({ ordem, atualizarOrdem }) {
             const res2 = await config_api.getEquipesAtividade(selectedDepartamento?.id);
             setEquipes(res2.data);
 
-            const res3 = await atividade_api.getAtividadesOrdem(ordem?.id);
+            const res3 = await atividade_api.getAtividadesOrdem(selectedDepartamento?.id, ordem?.id);
             setAtividades(res3.data);
         } catch (err) {
             console.log(err.message);
@@ -462,11 +458,11 @@ function Etapas({ ordem, atualizarOrdem }) {
         if (!window.confirm("Tem certeza que deseja enviar esta ordem para produção?")) return;
 
         try {
-            const response = await ordem_api.enviarProducao(ordem.id);
+            const response = await ordem_api.enviarProducao(selectedDepartamento.id, ordem.id);
             atualizarOrdem();
         } catch (error) {
-            console.error('Erro ao concluir dependência:', error);
-            alert('Erro ao concluir dependência. Verifique sua conexão e tente novamente.');
+            console.error('Erro ao enviar para produção:', error);
+            alert('Erro ao enviar para produção. Verifique sua conexão e tente novamente.');
         }
     }
 
@@ -537,6 +533,8 @@ function Etapas({ ordem, atualizarOrdem }) {
 }
 const AtividadeItem = memo(function AtividadeItem({ ordem, etapa, atividade, equipes, atividade_criada, carregar, atualizarOrdem }) {
     const { id } = useParams();
+    const { selectedDepartamento } = useUser();
+
     const isFirstRun = useRef(true);
     const [idAtividade, setIdAtividade] = useState(atividade_criada ? atividade_criada.id : null);
 
@@ -555,11 +553,14 @@ const AtividadeItem = memo(function AtividadeItem({ ordem, etapa, atividade, equ
     const [dataSelecionada, setDataSelecionada] = useState(atividade_criada ? formatarData(atividade_criada.data) : dayjs().format('DD/MM/YYYY'));
 
     const criarAtividade = async () => {
+        console.log(selectedDepartamento?.id);
+        
         try {
             const response = await atividade_api.createAtividade({
                 id: idAtividade,
                 id_ordem: ordem.id,
                 id_conf_etapa: atividade.id_conf_etapa,
+                id_departamento: selectedDepartamento?.id,
                 etapa: etapa.titulo,
                 id_conf_atividade: atividade.id,
                 atividade: atividade.titulo,
@@ -656,6 +657,7 @@ const AtividadeItem = memo(function AtividadeItem({ ordem, etapa, atividade, equ
 });
 
 function Atividades() {
+    const { selectedDepartamento } = useUser();
     const { id } = useParams();
     const [error, setError] = useState(null);
     const [atividades, setAtividades] = useState([]);
@@ -665,7 +667,7 @@ function Atividades() {
         if (!id) return;
         
         try {
-            const res = await atividade_api.getAtividadesOrdem(id);
+            const res = await atividade_api.getAtividadesOrdem(selectedDepartamento.id, id);
 
             setAtividades(res.data);
 
@@ -722,6 +724,7 @@ function Atividades() {
 }
 
 function Checklist() {
+    const { selectedDepartamento } = useUser();
     const { id } = useParams();
     const [error, setError] = useState(null);
     const [checklists, setChecklists] = useState([]);
@@ -738,7 +741,7 @@ function Checklist() {
         if (!id) return;
         
         try {
-            const res = await checklist_api.getChecklistOrdem(id);
+            const res = await checklist_api.getChecklistOrdem(selectedDepartamento.id, id);
 
             setChecklists(res.data);
 
@@ -822,6 +825,7 @@ function Checklist() {
 }
 
 function Volumes() {
+    const { selectedDepartamento } = useUser();
     const { id } = useParams();
     const [error, setError] = useState(null);
     const [volumes, setVolumes] = useState([]);
@@ -831,7 +835,7 @@ function Volumes() {
         if (!id) return;
         
         try {
-            const res = await volumes_api.getVolumesOrdem(id);
+            const res = await volumes_api.getVolumesOrdem(selectedDepartamento.id, id);
 
             setVolumes(res.data);
         } catch (err) {
