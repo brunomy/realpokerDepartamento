@@ -25,7 +25,6 @@ import VistoriaChecklist from '~/components/modal/VistoriaChecklist';
 
 import dayjs from 'dayjs';
 import Status from '~/components/layout/Status';
-import { Volumes } from './Remessa';
 import { calculoStatusPedido } from './Pedidos';
 
 //icons
@@ -46,7 +45,7 @@ import EventAvailableTwoToneIcon from '@mui/icons-material/EventAvailableTwoTone
 import HandymanTwoToneIcon from '@mui/icons-material/HandymanTwoTone';
 import InfoProdutoModal from '../components/modal/InfoProdutoModal';
 import { Historico } from './Atividade';
-import { ordem_api, config_api, atividade_api, checklist_api } from './../api';
+import { ordem_api, config_api, atividade_api, checklist_api, volumes_api } from './../api';
 import { converterDataParaBanco, formatarData, formatarDataHora } from '../Utils';
 import { StatusChecklist } from '../components/layout/Status';
 
@@ -157,7 +156,7 @@ export default function Ordem({resetOrdem = false}) {
                 { tab === 2 && <Etapas atualizarOrdem={carregar} ordem={ordem} /> }
                 { tab === 3 && <Atividades /> }
                 { tab === 4 && <Checklist /> }
-                { tab === 5 && <Historico /> }
+                { tab === 5 && <Volumes /> }
                 { tab === 6 && <Historico /> }
             </Box>
         </Layout>
@@ -818,6 +817,71 @@ function Checklist() {
                     </Typography>
                 </Box>
             </Modal>
+        </Box>
+    );
+}
+
+function Volumes() {
+    const { id } = useParams();
+    const [error, setError] = useState(null);
+    const [volumes, setVolumes] = useState([]);
+    const [rows, setRows] = useState([]);
+
+    const carregar = async () => {
+        if (!id) return;
+        
+        try {
+            const res = await volumes_api.getVolumesOrdem(id);
+
+            setVolumes(res.data);
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    useEffect(() => {
+        setRows(
+            volumes.map((item) => createData(item))
+        );
+    }, [volumes]);
+
+    useEffect(() => {
+        carregar();
+    }, [id]);
+
+    const createData = (item) => {
+        const volume = item?.volume;
+        const comprimento = item?.comprimento;
+        const largura = item?.largura;
+        const altura = item?.altura;
+        const peso = item?.peso;
+
+        const atividade = <Status status={item?.atividade_status} size='small' />;
+        
+        const checklist = <Chip size="small" color={item?.checklist_finalizado === item?.checklist ? "success" : ""} label={ 
+            item?.checklist_finalizado === item?.checklist ? "Finalizado" : `${item?.checklist_finalizado}/${item?.checklist}` } 
+            sx={{width: '100%'}}
+        />;
+
+        const embalagem = <Chip size="small" color={item?.id_embalagem ? "success" : ""} label={item?.id_embalagem ? id_embalagem : "Não embalado"} sx={{width: '100%'}}/>;
+
+        return { volume, comprimento, largura, altura, peso, atividade, checklist, embalagem };
+    }
+
+    const headCells = [
+        {id: 'volume', label: 'Volume'},
+        {id: 'comprimento', label: 'Comprimento'},
+        {id: 'largura', label: 'Largura'},
+        {id: 'altura', label: 'Altura'},
+        {id: 'peso', label: 'Peso'},
+        {id: 'atividade', label: 'Atividade'},
+        {id: 'checklist', label: 'Checklist'},
+        {id: 'embalagem', label: 'Embalagem'},
+    ];
+
+    return (
+        <Box className="atividades">
+            <DataTable headCells={headCells} rows={rows}/>
         </Box>
     );
 }

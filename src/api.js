@@ -85,3 +85,6 @@ export const checklist_api = {
   getChecklistOrdem: (id) => http(`/api/getChecklistOrdem/${id}`, { method: "GET" }),
 };
 
+export const volumes_api = {
+  getVolumesOrdem: (id) => http(`/api/getVolumesOrdem/${id}`, { method: "GET" }),
+};
