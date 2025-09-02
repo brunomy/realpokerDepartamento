@@ -1,5 +1,6 @@
 import * as React from 'react';
-import Button from '@mui/material/Button';
+import { useState, useEffect } from 'react';
+import { Button, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -19,11 +20,31 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-export default function CustomizedDialogs({ children, open, setOpen, title, confirm, confirmText = 'Salvar alterações', disabled, sx }) {
+export default function CustomizedDialogs({ children, open, setOpen, title, confirm, confirmReturn, confirmText = 'Salvar alterações', disabled, sx, atualizar }) {
+  const [error, setError] = useState(null);
 
   const handleClose = () => {
     setOpen(false);
   };
+  const handleSubmit = async () => {
+    if(confirm){
+      confirm();
+      handleClose();
+    } else if (confirmReturn){
+      const response = await confirmReturn();
+
+      if(response['error']){
+        setError(response['error']);
+      } else {
+        atualizar();
+        handleClose();
+      }
+    }
+  };
+
+  useEffect(() => {
+    setError(null);
+  }, [open]);
 
   return (
     <React.Fragment>
@@ -52,13 +73,11 @@ export default function CustomizedDialogs({ children, open, setOpen, title, conf
         </IconButton>
         <DialogContent dividers>
           {children}
+          <Box sx={{ color: 'red', fontSize: 13, marginTop: 1 }}>{error}</Box>
         </DialogContent>
         <DialogActions>
           { confirmText != '' &&
-            <Button autoFocus onClick={() => {
-              handleClose(false) 
-              confirm()
-            }} disabled={disabled}>
+            <Button autoFocus onClick={handleSubmit} disabled={disabled}>
                 {confirmText}
             </Button>
           }

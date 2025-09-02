@@ -626,9 +626,11 @@
             border-radius: 8px;
             border: 2px solid $color1;
             margin: 0 10px 0 0;
+            z-index: 1;
         }
         &.content_2{
             justify-content: flex-end;
+            z-index: 1;
         }
     }
 

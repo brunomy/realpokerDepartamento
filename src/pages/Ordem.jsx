@@ -44,7 +44,6 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import EventAvailableTwoToneIcon from '@mui/icons-material/EventAvailableTwoTone';
 import HandymanTwoToneIcon from '@mui/icons-material/HandymanTwoTone';
 import InfoProdutoModal from '../components/modal/InfoProdutoModal';
-import { Historico } from './Atividade';
 import { ordem_api, config_api, atividade_api, checklist_api, volumes_api } from './../api';
 import { converterDataParaBanco, formatarData, formatarDataHora } from '../Utils';
 import { StatusChecklist } from '../components/layout/Status';
@@ -888,4 +887,56 @@ function Volumes() {
             <DataTable headCells={headCells} rows={rows}/>
         </Box>
     );
+}
+
+
+function Historico() {
+    const { selectedDepartamento } = useUser();
+    const { id } = useParams();
+    const [error, setError] = useState(null);
+    const [historico, setHistorico] = useState([]);
+    const [rows, setRows] = useState([]);
+
+    const carregar = async () => {
+        if (!id) return;
+        
+        try {
+            const res = await ordem_api.getHistorico(selectedDepartamento.id, id);
+
+            setHistorico(res.data);
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    useEffect(() => {
+        setRows(
+            historico.map((item) => createData(item))
+        );
+    }, [historico]);
+
+    useEffect(() => {
+        carregar();
+    }, [id]);
+
+    const createData = (item) => {
+        const data = formatarDataHora(item?.created_at);
+        const descricao = item?.descricao;
+        const responsavel = item?.nome_funcionario;
+        const equipe = item?.nome_equipe;
+
+        return { data, descricao, equipe, responsavel };
+    }
+
+    const headCells = [
+        { id: 'data', label: 'Data', },
+        { id: 'descricao', label: 'Descrição', },
+        { id: 'equipe', label: 'Equipe', },
+        { id: 'responsavel', label: 'Responsável', },
+    ];
+    return (
+        <Box className="historico">
+            <DataTable headCells={headCells} rows={rows} />
+        </Box>
+    )
 }

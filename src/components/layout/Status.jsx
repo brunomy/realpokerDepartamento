@@ -1,6 +1,6 @@
 import { Chip, Box } from '@mui/material';
 
-export default function Status({ status, size = '', porcentagem = null }) {
+export default function Status({ status, size = '', porcentagem = null, sx }) {
     var andamentoText = '';
     var paradoText = '';
 
@@ -14,12 +14,12 @@ export default function Status({ status, size = '', porcentagem = null }) {
 
     return(
         <>
-        { status == -1 && <Chip size={size} className="stats" color="error" label="Falha" /> }
-        { (status == 0 || status == null) && <Chip size={size} className="stats" label="Pendente" /> }
-        { status == 1 && <Chip size={size} className="stats" color="info" label="Em produção" /> }
-        { status == 2 && <Chip size={size} className="stats" color="primary" label={andamentoText} /> }
-        { status == 3 && <Chip size={size} className="stats" color="warning" label={paradoText} /> }
-        { status == 4 && <Chip size={size} className="stats" color="success" label="Finalizado" /> }
+        { status == -1 && <Chip size={size} className="stats" color="error" label="Falha" sx={sx} /> }
+        { (status == 0 || status == null) && <Chip size={size} className="stats" label="Pendente" sx={sx} /> }
+        { status == 1 && <Chip size={size} className="stats" label="Em produção" sx={sx} /> }
+        { status == 2 && <Chip size={size} className="stats" color="primary" label={andamentoText} sx={sx} /> }
+        { status == 3 && <Chip size={size} className="stats" color="warning" label={paradoText} sx={sx} /> }
+        { status == 4 && <Chip size={size} className="stats" color="success" label="Finalizado" sx={sx} /> }
         </>
     )
 }

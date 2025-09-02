@@ -32,81 +32,80 @@ import CheckCircleTwoToneIcon from '@mui/icons-material/CheckCircleTwoTone';
 import MoveToInboxTwoToneIcon from '@mui/icons-material/MoveToInboxTwoTone';
 import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
 import AdicionarVolumeLista from '../components/modal/AdicionarVolumeLista';
+import { atividade_api } from './../api';
+import { formatarData } from '../Utils';
 
 
 export default function Atividades() {
-    const [tab, setTab] = useState(0);
+    const { selectedDepartamento } = useUser();
 
-    const handleChange = (event, newTab) => {
+    const [atividades, setAtividades] = useState([]);
+    const [rows, setRows] = useState([]);
+
+    const [tab, setTab] = useState(0);
+    const handleTabChange = (event, newTab) => {
         setTab(newTab);
     };
-    const { 
-        atividadesOP,
-        etapas,
-        atividades,
-        equipes,
-        categorias
-    } = useUser();
 
-    const hoje = dayjs();
+    const carregar = async () => {
+        try {
+            const res = await atividade_api.getAtividadesProducao(selectedDepartamento.id);
+            setAtividades(res.data || []);
+        } catch (err) {
+            console.log(err);
+        }
+    };
 
-    const [statusFilter, setStatusFilter] = useState([]);
-    const [teamFilter, setTeamFilter] = useState([]);
-    const [idFilter, setIdFilter] = useState([]);
-    const [dateFilterDe, setDateFilterDe] = useState(hoje.format('YYYY-MM-DD'));
-    const [dateFilterAte, setDateFilterAte] = useState(hoje.format('YYYY-MM-DD'));
+    useEffect(() => {
+        carregar();
+    }, [selectedDepartamento]);
 
-    const statusList = [
-        { label: 'Pendente', value: 1},
-        { label: 'Em andamento', value: 2},
-        { label: 'Parado', value: 3},
-        { label: 'Concluído', value: 4},
-    ]
-    const teamList = [
-        { label: 'M1', value: 1},
-        { label: 'M2', value: 2},
-        { label: 'M3', value: 3}
-    ]
-    const idList = [
-        { label: '#5951', value: 5951},
-        { label: '#5952', value: 5952},
-        { label: '#5953', value: 5953},
-        { label: '#5954', value: 5954},
-    ]
 
-    //dados da tabela
-    const createData = (item) => {
-        let atividadeItem = atividades.find(a => a.id == item.id_atividade);
+    useEffect(() => {
+        const newRows = [];
         
-        const pedido = '#5951';
-        const equipe = equipes.find(e => e.id == item.id_equipe).title;
-        const producao = item.data;
-        const categoria = categorias.find(c => c.id == atividadeItem.id_categoria).title;
-        const atividade = <Box>
-            <span style={{"fontSize": ".8em"}}>{etapas.find(e => e.id == item.id_etapa).title}</span>
-            <br />{atividadeItem.title}
-        </Box>;
-        const elementStatus = <Status status={item.status} size={'small'} />;
-        const acoes = <AcoesAtividades atividade={item} />
+        atividades['atrasadas']?.forEach(item => {
+            newRows.push(createData(item, 'atrasadas'));
+        });
+        atividades['da_semana']?.forEach(item => {
+            newRows.push(createData(item, 'da_semana'));
+        });
+        atividades['futuras']?.forEach(item => {
+            newRows.push(createData(item, 'futuras'));
+        });
+        
+        setRows(newRows);
+    }, [atividades]);
 
-        return { pedido, producao, equipe, categoria, atividade, elementStatus, acoes };
+    const createData = (item, tipo) => {
+        const remessa = item?.titulo_remessa;
+        const equipe = item?.nome_equipe;
+        const producao = formatarData(item?.data);
+        const categoria = <Chip size="small" label={item?.nome_categoria} />;
+        const atividade = <Box>
+            <span style={{"fontSize": ".8em"}}>{item?.etapa}</span>
+            <br />{item?.atividade}
+        </Box>;
+        const status = <Status status={item?.id_status} size={'small'} sx={{ zIndex: 1 }} />;
+        
+        const acoes = <>
+            {tipo === 'atrasadas' && <Box className="atrasada"></Box>}
+            {tipo === 'da_semana' && <Box className="da_semana"></Box>}
+            <AcoesAtividades atividade={item} atualizar={carregar} />
+        </>
+
+        return { remessa, equipe, producao, categoria, atividade, status, acoes };
     }
+
     const headCells = [
-        {id: 'pedido', label: 'Pedido'},
-        {id: 'producao', label: 'Produção'},
+        {id: 'remessa', label: 'Remessa'},
         {id: 'equipe', label: 'Equipe'},
+        {id: 'producao', label: 'Produção'},
         {id: 'categoria', label: 'Categoria'},
         {id: 'atividade', label: 'Atividade'},
         {id: 'status', label: 'Status'},
         {id: 'acoes', label: 'Ações'},
     ];
-    const rows = [];
-
-    atividadesOP.filter((a) => a.ativo == 1).map((item) => {
-        rows.push(
-            createData(item)
-        )
-    })
 
     return (
         <Layout>
@@ -114,7 +113,7 @@ export default function Atividades() {
             <Box className="tabs_content">
                 <Tabs
                     value={tab}
-                    onChange={handleChange}
+                    onChange={handleTabChange}
                     variant="scrollable"
                     scrollButtons
                     allowScrollButtonsMobile
@@ -156,7 +155,9 @@ export default function Atividades() {
     )
 }
 
-export function AcoesAtividades({ atividade }){
+export function AcoesAtividades({ atividade, atualizar }){
+    const { selectedDepartamento, usuarioLogado } = useUser();
+
     const { atividadesOP, setAtividadesOP, volumes, volumesOP } = useUser();
     const volumes_atividade = volumes.filter((volume) => volume.id_atividade == atividade.id_atividade)
     const volumesEnviados = volumesOP.filter((volume) => volume.id_ativ == atividade.id)
@@ -168,14 +169,25 @@ export function AcoesAtividades({ atividade }){
     const [openVolumes, setOpenVolumes] = useState(false);
     const [openInfo, setOpenInfo] = useState(false);
 
+    const playAtividade = async () => {
+        const payload = {
+            id_user: usuarioLogado.id,
+            id_departamento: selectedDepartamento.id,
+            id_ordem: atividade.id_ordem,
+            id_equipe: atividade.id_equipe,
+            codigo: codigo,
+            titulo: atividade.atividade
+        }
+        
+        const res = await atividade_api.iniciarAtividade(atividade.id, payload);
+        return res
+    }
+
     const playFinalizar = () => {
         if(codigo.length >= 4){
             if(acao == 'play'){
-                setAtividadesOP(prev =>
-                    prev.map(item =>
-                        item.id === atividade.id ? { ...item, status: 1 } : item
-                    )
-                );
+                alert("Atividade iniciada");
+                
             } else if(acao == 'finalizar'){
                 setAtividadesOP(prev =>
                     prev.map(item =>
@@ -203,15 +215,15 @@ export function AcoesAtividades({ atividade }){
     return (
         <>
         <Box className="acoes_atividade">
-            { (atividade.status != 4 && atividade.status != -1) &&
+            { (atividade.status != 4) &&
                 <div className="content_1">
-                    { atividade.status != 1 &&
+                    { atividade.id_status != 2 &&
                     <Button className="play" onClick={() => {setOpen(true); setAcao('play');}}><PlayCircleFilledWhiteTwoToneIcon /></Button>
                     }
-                    { (atividade.status != 0 && atividade.status != 2) &&
+                    { (atividade.id_status == 2) &&
                     <Button className="pause" onClick={pausar}><PauseCircleFilledTwoToneIcon /></Button>
                     }
-                    { (atividade.status != 0 ) &&
+                    { (atividade.id_status == 2 || atividade.id_status == 3) &&
                     <Button className="concluir" onClick={() => {setOpen(true); setAcao('finalizar');}}><CheckCircleTwoToneIcon /></Button>
                     }
                 </div>
@@ -231,7 +243,7 @@ export function AcoesAtividades({ atividade }){
                     <Button className="info" onClick={() => setOpenInfo(true)}><InfoTwoToneIcon /></Button>
                 </div>
         </Box>
-        <Modal open={open} setOpen={setOpen} title="Insira o seu código" confirmText="Confirmar" confirm={playFinalizar}>
+        <Modal open={open} setOpen={setOpen} title="Insira o seu código" confirmText="Confirmar" confirmReturn={acao === 'play' ? playAtividade : null} atualizar={atualizar} >
             <AdicionarString label='Código' value={codigo} setValue={setCodigo} />
         </Modal>
         <Modal open={openVolumes} setOpen={setOpenVolumes} title="Adicionar volumes" confirmText=''>
