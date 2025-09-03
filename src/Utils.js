@@ -193,3 +193,41 @@ export function validarCpfCnpj(documento) {
   
   return false;
 }
+
+export function calcularTempoAtividade(atividade) {
+  if (!atividade) return "00:00:00";
+
+  const { tempo = 0, inicio, pausa, fim, id_status } = atividade;
+  
+  // Converte tempo armazenado (segundos) para base
+  let tempoTotal = parseInt(tempo) || 0;
+  
+  if (id_status === 2) { // Em andamento
+    if (inicio && !pausa) {
+      const agora = new Date();
+      const dataInicio = new Date(inicio);
+      const tempoDecorrido = Math.floor((agora - dataInicio) / 1000);
+      tempoTotal = tempoDecorrido;
+    } else {
+      const agora = new Date();
+      const dataInicio = new Date(pausa);
+      const tempoDecorrido = Math.floor((agora - dataInicio) / 1000);
+      tempoTotal = tempoTotal + tempoDecorrido;
+    }
+  }
+  
+  // Converte segundos para formato HH:MM:SS
+  return formatarSegundos(tempoTotal);
+}
+
+// Função auxiliar para formatar segundos em HH:MM:SS
+export function formatarSegundos(segundos) {
+  if (segundos < 0) segundos = 0;
+  
+  const horas = Math.floor(segundos / 3600);
+  const minutos = Math.floor((segundos % 3600) / 60);
+  const segs = segundos % 60;
+  
+  // Se houver horas, retorna HH:MM:SS
+  return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segs.toString().padStart(2, '0')}`;
+}

@@ -27,10 +27,7 @@ export default function CustomizedDialogs({ children, open, setOpen, title, conf
     setOpen(false);
   };
   const handleSubmit = async () => {
-    if(confirm){
-      confirm();
-      handleClose();
-    } else if (confirmReturn){
+    if (confirmReturn){
       const response = await confirmReturn();
 
       if(response['error']){
@@ -39,7 +36,14 @@ export default function CustomizedDialogs({ children, open, setOpen, title, conf
         atualizar();
         handleClose();
       }
+
+      return;
     }
+    if (confirm){
+      confirm();
+    }
+    
+    handleClose();
   };
 
   useEffect(() => {

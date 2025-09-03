@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip, Tabs, Tab } from '@mui/material';
 import dayjs from 'dayjs';
+import { atividade_api } from './../api';
+import { formatarData, calcularTempoAtividade, formatarDataHora } from '../Utils';
 
 //LAYOUT
 import Layout from "~/components/layout/Layout";
@@ -22,6 +24,7 @@ import InputCalendarWeek from '~/components/InputCalendarWeek'
 //MODAIS
 import InfoProdutoModal from '../components/modal/InfoProdutoModal';
 import AdicionarString from '../components/modal/AdicionarString';
+import AdicionarVolumeLista from '../components/modal/AdicionarVolumeLista';
 
 //ICONS
 import PlayCircleFilledWhiteTwoToneIcon from '@mui/icons-material/PlayCircleFilledWhiteTwoTone';
@@ -31,10 +34,7 @@ import PauseCircleFilledTwoToneIcon from '@mui/icons-material/PauseCircleFilledT
 import CheckCircleTwoToneIcon from '@mui/icons-material/CheckCircleTwoTone';
 import MoveToInboxTwoToneIcon from '@mui/icons-material/MoveToInboxTwoTone';
 import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
-import AdicionarVolumeLista from '../components/modal/AdicionarVolumeLista';
-import { atividade_api } from './../api';
-import { formatarData } from '../Utils';
-
+import ArchiveIcon from '@mui/icons-material/Archive';
 
 export default function Atividades() {
     const { selectedDepartamento } = useUser();
@@ -81,30 +81,34 @@ export default function Atividades() {
         const remessa = item?.titulo_remessa;
         const equipe = item?.nome_equipe;
         const producao = formatarData(item?.data);
-        const categoria = <Chip size="small" label={item?.nome_categoria} />;
         const atividade = <Box>
-            <span style={{"fontSize": ".8em"}}>{item?.etapa}</span>
+            <span style={{"fontSize": "0.7em"}}>{item?.etapa}</span>
             <br />{item?.atividade}
+            { item?.fim && <>
+            <br /><span style={{"fontSize": "0.7em"}}>Finalizada: {formatarDataHora(item.fim)}</span>
+            </>}
         </Box>;
         const status = <Status status={item?.id_status} size={'small'} sx={{ zIndex: 1 }} />;
+        const tempo = <TempoAtividade atividade={item} />;
         
         const acoes = <>
-            {tipo === 'atrasadas' && <Box className="atrasada"></Box>}
-            {tipo === 'da_semana' && <Box className="da_semana"></Box>}
+            {(tipo === 'atrasadas' && item?.id_status !== 4) && <Box className="atrasada"></Box>}
+            {(tipo === 'da_semana' && item?.id_status !== 4) && <Box className="da_semana"></Box>}
+            {item?.id_status === 4 && <Box className="finalizada"></Box>}
             <AcoesAtividades atividade={item} atualizar={carregar} />
         </>
 
-        return { remessa, equipe, producao, categoria, atividade, status, acoes };
+        return { remessa, equipe, producao, atividade, status, tempo, acoes };
     }
 
     const headCells = [
-        {id: 'remessa', label: 'Remessa'},
-        {id: 'equipe', label: 'Equipe'},
-        {id: 'producao', label: 'Produção'},
-        {id: 'categoria', label: 'Categoria'},
+        {id: 'remessa', label: 'Remessa', width: '10px'},
+        {id: 'equipe', label: 'Equipe', width: '10px'},
+        {id: 'producao', label: 'Produção', width: '10px'},
         {id: 'atividade', label: 'Atividade'},
-        {id: 'status', label: 'Status'},
-        {id: 'acoes', label: 'Ações'},
+        {id: 'status', label: 'Status', width: '10px'},
+        {id: 'tempo', label: 'Tempo', width: '10px'},
+        {id: 'acoes', label: 'Ações', align: 'right', width: '10px'},
     ];
 
     return (
@@ -176,52 +180,63 @@ export function AcoesAtividades({ atividade, atualizar }){
             id_ordem: atividade.id_ordem,
             id_equipe: atividade.id_equipe,
             codigo: codigo,
-            titulo: atividade.atividade
+            titulo: atividade.atividade,
+            inicio: atividade.inicio
         }
         
         const res = await atividade_api.iniciarAtividade(atividade.id, payload);
         return res
     }
 
-    const playFinalizar = () => {
-        if(codigo.length >= 4){
-            if(acao == 'play'){
-                alert("Atividade iniciada");
-                
-            } else if(acao == 'finalizar'){
-                setAtividadesOP(prev =>
-                    prev.map(item =>
-                        item.id === atividade.id ? { ...item, status: 4 } : item
-                    )
-                );
-                
-                if(volumes_atividade.length != 0){
-                    setOpenVolumes(true)
-                }
-            }
-        } else {
-            alert('Codigo inválido')
+    const pausar = async () => {
+        const payload = {
+            id_user: usuarioLogado.id,
+            id_departamento: selectedDepartamento.id,
+            id_ordem: atividade.id_ordem,
+            id_equipe: atividade.id_equipe,
+            codigo: codigo,
+            titulo: atividade.atividade,
+            tempo: atividade.tempo,
+            inicio: atividade.inicio,
+            pausa: atividade.pausa,
         }
+        
+        const res = await atividade_api.pararAtividade(atividade.id, payload);
+        return res
+    }
+
+    const concluir = async () => {
+        const payload = {
+            id_user: usuarioLogado.id,
+            id_departamento: selectedDepartamento.id,
+            id_ordem: atividade.id_ordem,
+            id_equipe: atividade.id_equipe,
+            codigo: codigo,
+            titulo: atividade.atividade,
+            tempo: atividade.tempo,
+            inicio: atividade.inicio,
+            pausa: atividade.pausa,
+            id_status: atividade.id_status
+        }
+        
+        const res = await atividade_api.finalizarAtividade(atividade.id, payload);
+        return res
+    }
+
+    useEffect(() => {
         setCodigo('')
-    }
-    const pausar = () => {
-        setAtividadesOP(prev =>
-            prev.map(item =>
-                item.id === atividade.id ? { ...item, status: 2 } : item
-            )
-        );
-    }
+    }, [open]);
 
     return (
         <>
         <Box className="acoes_atividade">
-            { (atividade.status != 4) &&
+            { (atividade.id_status != 4) &&
                 <div className="content_1">
                     { atividade.id_status != 2 &&
                     <Button className="play" onClick={() => {setOpen(true); setAcao('play');}}><PlayCircleFilledWhiteTwoToneIcon /></Button>
                     }
                     { (atividade.id_status == 2) &&
-                    <Button className="pause" onClick={pausar}><PauseCircleFilledTwoToneIcon /></Button>
+                    <Button className="pause" onClick={() => {setOpen(true); setAcao('stop');}}><PauseCircleFilledTwoToneIcon /></Button>
                     }
                     { (atividade.id_status == 2 || atividade.id_status == 3) &&
                     <Button className="concluir" onClick={() => {setOpen(true); setAcao('finalizar');}}><CheckCircleTwoToneIcon /></Button>
@@ -229,28 +244,33 @@ export function AcoesAtividades({ atividade, atualizar }){
                 </div>
             }
                 <div className="content_2">
-                    { (atividade.status != -1 && atividade.status == 4 && volumes_atividade.length != 0) && 
+                    { (atividade.id_status == 4 && atividade.volumes_pendentes != 0) && 
                     <Button className="volumes" onClick={() => setOpenVolumes(true)}>
-                        <MoveToInboxTwoToneIcon />
+                        <ArchiveIcon />
                         <span 
                             className={'numero '+
-                                (!volumesEnviados.length ? 'vazio ' : '')+
-                                (volumesEnviados.length < volumes_atividade.length ? 'incompleto ' : '')
+                                (atividade.volumes_pendentes == atividade.volumes ? 'vazio ' : '')+
+                                ((atividade.volumes_pendentes < atividade.volumes && atividade.volumes_pendentes != 0) ? 'incompleto ' : '')
                             }
-                        >{volumesEnviados.length}</span>
+                        >{atividade.volumes - atividade.volumes_pendentes}</span>
                     </Button>
                     }
                     <Button className="info" onClick={() => setOpenInfo(true)}><InfoTwoToneIcon /></Button>
                 </div>
         </Box>
-        <Modal open={open} setOpen={setOpen} title="Insira o seu código" confirmText="Confirmar" confirmReturn={acao === 'play' ? playAtividade : null} atualizar={atualizar} >
+        <Modal open={open} setOpen={setOpen} title="Insira o seu código" confirmText="Confirmar" 
+            confirmReturn={acao === 'play' ? playAtividade : acao === 'stop' ? pausar : concluir} 
+            atualizar={atualizar} >
             <AdicionarString label='Código' value={codigo} setValue={setCodigo} />
         </Modal>
+
+
+
         <Modal open={openVolumes} setOpen={setOpenVolumes} title="Adicionar volumes" confirmText=''>
-            <AdicionarVolumeLista atividade={atividade} />
+            <AdicionarVolumeLista atividade={atividade} atualizar={atualizar} />
         </Modal>
         <Modal open={openInfo} setOpen={setOpenInfo} title="Mesa de poker profissional" confirmText="Fechar">
-            <InfoProdutoModal />
+            <InfoProdutoModal ordem={{ id: atividade.id_ordem }} />
         </Modal>
         </>
     )
@@ -327,7 +347,6 @@ function Semana() {
                 </div>
             ))}
             </Box>
-
         </Box>
         </>
     );
@@ -357,4 +376,24 @@ function separarAtividadesPorSemana(dataSelecionada, atividades) {
     });
   
     return diasSemana;
+}
+
+export function TempoAtividade({ atividade, size = "small" }) {
+    const [tempoAtual, setTempoAtual] = useState(calcularTempoAtividade(atividade));
+
+    useEffect(() => {
+        // Só cria intervalo se a atividade estiver em andamento (status 2)
+        if (atividade?.id_status === 2) {
+            const interval = setInterval(() => {
+                setTempoAtual(calcularTempoAtividade(atividade));
+            }, 1000);
+
+            return () => clearInterval(interval);
+        } else {
+            // Se não está em andamento, calcula uma vez
+            setTempoAtual(calcularTempoAtividade(atividade));
+        }
+    }, [atividade?.id_status, atividade?.inicio, atividade?.pausa, atividade?.fim]);
+
+    return <Chip color={atividade?.id_status === 2 ? "primary" : atividade?.id_status === 3 ? "warning" : atividade?.id_status === 4 ? "success" : "default"} size={size} label={tempoAtual} />;
 }

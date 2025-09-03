@@ -47,6 +47,7 @@ import InfoProdutoModal from '../components/modal/InfoProdutoModal';
 import { ordem_api, config_api, atividade_api, checklist_api, volumes_api } from './../api';
 import { converterDataParaBanco, formatarData, formatarDataHora } from '../Utils';
 import { StatusChecklist } from '../components/layout/Status';
+import { TempoAtividade } from './Atividades';
 
 export default function Ordem({resetOrdem = false}) {
     const { id } = useParams();
@@ -135,7 +136,7 @@ export default function Ordem({resetOrdem = false}) {
                 >
                     <Tab label="Informações" />
                     <Tab label="Requisitos" />
-                    <Tab label="Etapas " />
+                    <Tab label="Etapas "  disabled={ordem?.id_status === 4} />
                     <Tab label="Atividades" disabled={!ordem?.id_status} />
                     <Tab label="Checklist" disabled={!ordem?.id_status} />
                     <Tab label="Volumes" disabled={!ordem?.id_status} />
@@ -694,15 +695,15 @@ function Atividades() {
         const etapa = item?.etapa;
         const atividade_name = item?.atividade;
         const producao = formatarData(item?.data);
-        const tempo = item?.tempo ? item.tempo : '00:00';
-        const fim = item?.fim ? item.fim : '-';
+        const tempo = <TempoAtividade atividade={item} />;
+        const fim = item?.fim ? formatarDataHora(item.fim) : '-';
 
         const status = <>
             <Status status={item.id_status} size='small' />
             <Button className="link" variant="outlined" size="small">Detalhes</Button>
         </>;
         
-        return { equipe, etapa, atividade_name, producao, tempo, fim, status };
+        return { equipe, etapa, atividade_name, producao, fim, tempo, status };
     }
 
     const headCells = [
@@ -710,8 +711,8 @@ function Atividades() {
         {id: 'etapa', label: 'Etapa'},
         {id: 'atividade', label: 'Atividade'},
         {id: 'producao', label: 'Produção'},
+        {id: 'fim', label: 'Fim', width: '130px'},
         {id: 'tempo', label: 'Tempo'},
-        {id: 'fim', label: 'Fim'},
         {id: 'status', label: 'Status'},
     ];
 

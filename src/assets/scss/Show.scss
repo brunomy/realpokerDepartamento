@@ -617,6 +617,7 @@
 .acoes_atividade{
     display: flex;
     justify-content: flex-end;
+    align-items: center;
     
     >div{
         display: flex;
@@ -655,9 +656,9 @@
             top: 0;
             background: $sucess;
             color: white;
-            font-size: 0.6em;
-            width: 15px;
-            height: 15px;
+            font-size: 10px;
+            width: 16px;
+            height: 16px;
             display: flex;
             justify-content: center;
             align-items: center;

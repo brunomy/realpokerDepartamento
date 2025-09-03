@@ -84,8 +84,8 @@
                 width: 20px;
             }
         }
-        .atrasada, .da_semana{
-            background: #ff00002e;
+        .atrasada, .da_semana, .finalizada{
+            background: #ff00001c;
             position: absolute;
             left: 0;
             top: 0;
@@ -96,6 +96,9 @@
         }
         .da_semana{
             background: #ffb3001c;
+        }
+        .finalizada{
+            background: #48ca3d12;
         }
     }
 }

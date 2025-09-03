@@ -82,6 +82,8 @@ export const atividade_api = {
   deleteAtividade: (id) => http(`/api/deletarAtividade/${id}`, { method: "DELETE" }),
   getAtividadesProducao: (id) => http(`/api/getAtividadesProducao/${id}`, { method: "GET" }),
   iniciarAtividade: (id, payload) => http(`/api/iniciarAtividade/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
+  pararAtividade: (id, payload) => http(`/api/pararAtividade/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
+  finalizarAtividade: (id, payload) => http(`/api/finalizarAtividade/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
 };
 
 export const checklist_api = {
