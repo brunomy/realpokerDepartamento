@@ -1,5 +1,7 @@
 import '~/assets/scss/AdicionarVolumeLista.scss'
 import { useState, useEffect } from 'react';
+import { atividade_api } from './../../api';
+
 import InputAuto from '../InputAuto';
 import { Box, Button } from '@mui/material';
 import TextField from '@mui/material/TextField';
@@ -10,81 +12,94 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
+import Modal from '~/components/layout/Modal';
+import AdicionarString from './../../components/modal/AdicionarString';
+
+
 import { useUser } from '~/context/UserContext';
 
-export default function AdicionarVolumeLista({ atividade }) {
-    const { volumes } = useUser();
-    let volumes_atividade = volumes.filter((volume) => volume.id_atividade == atividade.id_atividade)
+export default function AdicionarVolumeLista({ atividade, atualizar }) {
+    const [volumes, setVolumes] = useState([]);
+
+    const carregar = async () => {
+        try {
+            atualizar();
+            const res = await atividade_api.getVolumesAtividade(atividade.id);
+            
+            setVolumes(res.data || []);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    useEffect(() => {
+        carregar();
+    }, []);
 
     return (
         <Box className="adicionarVolumeLista">
-            { volumes_atividade?.map((item) => <VolumeItem item={item} atividade_id={atividade.id} />)}
+            { volumes?.map((item) => <VolumeItem item={item} carregar={carregar} atividade={atividade} />)}
         </Box>
     )
 }
 
-function VolumeItem({item, atividade_id}) {
-    const { volumesOP, setVolumesOP } = useUser();
-    
-    var find = volumesOP.find(volume => (
-        volume.id_ativ == atividade_id && volume.id_volume == item.id
-    ));
+function VolumeItem({ item, carregar, atividade}) {
+    const { usuarioLogado } = useUser();
+
+    const [open, setOpen] = useState(false);
+    const [codigo, setCodigo] = useState('');
+    const [status, setStatus] = useState(0);
 
     useEffect(() => {
-        find = volumesOP.find(volume => (
-            volume.id_ativ == atividade_id && volume.id_volume == item.id
-        ));
-    }, [volumesOP])
+        setCodigo('')
+    }, [open]);
+    
+    const [check, setCheck] = useState(item?.status == 1 ? true : false);
+    const [comprimento, setComprimento] = useState(item?.comprimento || '');
+    const [largura, setLargura] = useState(item?.largura || '');
+    const [altura, setAltura] = useState(item?.altura || '');
+    const [peso, setPeso] = useState(item?.peso || '');
 
-    const [check, setCheck] = useState(false);
-    const [comprimento, setComprimento] = useState('');
-    const [largura, setLargura] = useState('');
-    const [altura, setAltura] = useState('');
-    const [peso, setPeso] = useState('');
-
-    const salvar = () => {
-        if(comprimento == ''){
+    const salvar = async () => {
+        if(comprimento == '' || comprimento == 0){
             alert('Preencha o comprimento')
             return
         }
-        if(largura == ''){
+        if(largura == '' || largura == 0){
             alert('Preencha a largura')
             return
         }
-        if(altura == ''){
+        if(altura == '' || altura == 0){
             alert('Preencha a altura')
             return
         }
-        if(peso == ''){
+        if(peso == '' || peso == 0){
             alert('Preencha o peso')
             return
         }
 
-        setVolumesOP([
-            ...volumesOP,
-            {
-                id: volumesOP.length + 1,
-                id_ativ: atividade_id,
-                id_atividade: item.id_atividade,
-                id_etapa: item.id_etapa,
-                id_volume: item.id,
-                id_remessa: 5951,
-                id_embalagem: null,
-                comprimento: comprimento,
-                largura: largura,
-                altura: altura,
-                peso: peso
-            },
-        ]);
-    }
+        const payload = {
+            id_user: usuarioLogado.id,
+            id_departamento: atividade.id_departamento,
+            id_equipe: atividade.id_equipe,
+            id_ordem: atividade.id_ordem,
+            id_atividade: atividade.id,
+            codigo: codigo,
+            titulo: item.volume,
+            comprimento: comprimento,
+            largura: largura,
+            altura: altura,
+            peso: peso,
+            status: status
+        }
 
-    const deletar = (id) => {
-        setVolumesOP(volumesOP.filter(volume => volume.id !== id))
+        const res = await atividade_api.updateVolume(item.id, payload);
+        return res
     }
 
     return (
         <Box className={'volume_item' + (find ? ' volume_adicionado' : '')}>
-            { !find && (
+            { item?.status == 0 && (
                 <>
                 <FormControl component="fieldset" variant="standard">
                     <FormGroup className="check_content">
@@ -92,38 +107,38 @@ function VolumeItem({item, atividade_id}) {
                             control={
                                 <Switch checked={check} onChange={(e) => setCheck(e.target.checked)} />
                             }
-                            label={item.title}
+                            label={item.volume}
                         />
-                        { check && <Button size="small" variant="contained" onClick={salvar}>Salvar</Button>}
+                        { check && <Button size="small" variant="contained" onClick={() => { setStatus(1); setOpen(true); }}>Salvar</Button>}
                     </FormGroup>
                 </FormControl>
                 { check && 
                     <Box className="dimensoes_form">
                         <div className="item">
-                            <TextField value={comprimento} onChange={(e) => setComprimento(e.target.value)} label="Comprimento" variant="outlined" sx={{width: '100%'}} slotProps={{
+                            <TextField size="small" value={comprimento} onChange={(e) => setComprimento(e.target.value)} label="Comprimento" variant="outlined" sx={{width: '100%'}} slotProps={{
                                 input: {
                                     endAdornment: <InputAdornment position="start">cm</InputAdornment>,
                                 },
                             }} />
                         </div>
                         <div className="item">
-                            <TextField value={largura} onChange={(e) => setLargura(e.target.value)} label="Largura" variant="outlined" sx={{width: '100%'}} slotProps={{
+                            <TextField size="small" value={largura} onChange={(e) => setLargura(e.target.value)} label="Largura" variant="outlined" sx={{width: '100%'}} slotProps={{
                                 input: {
                                     endAdornment: <InputAdornment position="start">cm</InputAdornment>,
                                 },
                             }} />
                         </div>
                         <div className="item">
-                            <TextField value={altura} onChange={(e) => setAltura(e.target.value)} label="Altura" variant="outlined" sx={{width: '100%'}} slotProps={{
+                            <TextField size="small" value={altura} onChange={(e) => setAltura(e.target.value)} label="Altura" variant="outlined" sx={{width: '100%'}} slotProps={{
                                 input: {
                                     endAdornment: <InputAdornment position="start">cm</InputAdornment>,
                                 },
                             }} />
                         </div>
                         <div className="item">
-                            <TextField value={peso} onChange={(e) => setPeso(e.target.value)} label="Peso" variant="outlined" sx={{width: '100%'}} slotProps={{
+                            <TextField size="small" value={peso} onChange={(e) => setPeso(e.target.value)} label="Peso" variant="outlined" sx={{width: '100%'}} slotProps={{
                                 input: {
-                                    endAdornment: <InputAdornment position="start">kg</InputAdornment>,
+                                    endAdornment: <InputAdornment position="start">gramas</InputAdornment>,
                                 },
                             }} />
                         </div>
@@ -133,24 +148,30 @@ function VolumeItem({item, atividade_id}) {
                 </>
             )}
 
-            { find && (
+            { item?.status == 1 && (
                 <Box>
                     <div className="title_content">
-                        <h2>{item.title}</h2>
-                        <Button color="error" onClick={() => deletar(find.id)}><DeleteTwoToneIcon  /></Button>
+                        <h2>{item.volume}</h2>
+                        <Button color="error"  onClick={() => { setStatus(0); setOpen(true); }}><DeleteTwoToneIcon  /></Button>
                     </div>
                     <div className="dimensoes">
                         <div>
                             <h3>Dimensões</h3>
-                            <span>{find.comprimento} x {find.largura} x {find.altura}</span>
+                            <span>{item.comprimento} x {item.largura} x {item.altura}</span>
                         </div>
                         <div>
                             <h3>Peso</h3>
-                            <span>{find.peso}</span>
+                            <span>{item.peso}</span>
                         </div>
                     </div>
                 </Box>
             )}
+
+            <Modal open={open} setOpen={setOpen} title="Insira o seu código" confirmText="Confirmar" 
+                confirmReturn={salvar} 
+                atualizar={carregar} >
+                <AdicionarString label='Código' value={codigo} setValue={setCodigo} />
+            </Modal>
         </Box>
     )
 }

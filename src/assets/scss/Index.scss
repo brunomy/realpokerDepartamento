@@ -84,7 +84,7 @@
                 width: 20px;
             }
         }
-        .atrasada, .da_semana, .finalizada{
+        .atrasada, .semana, .finalizada, .futuras, .hoje{
             background: #ff00001c;
             position: absolute;
             left: 0;
@@ -94,11 +94,17 @@
             z-index: 0;
             pointer-events: none;
         }
-        .da_semana{
-            background: #ffb3001c;
+        .semana{
+            opacity: 0;
         }
         .finalizada{
             background: #48ca3d12;
+        }
+        .futuras{
+            background: #1c5b5229;
+        }
+        .hoje{
+            background: #ffb3001c;
         }
     }
 }

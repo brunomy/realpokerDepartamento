@@ -19,7 +19,6 @@ import Status from '../components/layout/Status';
 import InputAuto from '~/components/InputAuto';
 import InputCalendarRange from '~/components/InputCalendarRange';
 import DataTable from '~/components/DataTable';
-import InputCalendarWeek from '~/components/InputCalendarWeek'
 
 //MODAIS
 import InfoProdutoModal from '../components/modal/InfoProdutoModal';
@@ -40,6 +39,9 @@ export default function Atividades() {
     const { selectedDepartamento } = useUser();
 
     const [atividades, setAtividades] = useState([]);
+    const [atividadesHoje, setAtividadesHoje] = useState([]);
+    const [atividadesSemana, setAtividadesSemana] = useState([]);
+    const [atividadesAtrasadas, setAtividadesAtrasadas] = useState([]);
     const [rows, setRows] = useState([]);
 
     const [tab, setTab] = useState(0);
@@ -51,6 +53,19 @@ export default function Atividades() {
         try {
             const res = await atividade_api.getAtividadesProducao(selectedDepartamento.id);
             setAtividades(res.data || []);
+
+            const semana = [
+                ...(atividades['hoje'] || []),
+                ...(atividades['semana'] || [])
+            ].sort((a, b) => {
+                const dataA = new Date(a.data);
+                const dataB = new Date(b.data);
+                return dataA - dataB; // ASC (crescente)
+            });
+
+            setAtividadesSemana(semana);
+            setAtividadesAtrasadas(res.data['atrasadas'] || []);
+            setAtividadesHoje(res.data['hoje'] || []);
         } catch (err) {
             console.log(err);
         }
@@ -58,24 +73,68 @@ export default function Atividades() {
 
     useEffect(() => {
         carregar();
-    }, [selectedDepartamento]);
+    }, [selectedDepartamento, tab]);
 
 
     useEffect(() => {
         const newRows = [];
-        
-        atividades['atrasadas']?.forEach(item => {
-            newRows.push(createData(item, 'atrasadas'));
-        });
-        atividades['da_semana']?.forEach(item => {
-            newRows.push(createData(item, 'da_semana'));
-        });
-        atividades['futuras']?.forEach(item => {
-            newRows.push(createData(item, 'futuras'));
-        });
-        
-        setRows(newRows);
-    }, [atividades]);
+
+        if(tab == 0){
+            atividades['hoje']?.forEach(item => {
+                newRows.push(createData(item, 'hoje'));
+            });
+            setRows(newRows);
+        }
+        if(tab == 1){
+            const semana = [
+                ...(atividades['hoje'] || []),
+                ...(atividades['semana'] || [])
+            ].sort((a, b) => {
+                const dataA = new Date(a.data);
+                const dataB = new Date(b.data);
+                return dataA - dataB; // ASC (crescente)
+            });
+
+            setAtividadesSemana(semana);
+        }
+        if(tab == 2){
+            atividadesAtrasadas?.forEach(item => {
+                newRows.push(createData(item, 'atrasadas'));
+            });
+
+            setRows(newRows);
+        }
+        if(tab == 3){
+            atividades['atrasadas']?.forEach(item => {
+                newRows.push(createData(item, 'atrasadas'));
+            });
+            
+            // Junta os arrays 'hoje' e 'semana' e ordena por data ASC
+            const semana = [
+                ...(atividades['hoje'] || []),
+                ...(atividades['semana'] || [])
+            ].sort((a, b) => {
+                const dataA = new Date(a.data);
+                const dataB = new Date(b.data);
+                return dataA - dataB; // ASC (crescente)
+            });
+            
+            // Adiciona as atividades ordenadas às rows
+            semana.forEach(item => {
+                // Determina o tipo baseado na data original
+                const tipo = atividades['hoje']?.includes(item) ? 'hoje' : 'semana';
+                newRows.push(createData(item, tipo));
+            });
+            
+            atividades['futuras']?.forEach(item => {
+                newRows.push(createData(item, 'futuras'));
+            });
+
+            setRows(newRows);
+        }
+
+
+    }, [atividades, tab, selectedDepartamento]);
 
     const createData = (item, tipo) => {
         const remessa = item?.titulo_remessa;
@@ -93,7 +152,9 @@ export default function Atividades() {
         
         const acoes = <>
             {(tipo === 'atrasadas' && item?.id_status !== 4) && <Box className="atrasada"></Box>}
-            {(tipo === 'da_semana' && item?.id_status !== 4) && <Box className="da_semana"></Box>}
+            {(tipo === 'semana' && item?.id_status !== 4) && <Box className="semana"></Box>}
+            {(tipo === 'hoje' && item?.id_status !== 4) && <Box className="hoje"></Box>}
+            {(tipo === 'futuras' && item?.id_status !== 4) && <Box className="futuras"></Box>}
             {item?.id_status === 4 && <Box className="finalizada"></Box>}
             <AcoesAtividades atividade={item} atualizar={carregar} />
         </>
@@ -122,39 +183,24 @@ export default function Atividades() {
                     scrollButtons
                     allowScrollButtonsMobile
                 >
-                    <Tab label="Lista" />
+                    <Tab label="Hoje" />
                     <Tab label="Semana" />
+                    <Tab label="Atrasadas" disabled={atividadesAtrasadas.length === 0} />
+                    <Tab label="Lista" />
                 </Tabs>
             </Box>
-                <Box className="index_content atividades_list">
-                { tab == 0 &&
+            <Box className="index_content atividades_list">
+                { (tab == 0 || tab == 2 || tab == 3) &&
                     <>
-                    {/* <Box className="filtros">
-                        <h2>Filtros:</h2>
-                        <Box className="filter_list">
-                            <Box className="item">
-                                <InputAuto label="id" list={idList} setValue={setIdFilter} width={'100%'} />
-                            </Box>
-                            <Box className="item">
-                                <InputAuto label="Equipe" list={teamList} setValue={setTeamFilter} width={'100%'} />
-                            </Box>
-                            <Box className="item">
-                                <InputAuto label="Status" list={statusList} setValue={setStatusFilter} width={'100%'} />
-                            </Box>
-                            <Box className="item calendario">
-                                <InputCalendarRange setFunctionDe={setDateFilterDe} setFunctionAte={setDateFilterAte} />
-                            </Box>
-                        </Box>
-                    </Box> */}
                     <Box className="table_content">
                         <DataTable headCells={headCells} rows={rows} buttons={true}/>
                     </Box>
                     </>
                 }
                 { tab == 1 &&
-                    <Semana />
+                    <Semana atividades={atividadesSemana} atualizar={carregar} />
                 }
-                </Box>
+            </Box>
         </Layout>
     )
 }
@@ -244,7 +290,7 @@ export function AcoesAtividades({ atividade, atualizar }){
                 </div>
             }
                 <div className="content_2">
-                    { (atividade.id_status == 4 && atividade.volumes_pendentes != 0) && 
+                    { (atividade.id_status == 4 && atividade.volumes != 0) && 
                     <Button className="volumes" onClick={() => setOpenVolumes(true)}>
                         <ArchiveIcon />
                         <span 
@@ -258,13 +304,12 @@ export function AcoesAtividades({ atividade, atualizar }){
                     <Button className="info" onClick={() => setOpenInfo(true)}><InfoTwoToneIcon /></Button>
                 </div>
         </Box>
+
         <Modal open={open} setOpen={setOpen} title="Insira o seu código" confirmText="Confirmar" 
             confirmReturn={acao === 'play' ? playAtividade : acao === 'stop' ? pausar : concluir} 
             atualizar={atualizar} >
             <AdicionarString label='Código' value={codigo} setValue={setCodigo} />
         </Modal>
-
-
 
         <Modal open={openVolumes} setOpen={setOpenVolumes} title="Adicionar volumes" confirmText=''>
             <AdicionarVolumeLista atividade={atividade} atualizar={atualizar} />
@@ -276,105 +321,89 @@ export function AcoesAtividades({ atividade, atualizar }){
     )
 }
 
-function Semana() {
-    const { atividadesOP, equipes, etapas, atividades, categorias } = useUser();
-
-    const [primeiroDia, setPrimeiroDia] = useState();
-    const [ultimoDia, setUltimoDia] = useState();
+function Semana({ atividades, atualizar }) {
+    const { selectedDepartamento } = useUser();
     const [atividadesSeparadas, setAtividadesSeparadas] = useState([[], [], [], [], [], []]);
-    var separadas;
-    const [mudarData, setMudarData] = useState(false)
 
     useEffect(() => {
-        setAtividadesSeparadas([[], [], [], [], [], []])
-        setMudarData(false)
-        if (primeiroDia) {
-            separadas = separarAtividadesPorSemana(primeiroDia, atividadesOP.filter((a) => a.status != -1));
+        if (atividades && atividades.length > 0) {
+            const separadas = separarAtividadesPorSemana(atividades);
             setAtividadesSeparadas(separadas);
+        } else {
+            setAtividadesSeparadas([[], [], [], [], [], []]);
         }
-        
-    }, [primeiroDia, atividadesOP]);
+    }, [atividades, selectedDepartamento]);
 
     return (
         <>
-        <div className="calendario_semana">
-            { !mudarData && 
-                <Button onClick={() => setMudarData(true)} variant="contained" size="small">Alterar semana</Button>
-            }
-            <Box sx={{display: !mudarData ? 'none' : ''}}>
-                <InputCalendarWeek setPrimeiroDia={setPrimeiroDia} setUltimoDia={setUltimoDia} />
-            </Box>
-        </div>
-        <Box className="atividades_semana">
-
-            <div className="dias">
-                <span>{primeiroDia}</span> - <span>{ultimoDia}</span>
-            </div>
-
-            {/* Aqui você mostra atividades de segunda a sábado */}
+        <Box className="atividades_semana table_content">
             <Box className="semana_calendario">
-            {atividadesSeparadas.map((atividadesDia, index) => (
-                <div className="dia" key={index} >
+            {atividadesSeparadas?.map((atividadesDia, index) => {
+                const hoje = dayjs();
+                const diaAtual = hoje.day();
+                
+                const diaIndex = index + 1;
+                const isHoje = diaAtual === diaIndex;
+
+                return (
+                <div className={`dia ${isHoje ? 'hoje_' : ''}`}  key={index}>
                     <h2>
-                        { index == 0 && 'Seg'}
-                        { index == 1 && 'Ter'}
-                        { index == 2 && 'Qua'}
-                        { index == 3 && 'Qui'}
-                        { index == 4 && 'Sex'}
-                        { index == 5 && 'Sab'}
-
+                        {index === 0 && 'Seg'}
+                        {index === 1 && 'Ter'}
+                        {index === 2 && 'Qua'}
+                        {index === 3 && 'Qui'}
+                        {index === 4 && 'Sex'}
+                        {index === 5 && 'Sáb'}
                     </h2>
-                    {atividadesDia.length == 0 && <div className="sem_atividade">Sem atividades</div>}
-                    {atividadesDia.length != 0 && 
-                    <>
-
-                    { atividadesDia?.map((atv, index) => (
-                        <div className={"atividade "+(atv.status == 4 ? 'finalizado' : '')}>
-                            <p className="pedido">#5952</p>
-                            <p className="categoria">{
-                                categorias.find(c => c.id == atividades.find(a => a.id == atv.id_atividade).id_categoria).title
-                            }</p>
-                            <p className="etapa">{etapas.find(e => e.id == atv.id_etapa).title}</p>
-                            <p className="atv">{atividades.find(a => a.id == atv.id_atividade).title}</p>
-                            <div className="acoes">
-                                <p className="equipe">{equipes.find(e => e.id == atv.id_equipe).title}</p>
-                                <AcoesAtividades key={index} atividade={atv} />
+                    {atividadesDia?.length === 0 && <div className="sem_atividade">Sem atividades</div>}
+                    {atividadesDia?.length > 0 && 
+                        atividadesDia?.map((atv, atividadeIndex) => (
+                            <div key={atividadeIndex} 
+                            className={
+                                "atividade " + (
+                                atv.id_status === 2 ? 'em andamento' :
+                                atv.id_status === 3 ? 'parado' :
+                                atv.id_status === 4 ? 'finalizado' : ''
+                            )}>
+                                <p className="pedido">#{atv.id_ordem}</p>
+                                <p className="etapa">{atv.etapa}</p>
+                                <p className="atv">{atv.atividade}</p>
+                                <div className="acoes">
+                                    <p className="equipe">{atv.nome_equipe}</p>
+                                    <TempoAtividade atividade={atv} />
+                                    <AcoesAtividades atividade={atv} atualizar={atualizar} />
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                    </>
+                        ))
                     }
                 </div>
-            ))}
+                )
+            })}
             </Box>
         </Box>
         </>
     );
 }
   
-function separarAtividadesPorSemana(dataSelecionada, atividades) {
-    const diasSemana = [[], [], [], [], [], []]; // Segunda (0) até Sábado (5)
+function separarAtividadesPorSemana(atividades) {
+    // Array com 6 posições: Segunda(0), Terça(1), Quarta(2), Quinta(3), Sexta(4), Sábado(5)
+    const diasSemana = [[], [], [], [], [], []];
   
-    const dataBase = dayjs(dataSelecionada, 'DD/MM/YYYY');
-    const inicioSemana = dataBase.startOf('week');
-    const fimSemana = dataBase.endOf('week');
-  
-    atividades.forEach((atividade) => {
-        const dataAtividade = dayjs(atividade.data, 'DD/MM/YYYY');
-    
-        // Agora verificamos se a atividade está dentro da semana selecionada
-        if (!dataAtividade.isBetween(inicioSemana, fimSemana, 'day', '[]')) {
-            return;
-        }
-    
-        const diaSemana = dataAtividade.day(); 
-        // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
-    
-        if (diaSemana >= 1 && diaSemana <= 6) {
-            diasSemana[diaSemana - 1].push(atividade);
-        }
-    });
-  
+    if(atividades){
+        atividades?.forEach((atividade) => {
+            // Converte a data da atividade (formato YYYY-MM-DD)
+            const dataAtividade = dayjs(atividade.data);
+            
+            // Pega o dia da semana (0 = Domingo, 1 = Segunda, ..., 6 = Sábado)
+            const diaSemana = dataAtividade.day();
+        
+            // Mapeia para nosso array (Segunda = 0, Terça = 1, ..., Sábado = 5)
+            if (diaSemana >= 1 && diaSemana <= 6) {
+                diasSemana[diaSemana - 1].push(atividade);
+            }
+        });
+    }
+
     return diasSemana;
 }
 
