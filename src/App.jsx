@@ -5,11 +5,9 @@ import { UserProvider } from './context/UserContext';
 
 import Login from './pages/Login'
 import Pedidos from './pages/Pedidos';
-import Pedido from './pages/Pedido';
 import Ordens from './pages/Ordens';
 import Ordem from './pages/Ordem';
 import Atividades from './pages/Atividades';
-import Atividade from './pages/Atividade';
 import Checklists from './pages/Checklists';
 import Checklist from './pages/Checklist';
 import Equipes from './pages/Equipes';
