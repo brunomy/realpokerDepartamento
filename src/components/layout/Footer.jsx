@@ -101,6 +101,24 @@ export default function Footer() {
             />
         </BottomNavigation>
         }
+        { usuarioLogado.permissao === "checklists" && 
+        <BottomNavigation
+            className="bottomNavigation"
+            sx={{ width: '100%' }}
+            value={currentTab() ?? 'ordens'}
+            showLabels
+        >
+            <BottomNavigationAction
+                label="Checklists"
+                value="checklists"
+                icon={<CheckBoxTwoToneIcon />}
+                component={Link}
+                to="/checklists"
+                showLabel
+                sx={{ display: usuarioLogado.permissao === "checklists" ? 'flex' : 'none' }}
+            />
+        </BottomNavigation>
+        }
         { false && 
         <BottomNavigation
             className="bottomNavigation"

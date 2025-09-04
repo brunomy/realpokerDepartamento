@@ -1,5 +1,5 @@
 import "~/assets/scss/Show.scss";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { useState, useEffect, useRef, memo } from "react";
 import { Box, Button, TextField, Typography, IconButton } from "@mui/material";
 import AssignmentIcon from "@mui/icons-material/Assignment";
@@ -7,6 +7,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Accordion from "@mui/material/Accordion";
+import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
 import AccordionActions from "@mui/material/AccordionActions";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -15,10 +16,17 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import Layout from "~/components/layout/Layout";
 import Title from "~/components/layout/Title";
 import { useUser } from "~/context/UserContext";
+import Modal from "~/components/layout/Modal";
+import VistoriaChecklist from "~/components/modal/VistoriaChecklist";
+import InfoProdutoModal from "~/components/modal/InfoProdutoModal";
 
 export default function ChecklistOrder() {
     const { id } = useParams();
-    const { checklists, checklistItem, setChecklistItem, setChecklists } = useUser();
+    const { checklists, checklistItem, setChecklistItem, setChecklists, usuarioLogado } = useUser();
+
+    if (usuarioLogado && usuarioLogado.permissao !== 'checklists') {
+        return <Navigate to="/" replace />;
+    }
 
 
     return (
@@ -168,7 +176,7 @@ function ChecklistEtapa({ etapa, atividadesOP, checklists, equipes, openModal })
 
     return (
         <>
-            {atividadesOP.length > 0 && 
+            {/* {atividadesOP.length > 0 && 
                 <Box className="checklist_etapa">
                     <h3>{etapa.title}</h3>
                     <div className="checklist_itens">
@@ -190,7 +198,7 @@ function ChecklistEtapa({ etapa, atividadesOP, checklists, equipes, openModal })
                         })}
                     </div>
                 </Box>
-            }
+            } */}
         </>
     )
 }

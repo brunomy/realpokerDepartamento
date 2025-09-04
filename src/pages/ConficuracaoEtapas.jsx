@@ -1,5 +1,5 @@
 import "~/assets/scss/Show.scss";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, Navigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { Box, Button, TextField } from "@mui/material";
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
@@ -19,10 +19,14 @@ import { config_api } from './../api';
 import SaveIcon from '@mui/icons-material/Save';
 
 export default function ConficuracaoEtapas() {
+    const { selectedDepartamento, usuarioLogado } = useUser();
+    
+    if (usuarioLogado && usuarioLogado.permissao !== 'gerente') {
+        return <Navigate to="/" replace />;
+    }
+    
     const navigate = useNavigate();
     const prevDepartamento = useRef(null);
-
-    const { selectedDepartamento } = useUser();
     const { id } = useParams();
 
     const [rows, setRows] = useState([]);

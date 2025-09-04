@@ -3,7 +3,7 @@ import '~/assets/scss/Show.scss';
 import { useUser } from '~/context/UserContext';
 
 import { useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Navigate } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Button, Chip, Tabs, Tab } from '@mui/material';
 
@@ -39,6 +39,11 @@ import EditarRemessa from '../components/EditarRemessa';
 
 export default function Remessa() {
     const { id } = useParams();
+    const { usuarioLogado } = useUser();
+
+    if (usuarioLogado && usuarioLogado.permissao !== 'remessas') {
+        return <Navigate to="/" replace />;
+    }
 
     return (
         <Layout>

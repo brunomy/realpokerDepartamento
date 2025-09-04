@@ -1,5 +1,5 @@
 import "~/assets/scss/Show.scss";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, Link, Navigate } from "react-router-dom";
 import { useState, useEffect, useRef, memo } from "react";
 import { Box, Button, TextField, Typography, IconButton, Tabs, Tab } from "@mui/material";
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
@@ -26,7 +26,12 @@ import { config_api } from './../api';
 import { MudarTitulo } from "./ConficuracaoEtapas";
 
 export default function ConfiguracaoCheckVol() {
-    const { selectedDepartamento } = useUser();
+    const { selectedDepartamento, usuarioLogado } = useUser();
+
+    if (usuarioLogado && usuarioLogado.permissao !== 'gerente') {
+        return <Navigate to="/" replace />;
+    }
+
     const navigate = useNavigate();
     const prevDepartamento = useRef(null);
 

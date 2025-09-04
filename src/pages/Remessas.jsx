@@ -1,7 +1,7 @@
 import '~/assets/scss/Index.scss';
 import { useState } from 'react';
 
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import ReportProblemTwoToneIcon from '@mui/icons-material/ReportProblemTwoTone';
@@ -20,8 +20,13 @@ import Status from '~/components/layout/Status';
 import { useUser } from '~/context/UserContext';
 
 export default function Remessas() {
+    const { volumes, volumesOP, embalagensOP, usuarioLogado } = useUser();
+
+    if (usuarioLogado && usuarioLogado.permissao !== 'remessas') {
+        return <Navigate to="/" replace />;
+    }
+    
     const hoje = dayjs();
-    const { volumes, volumesOP, embalagensOP } = useUser();
 
     const naoEmbalados = volumesOP.filter(item => item.id_embalagem == null);
 

@@ -1,6 +1,6 @@
 import '~/assets/scss/Show.scss';
 
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useState, useEffect, useMemo, memo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -51,9 +51,13 @@ import { TempoAtividade } from './Atividades';
 
 export default function Ordem({resetOrdem = false}) {
     const { id } = useParams();
-    const { selectedDepartamento } = useUser();
+    const { selectedDepartamento, usuarioLogado } = useUser();
     const navigate = useNavigate();
     const prevDepartamento = useRef(null);
+
+    if (usuarioLogado && usuarioLogado.permissao !== 'gerente') {
+        return <Navigate to="/" replace />;
+    }
 
     const [ordem, setOrdem] = useState(null);
 

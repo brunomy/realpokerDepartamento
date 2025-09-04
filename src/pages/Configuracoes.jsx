@@ -1,7 +1,7 @@
 import '~/assets/scss/Index.scss';
 import { useState, useEffect } from 'react';
 
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Box, Button } from '@mui/material';
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
@@ -15,7 +15,12 @@ import { useUser } from "~/context/UserContext";
 import { config_api } from './../api';
 
 export default function Configuracoes() {
-    const { selectedDepartamento } = useUser();
+    const { selectedDepartamento, usuarioLogado } = useUser();
+
+    if (usuarioLogado && usuarioLogado.permissao !== 'gerente') {
+        return <Navigate to="/" replace />;
+    }
+
     const [error, setError] = useState(null);
 
     const [rows, setRows] = useState([]);
@@ -90,7 +95,7 @@ export default function Configuracoes() {
         <Layout>
             <Title title="Configuração de produção" icon={<SettingsApplicationsIcon/>} />
             <Box className="index_content">
-                <Box className="table_content filtros">
+                <Box className="table_content">
                     <DataTable headCells={headCells} rows={rows}/>
                 </Box>
             </Box>

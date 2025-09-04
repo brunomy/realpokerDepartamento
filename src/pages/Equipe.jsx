@@ -1,6 +1,6 @@
 import '~/assets/scss/Show.scss';
 
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, Navigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import { Box, Button, Chip, Tabs, Tab } from '@mui/material';
 
@@ -33,6 +33,10 @@ import { MudarTitulo } from './ConficuracaoEtapas';
 export default function Equipe() {
     const { id } = useParams();
     const { selectedDepartamento, usuarioLogado } = useUser();
+
+    if (usuarioLogado && (usuarioLogado.permissao !== 'gerente' && usuarioLogado.permissao !== 'atividades')) {
+        return <Navigate to="/" replace />;
+    }
 
     const [userEquipe, setUserEquipe] = useState(null);
 

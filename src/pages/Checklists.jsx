@@ -1,7 +1,7 @@
 import '~/assets/scss/Index.scss';
 import { useState } from 'react';
 
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip, Tabs, Tab } from '@mui/material';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
@@ -18,11 +18,14 @@ import AdicionarChecklist from '~/components/modal/AdicionarChecklist';
 
 import { useUser } from '~/context/UserContext';
 
-
 export default function Checklists() {
+    const { atividadesOP, checklistOP, usuarioLogado } = useUser();
+    
+    if (usuarioLogado && usuarioLogado.permissao !== 'checklists') {
+        return <Navigate to="/" replace />;
+    }
+    
     const [pedidoFilter, setPedidoFilter] = useState([]);
-    const { atividadesOP, checklistOP } = useUser();
-
     const atividades = atividadesOP.filter((atividade) => atividade.status == 4).length;
     const checklists = checklistOP.filter((checklist) => checklist.status == 1).length
     const disponiveis = atividades - checklists;
@@ -93,14 +96,14 @@ export default function Checklists() {
         <Layout>
             <Title title="Lista de checklists" icon={<CheckBoxIcon/>} />
             <Box className="index_content atividades_list">
-                <Box className="filtros">
+                {/* <Box className="filtros">
                     <h2>Filtros:</h2>
                     <Box className="filter_list">
                         <Box className="item">
                             <InputAuto label="Pedido" list={pedidosList} setValue={setPedidoFilter} width={'100%'} />
                         </Box>
                     </Box>
-                </Box>
+                </Box> */}
                 <Box className="table_content">
                     <DataTable headCells={headCells} rows={rows}/>
                 </Box>

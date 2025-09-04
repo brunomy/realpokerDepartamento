@@ -8,7 +8,8 @@ import { useUser } from "~/context/UserContext";
 export default function Login() {
   const { login } = useUser();
   // const [user, setUser] = useState("gerente");
-  const [user, setUser] = useState("atividades");
+  // const [user, setUser] = useState("atividades");
+  const [user, setUser] = useState("checklists");
   // const [user, setUser] = useState("bruno");
   const [password, setPassword] = useState("123456");
   const [error, setError] = useState("");
@@ -22,34 +23,36 @@ export default function Login() {
 
   return (
     <Container className="login_content">
-      <Box className="login">
-        <h1>Login departamento</h1>
-        <p>Utilize as credenciais cadastradas no sistema.</p>
+      <form onSubmit={(e) => {e.preventDefault(); login({ user, password, navigate, setError })}}>{/* Prevent form submission */}
+        <Box className="login">
+          <h1>Login departamento</h1>
+          <p>Utilize as credenciais cadastradas no sistema.</p>
+            <TextField
+              className="input"
+              label="Usuário"
+              variant="outlined"
+              size="small"
+              value={user}
+              onChange={(e) => setUser(e.target.value)}
+            />
+            <TextField
+              className="input"
+              label="Senha"
+              type="password"
+              variant="outlined"
+              size="small"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
 
-        <TextField
-          className="input"
-          label="Usuário"
-          variant="outlined"
-          size="small"
-          value={user}
-          onChange={(e) => setUser(e.target.value)}
-        />
-        <TextField
-          className="input"
-          label="Senha"
-          type="password"
-          variant="outlined"
-          size="small"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+            <Button variant="contained" type="submit">
+              Login
+            </Button>
 
-        <Button variant="contained" onClick={() => login({ user, password, navigate, setError })}>
-          Login
-        </Button>
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
-      </Box>
+          {error && <p style={{ color: "red" }}>{error}</p>}
+        </Box>
+      </form>
     </Container>
   );
 }

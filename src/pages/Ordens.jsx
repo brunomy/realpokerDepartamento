@@ -1,5 +1,6 @@
 import '~/assets/scss/Index.scss';
 import { useState, useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
 
 import { Link } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
@@ -26,8 +27,12 @@ import { formatarData } from '../Utils';
 import RemessaEditModal from '../components/modal/RemessaEditModal';
 
 export default function Ordens() {
-    const { selectedDepartamento } = useUser();
+    const { selectedDepartamento, usuarioLogado } = useUser();
     const hoje = dayjs();
+
+    if (usuarioLogado && usuarioLogado.permissao !== 'gerente') {
+        return <Navigate to="/" replace />;
+    }
 
     const [ordens, setOrdens] = useState([]);
     const [selectedRemessa, setSelectedRemessa] = useState(null);

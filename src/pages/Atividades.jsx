@@ -3,7 +3,7 @@ import '~/assets/scss/Index.scss';
 import { useUser } from '~/context/UserContext';
 
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip, Tabs, Tab } from '@mui/material';
 import dayjs from 'dayjs';
 import { atividade_api } from './../api';
@@ -36,7 +36,11 @@ import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
 import ArchiveIcon from '@mui/icons-material/Archive';
 
 export default function Atividades() {
-    const { selectedDepartamento, selectedEquipe } = useUser();
+    const { selectedDepartamento, selectedEquipe, usuarioLogado } = useUser();
+
+    if (usuarioLogado && usuarioLogado.permissao !== 'atividades') {
+        return <Navigate to="/" replace />;
+    }
 
     const [atividades, setAtividades] = useState([]);
     const [atividadesHoje, setAtividadesHoje] = useState([]);

@@ -1,6 +1,6 @@
 import '~/assets/scss/Index.scss';
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
 import dayjs from 'dayjs';
 import { user_api } from '../api';
@@ -26,7 +26,11 @@ import { useUser } from '~/context/UserContext';
 
 
 export default function Usuarios() {
-    const { selectedDepartamento } = useUser();
+    const { selectedDepartamento, usuarioLogado } = useUser();
+
+    if (usuarioLogado && usuarioLogado.permissao !== 'gerente') {
+        return <Navigate to="/" replace />;
+    }
 
     const [error, setError] = useState("");
 
@@ -92,8 +96,6 @@ export default function Usuarios() {
         <Layout>
             <Title title="Lista de usuários" icon={<GroupsIcon/>} />
             <Box className="index_content">
-                <br />
-                <br />
                 <Box className="table_content">
                     <DataTable headCells={headCells} rows={rows}/>
                 </Box>

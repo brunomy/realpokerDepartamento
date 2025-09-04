@@ -1,6 +1,6 @@
 import '~/assets/scss/Index.scss';
 import { useState, useEffect, useRef } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate, Navigate } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
 import dayjs from 'dayjs';
 
@@ -31,6 +31,16 @@ export default function Equipes() {
     const { selectedDepartamento, usuarioLogado } = useUser();
     const { id } = useParams();
 
+    if (usuarioLogado && (usuarioLogado.permissao !== 'gerente' && usuarioLogado.permissao !== 'atividades')) {
+        return <Navigate to="/" replace />;
+    }
+    useEffect(() => {
+        if(usuarioLogado.permissao !== "gerente" && id != usuarioLogado.id){
+            navigate("/usuario/" + usuarioLogado.id);
+        }
+    }, []);
+
+
     const navigate = useNavigate();
     const prevDepartamento = useRef(null);
 
@@ -43,12 +53,6 @@ export default function Equipes() {
     const [novaEquipe, setNovaEquipe] = useState();
 
     const [error, setError] = useState(null);
-
-    useEffect(() => {
-        if(usuarioLogado.permissao !== "gerente" && id != usuarioLogado.id){
-            navigate("/usuario/" + usuarioLogado.id);
-        }
-    }, [])
 
     const [breadcrumbs, setBreadcrumbs] = useState([
         {

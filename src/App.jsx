@@ -23,6 +23,9 @@ import ConfiguracaoCheckVol from './pages/ConfiguracaoCheckVol';
 import ChecklistOrder from './pages/Checklist';
 import Usuarios from './pages/Usuarios';
 
+import { useUser } from "~/context/UserContext";
+
+
 function App() {
   return (
     <UserProvider>
@@ -54,6 +57,8 @@ function App() {
 
           <Route path="/remessas" element={<PrivateRoute><Remessas /></PrivateRoute>} />
           <Route path="/remessas/:id" element={<PrivateRoute><Remessa /></PrivateRoute>} />
+
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </section>
@@ -62,6 +67,9 @@ function App() {
 }
 
 export function PrivateRoute({ children }) {
+  const { usuarioLogado } = useUser();
+
+
   const token = localStorage.getItem('authToken');
   const equipe = localStorage.getItem('equipe');
   const location = useLocation();

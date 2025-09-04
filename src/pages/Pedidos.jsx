@@ -1,7 +1,7 @@
 import '~/assets/scss/Index.scss';
 import { useState, useEffect } from 'react';
 
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
 
 import dayjs from 'dayjs';
@@ -26,8 +26,13 @@ import { formatarData } from '../Utils';
 
 
 export default function Pedidos() {
+    const { selectedDepartamento, usuarioLogado } = useUser();
     const hoje = dayjs();
-    const { selectedDepartamento } = useUser();
+
+    if (usuarioLogado && usuarioLogado.permissao !== 'gerente') {
+        return <Navigate to="/" replace />;
+    }
+
     const [openRemessa, setOpenRemessa] = useState(false);
     const [tab, setTab] = useState(0);
 
