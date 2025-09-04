@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, Box, TextField, Button } from "@mui/material";
 import "~/assets/scss/Login.scss";
@@ -13,6 +13,12 @@ export default function Login() {
   const [password, setPassword] = useState("123456");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+    localStorage.removeItem("equipe");
+  }, []);
 
   return (
     <Container className="login_content">

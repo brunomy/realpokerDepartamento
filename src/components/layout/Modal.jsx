@@ -20,7 +20,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-export default function CustomizedDialogs({ children, open, setOpen, title, confirm, confirmReturn, confirmText = 'Salvar alterações', disabled, sx, atualizar }) {
+export default function CustomizedDialogs({ children, open, setOpen, title, confirm, confirmReturn, confirmText = 'Salvar alterações', disabled, sx, atualizar, clearInputs = () => {} }) {
   const [error, setError] = useState(null);
 
   const handleClose = () => {
@@ -32,6 +32,7 @@ export default function CustomizedDialogs({ children, open, setOpen, title, conf
 
       if(response['error']){
         setError(response['error']);
+        clearInputs();
       } else {
         atualizar();
         handleClose();
@@ -41,9 +42,8 @@ export default function CustomizedDialogs({ children, open, setOpen, title, conf
     }
     if (confirm){
       confirm();
+      handleClose();
     }
-    
-    handleClose();
   };
 
   useEffect(() => {
@@ -76,7 +76,9 @@ export default function CustomizedDialogs({ children, open, setOpen, title, conf
           <CloseIcon />
         </IconButton>
         <DialogContent dividers>
-          {children}
+          <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+            {children}
+          </form>
           <Box sx={{ color: 'red', fontSize: 13, marginTop: 1 }}>{error}</Box>
         </DialogContent>
         <DialogActions>

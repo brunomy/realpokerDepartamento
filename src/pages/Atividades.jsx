@@ -36,7 +36,7 @@ import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
 import ArchiveIcon from '@mui/icons-material/Archive';
 
 export default function Atividades() {
-    const { selectedDepartamento } = useUser();
+    const { selectedDepartamento, selectedEquipe } = useUser();
 
     const [atividades, setAtividades] = useState([]);
     const [atividadesHoje, setAtividadesHoje] = useState([]);
@@ -51,8 +51,24 @@ export default function Atividades() {
 
     const carregar = async () => {
         try {
-            const res = await atividade_api.getAtividadesProducao(selectedDepartamento.id);
-            setAtividades(res.data || []);
+            const res = await atividade_api.getAtividadesProducao(selectedDepartamento?.id);
+            
+            const atividadesFiltradas = {
+                atrasadas: selectedEquipe ? 
+                    (res.data['atrasadas'] || []).filter(item => item.id_equipe === selectedEquipe.id) : 
+                    (res.data['atrasadas'] || []),
+                hoje: selectedEquipe ? 
+                    (res.data['hoje'] || []).filter(item => item.id_equipe === selectedEquipe.id) : 
+                    (res.data['hoje'] || []),
+                semana: selectedEquipe ? 
+                    (res.data['semana'] || []).filter(item => item.id_equipe === selectedEquipe.id) : 
+                    (res.data['semana'] || []),
+                futuras: selectedEquipe ? 
+                    (res.data['futuras'] || []).filter(item => item.id_equipe === selectedEquipe.id) : 
+                    (res.data['futuras'] || [])
+            };
+        
+            setAtividades(atividadesFiltradas);
 
             const semana = [
                 ...(atividades['hoje'] || []),
@@ -63,9 +79,9 @@ export default function Atividades() {
                 return dataA - dataB; // ASC (crescente)
             });
 
-            setAtividadesSemana(semana);
-            setAtividadesAtrasadas(res.data['atrasadas'] || []);
-            setAtividadesHoje(res.data['hoje'] || []);
+            setAtividadesSemana(selectedEquipe ? semana.filter(item => item.id_equipe === selectedEquipe.id) : semana);
+            setAtividadesAtrasadas(selectedEquipe ? res.data['atrasadas'].filter(item => item.id_equipe === selectedEquipe.id) : res.data['atrasadas']);
+            setAtividadesHoje(selectedEquipe ? res.data['hoje'].filter(item => item.id_equipe === selectedEquipe.id) : res.data['hoje']);
         } catch (err) {
             console.log(err);
         }
@@ -73,10 +89,11 @@ export default function Atividades() {
 
     useEffect(() => {
         carregar();
-    }, [selectedDepartamento, tab]);
+    }, [selectedDepartamento, tab, selectedEquipe]);
 
 
     useEffect(() => {
+        setRows([]);
         const newRows = [];
 
         if(tab == 0){
@@ -132,9 +149,7 @@ export default function Atividades() {
 
             setRows(newRows);
         }
-
-
-    }, [atividades, tab, selectedDepartamento]);
+    }, [atividades]);
 
     const createData = (item, tipo) => {
         const remessa = item?.titulo_remessa;
@@ -185,7 +200,7 @@ export default function Atividades() {
                 >
                     <Tab label="Hoje" />
                     <Tab label="Semana" />
-                    <Tab label="Atrasadas" disabled={atividadesAtrasadas.length === 0} />
+                    <Tab label={<>{atividadesAtrasadas.length > 0 ? atividadesAtrasadas.length+ ' ' : ''}Atrasada{atividadesAtrasadas.length > 1 ? 's' : ''}</>} disabled={atividadesAtrasadas.length === 0} />
                     <Tab label="Lista" />
                 </Tabs>
             </Box>
@@ -222,7 +237,7 @@ export function AcoesAtividades({ atividade, atualizar }){
     const playAtividade = async () => {
         const payload = {
             id_user: usuarioLogado.id,
-            id_departamento: selectedDepartamento.id,
+            id_departamento: selectedDepartamento?.id,
             id_ordem: atividade.id_ordem,
             id_equipe: atividade.id_equipe,
             codigo: codigo,
@@ -237,7 +252,7 @@ export function AcoesAtividades({ atividade, atualizar }){
     const pausar = async () => {
         const payload = {
             id_user: usuarioLogado.id,
-            id_departamento: selectedDepartamento.id,
+            id_departamento: selectedDepartamento?.id,
             id_ordem: atividade.id_ordem,
             id_equipe: atividade.id_equipe,
             codigo: codigo,
@@ -307,8 +322,8 @@ export function AcoesAtividades({ atividade, atualizar }){
 
         <Modal open={open} setOpen={setOpen} title="Insira o seu código" confirmText="Confirmar" 
             confirmReturn={acao === 'play' ? playAtividade : acao === 'stop' ? pausar : concluir} 
-            atualizar={atualizar} >
-            <AdicionarString label='Código' value={codigo} setValue={setCodigo} />
+            atualizar={atualizar} clearInputs={() => setCodigo('')}>
+            <AdicionarString label='Código' value={codigo} setValue={setCodigo} type='password' />
         </Modal>
 
         <Modal open={openVolumes} setOpen={setOpenVolumes} title="Adicionar volumes" confirmText=''>
@@ -365,7 +380,7 @@ function Semana({ atividades, atualizar }) {
                                 atv.id_status === 3 ? 'parado' :
                                 atv.id_status === 4 ? 'finalizado' : ''
                             )}>
-                                <p className="pedido">#{atv.id_ordem}</p>
+                                <p className="pedido">{atv.titulo_remessa}</p>
                                 <p className="etapa">{atv.etapa}</p>
                                 <p className="atv">{atv.atividade}</p>
                                 <div className="acoes">
@@ -386,18 +401,14 @@ function Semana({ atividades, atualizar }) {
 }
   
 function separarAtividadesPorSemana(atividades) {
-    // Array com 6 posições: Segunda(0), Terça(1), Quarta(2), Quinta(3), Sexta(4), Sábado(5)
     const diasSemana = [[], [], [], [], [], []];
   
     if(atividades){
         atividades?.forEach((atividade) => {
-            // Converte a data da atividade (formato YYYY-MM-DD)
             const dataAtividade = dayjs(atividade.data);
             
-            // Pega o dia da semana (0 = Domingo, 1 = Segunda, ..., 6 = Sábado)
             const diaSemana = dataAtividade.day();
         
-            // Mapeia para nosso array (Segunda = 0, Terça = 1, ..., Sábado = 5)
             if (diaSemana >= 1 && diaSemana <= 6) {
                 diasSemana[diaSemana - 1].push(atividade);
             }

@@ -32,7 +32,9 @@ import { MudarTitulo } from './ConficuracaoEtapas';
 
 export default function Equipe() {
     const { id } = useParams();
-    const { selectedDepartamento } = useUser();
+    const { selectedDepartamento, usuarioLogado } = useUser();
+
+    const [userEquipe, setUserEquipe] = useState(null);
 
     const navigate = useNavigate();
     const prevDepartamento = useRef(null);
@@ -71,7 +73,7 @@ export default function Equipe() {
         const funcao = funcionario.funcao
         const senha = funcionario.senha
         const codigo = funcionario.codigo
-        // const senhaMascarada = '●'.repeat(senha.length);
+        
         const excluir = <Box>
             <Button color="error" sx={
                 {float: 'right', minWidth: 0, zIndex: 1}
@@ -109,10 +111,15 @@ export default function Equipe() {
         try {
             const res = await user_api.getFuncionarios(id);
 
+            if(usuarioLogado.permissao !== "gerente" && res.user?.id != usuarioLogado.id){
+                navigate("/usuario/" + usuarioLogado.id);
+            }
+
             setBreadcrumbs([
                 {
                     label: 'Usuários',
-                    url: '/usuarios'
+                    url: '/usuarios',
+                    disabled: usuarioLogado.permissao !== "gerente"
                 },
                 {
                     label: res.user?.nome || 'Usuário',
@@ -150,8 +157,6 @@ export default function Equipe() {
 
             const res = await user_api.createFuncionario(payload);
 
-            console.log("Funcionário criado:", res.data);
-
             carregar();
 
             setOpenModal(false);
@@ -168,8 +173,6 @@ export default function Equipe() {
 
             const res = await user_api.updateEquipe(id, payload);
 
-            console.log("Equipe atualizada:", res.data);
-
             carregar();
         } catch (err) {
             console.error("Erro ao criar equipe:", err.message);
@@ -181,14 +184,12 @@ export default function Equipe() {
 
         try {
             const res = await user_api.deleteFuncionario(id);
-            console.log(res.message);
 
             carregar();
         } catch (err) {
             console.error("Erro ao deletar funcionário:", err.message);
         }
     };
-
 
     return (
         <Layout>

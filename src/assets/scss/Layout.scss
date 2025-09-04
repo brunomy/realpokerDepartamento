@@ -10,6 +10,10 @@
         height: calc(100% - 120px);
         overflow-y: scroll;
 
+        &.equipe{
+            height: 100%;
+        }
+
         @media (max-width: 768px) {
             height: calc(100% - 60px);
         }

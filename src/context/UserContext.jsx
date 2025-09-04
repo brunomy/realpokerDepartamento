@@ -5,7 +5,6 @@ import { user_api } from "./../api";
 const UserContext = createContext();
 
 export function UserProvider({ children }) {
-
   const [usuarioLogado, setUsuarioLogado] = useState(() => {
     const savedUser = localStorage.getItem("user");
     return savedUser ? JSON.parse(savedUser) : null;
@@ -13,6 +12,11 @@ export function UserProvider({ children }) {
   const [departamentos, setDepartamentos] = useState([]);
   const [selectedDepartamento, setSelectedDepartamento] = useState(null);
 
+  const [equipes, setEquipes] = useState([]);
+  const [selectedEquipe, setSelectedEquipe] = useState(() => {
+    const savedUser = localStorage.getItem("equipe");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
 
   const carregarDepartamentos = async (idUser) => {
     try {
@@ -27,13 +31,15 @@ export function UserProvider({ children }) {
     }
   }
   
-  const login = async ({ user, password, navigate, setError }) => {
+  const login = async ({ user, password, navigate, setError, checkUser }) => {
     try {
       const res = await user_api.login({ user, password });
       
       if (res.token) {
         localStorage.setItem("authToken", res.token);
         localStorage.setItem("user", JSON.stringify(res.user));
+        localStorage.removeItem("equipe");
+        setSelectedEquipe(null);
         setUsuarioLogado(res.user);
 
         carregarDepartamentos(res.user.id);
@@ -52,6 +58,24 @@ export function UserProvider({ children }) {
       setError(err.message || "Erro ao fazer login");
     }
   };
+
+  const carregarEquipes = async () => {
+      try {
+          const res = await user_api.getUserEquipes(usuarioLogado.id, selectedDepartamento.id);
+          
+          setEquipes(res.data?.equipes || []);
+      } catch (err) {
+          console.log(err.message);
+      }
+  };
+
+  useEffect(() => {
+    if(usuarioLogado?.permissao === "atividades"){
+        if (selectedDepartamento?.id) {
+            carregarEquipes();
+        }
+    }
+  }, [selectedDepartamento]);
 
 
   const [categorias, setCategorias] = useState([
@@ -195,18 +219,6 @@ export function UserProvider({ children }) {
     { id: 4, id_categoria: 1, id_etapa: 1, id_atividade: 3, title: 'Suporte para pé de mesa' },
   ])
 
-  const [equipes, setEquipes] = useState([
-    {
-      id: 1,
-      title: 'M1',
-      descricao: "Responsável por montagem",
-      usuario: 'm1',
-      senha: '1234'
-    },
-    {id: 2,title: 'M2',descricao: "Responsável por montagem",usuario: 'm2',senha: '1234'},
-    {id: 3,title: 'M3',descricao: "Responsável por montagem",usuario: 'm3',senha: '1234'},
-    {id: 4,title: 'M4',descricao: "Responsável por montagem",usuario: 'm4',senha: '1234'}
-  ])
   const [funcionarios, setFuncionarios] = useState([{
     id: 0,
     id_equipe: 1,
@@ -236,8 +248,6 @@ export function UserProvider({ children }) {
   const [volumesOP, setVolumesOP] = useState([])
   const [embalagensOP, setEmbalagensOP] = useState([])
 
-  
-
   return (
     <UserContext.Provider value={{ 
       usuarioLogado, setUsuarioLogado,
@@ -247,12 +257,22 @@ export function UserProvider({ children }) {
       selectedDepartamento, setSelectedDepartamento,
       carregarDepartamentos,
 
+      equipes, carregarEquipes,
+      selectedEquipe, setSelectedEquipe,
+
+
+
+
+
+
+
+
+      
       categorias, setCategorias,
       etapas, setEtapas,
       atividades, setAtividades,
       checklists, setChecklists,
       volumes, setVolumes,
-      equipes, setEquipes,
       funcionarios, setFuncionarios,
 
       etapasOP, setEtapasOP,

@@ -28,7 +28,7 @@ import { MudarTitulo } from './ConficuracaoEtapas';
 
 
 export default function Equipes() {
-    const { selectedDepartamento } = useUser();
+    const { selectedDepartamento, usuarioLogado } = useUser();
     const { id } = useParams();
 
     const navigate = useNavigate();
@@ -44,10 +44,17 @@ export default function Equipes() {
 
     const [error, setError] = useState(null);
 
+    useEffect(() => {
+        if(usuarioLogado.permissao !== "gerente" && id != usuarioLogado.id){
+            navigate("/usuario/" + usuarioLogado.id);
+        }
+    }, [])
+
     const [breadcrumbs, setBreadcrumbs] = useState([
         {
             label: 'Usuários',
-            url: '/usuarios'
+            url: '/usuarios',
+            disabled: true
         },
     ]);
 
@@ -63,7 +70,8 @@ export default function Equipes() {
             setBreadcrumbs([
                 {
                     label: 'Usuários',
-                    url: '/usuarios'
+                    url: '/usuarios',
+                    disabled: usuarioLogado.permissao !== "gerente"
                 },
                 {
                     label: res.data?.user?.nome || 'Usuário',
@@ -94,8 +102,6 @@ export default function Equipes() {
 
             const res = await user_api.createEquipe(payload);
 
-            console.log("Equipe criada:", res.data);
-
             carregar();
 
             setOpenModal(false);
@@ -109,7 +115,6 @@ export default function Equipes() {
 
         try {
             const res = await user_api.deleteEquipe(id);
-            console.log(res.message);
 
             carregar();
         } catch (err) {
@@ -118,7 +123,7 @@ export default function Equipes() {
     };
 
     useEffect(() => {
-        if (prevDepartamento.current !== null && prevDepartamento.current !== selectedDepartamento) {
+        if (prevDepartamento.current !== null && prevDepartamento.current !== selectedDepartamento && usuarioLogado.permissao === "gerente") {
             navigate("/usuarios");
         }
         if (selectedDepartamento?.id) {

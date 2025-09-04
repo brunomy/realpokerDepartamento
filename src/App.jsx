@@ -1,5 +1,6 @@
+import React from 'react';
 import './App.scss'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
 
 import Login from './pages/Login'
@@ -31,13 +32,13 @@ function App() {
           <Route path="/" element={<Login />} />
 
           <Route path="/pedidos" element={<PrivateRoute><Pedidos /></PrivateRoute>} />
-          <Route path="/pedidos/:id" element={<PrivateRoute><Pedido /></PrivateRoute>} />
+          {/* <Route path="/pedidos/:id" element={<PrivateRoute><Pedido /></PrivateRoute>} /> */}
 
           <Route path="/ordens" element={<PrivateRoute><Ordens /></PrivateRoute>} />
           <Route path="/ordem/:id" element={<PrivateRoute><Ordem /></PrivateRoute>} />
 
           <Route path="/atividades" element={<PrivateRoute><Atividades /></PrivateRoute>} />
-          <Route path="/atividades/:id" element={<PrivateRoute><Atividade /></PrivateRoute>} />
+          {/* <Route path="/atividades/:id" element={<PrivateRoute><Atividade /></PrivateRoute>} /> */}
 
           <Route path="/configuracoes" element={<PrivateRoute><Configuracoes /></PrivateRoute>} />
           <Route path="/configuracoes/:id" element={<PrivateRoute><ConficuracaoEtapas /></PrivateRoute>} />
@@ -61,8 +62,17 @@ function App() {
 }
 
 export function PrivateRoute({ children }) {
-  const token = localStorage.getItem("authToken");
-  return token ? children : <Navigate to="/" />;
+  const token = localStorage.getItem('authToken');
+  const equipe = localStorage.getItem('equipe');
+  const location = useLocation();
+
+  if (!token) return <Navigate to="/" replace />;
+
+  if (equipe && location.pathname !== '/atividades') {
+    return <Navigate to="/atividades" replace />;
+  }
+
+  return children;
 }
 
 export default App

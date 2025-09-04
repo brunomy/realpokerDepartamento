@@ -11,7 +11,7 @@ export default function Breadcrumbs({ links }) {
             <Box sx={{ minHeight: '25px' }}>
                 { links.map((item) => (
                     <div className="item">
-                        <Button component={Link} to={item.url}>{item.label}</Button>
+                        <Button component={Link} to={item.url} disabled={item.disabled}>{item.label}</Button>
                         <span><KeyboardArrowRightRoundedIcon /></span>
                     </div>
                 ))}

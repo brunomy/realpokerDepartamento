@@ -169,8 +169,8 @@ function VolumeItem({ item, carregar, atividade}) {
 
             <Modal open={open} setOpen={setOpen} title="Insira o seu código" confirmText="Confirmar" 
                 confirmReturn={salvar} 
-                atualizar={carregar} >
-                <AdicionarString label='Código' value={codigo} setValue={setCodigo} />
+                atualizar={carregar} clearInputs={() => setCodigo('')}>
+                <AdicionarString label='Código' value={codigo} setValue={setCodigo} type='password' />
             </Modal>
         </Box>
     )

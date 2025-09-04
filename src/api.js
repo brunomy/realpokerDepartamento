@@ -20,6 +20,7 @@ async function http(path, options = {}) {
 
 export const user_api = {
   login: (payload) => http("/api/login", { method: "POST", body: JSON.stringify(payload) }),
+  verificarUser: (payload) => http("/api/verificarUser", { method: "POST", body: JSON.stringify(payload) }),
   getDepartamentos: (idUser) => http(`/api/getDepartamentos/${idUser}`, { method: "GET" }),
   getUsersDepartamento: (idDepartamento) => http(`/api/getUsersDepartamento/${idDepartamento}`, { method: "GET" }),
 

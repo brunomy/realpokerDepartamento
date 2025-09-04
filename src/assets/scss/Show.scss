@@ -755,8 +755,11 @@
                         &.categoria{
                             background: rgba($color1, .25);
                         }
-                        &.atv{
+                        &.etapa{
                             background: rgba($color1, .25);
+                        }
+                        &.atv{
+                            background: rgba($color1, 0.141);
                         }
                     }
                 }
@@ -771,8 +774,11 @@
                         &.categoria{
                             background: rgba($warning, .25);
                         }
-                        &.atv{
+                        &.etapa{
                             background: rgba($warning, .25);
+                        }
+                        &.atv{
+                            background: rgba($warning, 0.141);
                         }
                     }
                 }
@@ -787,8 +793,11 @@
                         &.categoria{
                             background: rgba($sucess, .25);
                         }
-                        &.atv{
+                        &.etapa{
                             background: rgba($sucess, .25);
+                        }
+                        &.atv{
+                            background: rgba($sucess, 0.141);
                         }
                     }
                 }
@@ -812,11 +821,13 @@
                     &.etapa{
                         padding: 5px 3px;
                         text-align: center;
+                        background: #d7d7d7;
                     }
                     &.atv{
                         padding: 5px 3px;
                         text-align: center;
-                        background: #d7d7d7;
+                        background: rgba(#454545, 0.1);
+                        
                     }
                     &.pedido{
                     }

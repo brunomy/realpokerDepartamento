@@ -21,6 +21,10 @@ import MoreIcon from '@mui/icons-material/MoreVert';
 import MeetingRoomTwoToneIcon from '@mui/icons-material/MeetingRoomTwoTone';
 import CancelTwoToneIcon from '@mui/icons-material/CancelTwoTone';
 import { useUser } from "~/context/UserContext";
+import Modal from '~/components/layout/Modal';
+import AdicionarString from '~/components/modal/AdicionarString';
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
+import { user_api } from '../../api';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -63,19 +67,44 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Header() {
-  const { usuarioLogado, departamentos, selectedDepartamento, setSelectedDepartamento, carregarDepartamentos } = useUser();
+  const { usuarioLogado, departamentos, selectedDepartamento, setSelectedDepartamento, carregarDepartamentos, equipes, setSelectedEquipe, selectedEquipe } = useUser();
 
   const [active, setActive] = useState(false)
+  const [open, setOpen] = useState(false);
+  const [senha, setSenha] = useState('');
 
+  const sairDaEquipe = () => {
+    setSelectedEquipe(null);
+  }
+  const verificarSenha = async () => {
+      const res = await user_api.verificarUser({ id: usuarioLogado?.id, password: senha });
+      console.log(res);
+      if(!res['error']){
+        localStorage.removeItem("equipe");
+      }
+      return res;
+  };
 
+  const handleMenuToggle = () => {
+    if(selectedEquipe){
+      setOpen(true);
+    } else {
+      setActive(true);
+    }
+  }
 
   useEffect(() => {
-    carregarDepartamentos(usuarioLogado.id);
+    carregarDepartamentos(usuarioLogado?.id);
   }, [active]);
+
+  useEffect(() => {
+    setSenha('');
+  }, [open]);
 
   const logout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("user");
+    localStorage.removeItem("equipe");
     window.location.href = "/";
   }
 
@@ -90,25 +119,27 @@ export default function Header() {
               color="inherit"
               aria-label="open drawer"
               sx={{ mr: 2 }}
-              onClick={() => setActive(true)}
+              onClick={handleMenuToggle}
             >
-              <MenuIcon />
+              { selectedEquipe ? <MeetingRoomIcon /> : <MenuIcon /> }
             </IconButton>
             <h1>{selectedDepartamento?.nome}</h1>
           </Box>
           <Box className="right">
             <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-              {usuarioLogado.nome}
+              {selectedEquipe ? selectedEquipe.nome : usuarioLogado.nome}
             </Typography>
           </Box>
         </Toolbar>
       </AppBar>
       <Box className={"menu "+(active ? 'active' : '') }>
         <Box className="menu_content">
-          <Button onClick={() => setActive(false)} className="close" variant="contained"><CancelTwoToneIcon />Fechar</Button>
+          <Button onClick={() => setActive(false)} className="close" variant="contained"><CancelTwoToneIcon /></Button>
           <div className="links">
-            { departamentos && (
-              departamentos.map((departamento) => (
+            <div className="links_group">
+              <h2>Departamentos</h2>
+              <div>
+              {departamentos?.length > 1 && departamentos.map((departamento) => (
                 <Button
                   key={departamento.id}
                   variant="contained"
@@ -120,12 +151,38 @@ export default function Header() {
                 >
                   {departamento.nome}
                 </Button>
-              ))
-            )}
+              ))}
+              </div>
+            </div>
+
+            { (usuarioLogado?.permissao === "atividades" && equipes?.length > 0 ) &&
+              <div className="links_group">
+                <h2>Equipes</h2>
+                <div>
+                { equipes.map((equipe) => (
+                  <Button
+                    key={equipe.id}
+                    variant="contained"
+                    onClick={() => {
+                      localStorage.setItem("equipe", JSON.stringify(equipe));
+                      setSelectedEquipe(equipe);
+                      setActive(false);
+                    }}
+                  >
+                    {equipe.nome}
+                  </Button>
+                ))}
+                </div>
+              </div>
+            }
           </div>
-          <Button className="logout" variant="contained" onClick={logout}><MeetingRoomTwoToneIcon /> Logout</Button>
+          <Button className="logout" variant="contained" onClick={logout}><MeetingRoomTwoToneIcon /></Button>
         </Box>
       </Box>
+
+      <Modal open={open} setOpen={setOpen} title="Insira sua senha" confirmText="Confirmar" confirmReturn={verificarSenha} atualizar={sairDaEquipe} clearInputs={() => setSenha('')}>
+          <AdicionarString label='Senha' value={senha} setValue={setSenha} type='password' />
+      </Modal>
     </Box>
   );
 }
