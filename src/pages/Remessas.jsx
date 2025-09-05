@@ -40,40 +40,7 @@ export default function Remessas() {
     
     const hoje = dayjs();
 
-    const createData = ({ remessa, titulo }) => {
-        const remessa_name = <Box className="linha_dupla">
-            <Button variant="outlined" size="small" onClick={() => { setSelectedRemessa({ id: remessa[0]?.id_remessa, titulo: titulo }); setOpenRemessa(true); setTab(0); }}>{titulo}</Button>
-        </Box>
-        const pedidos = <Box className="linha_dupla">
-            {unicos.map((item) => <div><Button onClick={() => { setSelectedRemessa({ id: remessa[0]?.id_remessa, titulo: titulo }); setOpenRemessa(true); setTab(1); }} variant="outlined" size="small">{item.id_pedido}</Button></div>)}
-        </Box>
-        const criacao = <Box className="linha_dupla">
-            {unicos.map((item) => <div>{formatarData(item.created_at)}</div>)}
-        </Box>
-        const saida = <Box className="linha_dupla">
-            {remessa[0].nova_saida
-                ? (<div><Box className={dayjs(remessa[0].nova_saida).isBefore(hoje) ? "data_late" : "data_alert"}>{formatarData(remessa[0].nova_saida)} <ReportProblemTwoToneIcon color="warning"/></Box></div>)
-                : (<div><Box className={dayjs(remessa[0].saida).isBefore(hoje) ? "data_late" : ""}>{formatarData(remessa[0].saida)}</Box></div>)
-            }
-        </Box>
 
-        const entrega = <Box className="linha_dupla">
-            {remessa[0].nova_entrega
-                ? (<div><Box className={dayjs(remessa[0].nova_entrega).isBefore(hoje) ? "data_late" : "data_alert"}>{formatarData(remessa[0].nova_entrega)} <ReportProblemTwoToneIcon color="warning"/></Box></div>)
-                : (<div><Box className={dayjs(remessa[0].entrega).isBefore(hoje) ? "data_late" : ""}>{formatarData(remessa[0].entrega)}</Box></div>)
-            }
-        </Box>
-     
-        const comprador = <Box className="linha_dupla">
-            <div>{remessa[0].nome}</div>
-        </Box>
-
-        const cidade_uf = <Box className="linha_dupla">
-            <div>{remessa[0].cidade}/{remessa[0].uf}</div>
-        </Box>
-
-        return { remessa_name, pedidos, criacao, saida, entrega, comprador, cidade_uf };
-    }
 
     const carregar = async () => {
         try {
@@ -81,15 +48,9 @@ export default function Remessas() {
 
             setRemessas(res.data || []);
 
-            console.log(res.data);
-            
-
             setRows(
-                remessas.map((item) => {
-                    return createData({
-                        remessa: item,
-                        titulo: item.titulo_remessa
-                    });
+                res.data.map((item) => {
+                    return createData(item);
                 })
             );
         } catch (err) {
@@ -102,6 +63,26 @@ export default function Remessas() {
             carregar();
         }
     }, [openRemessa, selectedDepartamento]);
+
+
+    const createData = (item) => {
+        const remessa = <Button variant="outlined" size="small" onClick={() => { setSelectedRemessa({ id: item.id, titulo: item.titulo }); setOpenRemessa(true); setTab(0); }}>{item.titulo}</Button>;
+        const pedidos = item.pedidos;
+
+        console.log(item.pedidos);
+  
+        const disponiveis = 1;
+        const volumes = 1;
+        const embalagens = 1;
+        const destino = 1;
+        const entrega = 1;
+        const status = 1;
+
+
+        const cidade_uf = `${item.cidade}/${item.uf}`;
+
+        return { remessa, pedidos, disponiveis, volumes, embalagens, destino, entrega, status };
+    }
 
     const headCells = [
         {
