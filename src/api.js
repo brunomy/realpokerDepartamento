@@ -74,6 +74,7 @@ export const remessa_api = {
   updateRemessa: (id, payload) => http(`/api/updateRemessa/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
   getOrdensRemessa: (id) => http(`/api/getOrdensRemessa/${id}`, { method: "GET" }),
   getOrdensRemessaDepartamento: (id_departamento, id) => http(`/api/getOrdensRemessaDepartamento/${id_departamento}/${id}`, { method: "GET" }),
+  getRemessas: (idRemessa) => http(`/api/getRemessas`, { method: "GET" }),
 }
 
 export const atividade_api = {

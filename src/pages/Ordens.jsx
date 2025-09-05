@@ -13,7 +13,6 @@ import Title from "~/components/layout/Title";
 import InputAuto from '~/components/InputAuto';
 import InputCalendarRange from '~/components/InputCalendarRange';
 import Status from '~/components/layout/Status';
-import { calculoStatusPedido } from './Pedidos';
 
 //icons
 import FactoryIcon from '@mui/icons-material/Factory';

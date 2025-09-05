@@ -1,5 +1,5 @@
 import '~/assets/scss/Index.scss';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Link, Navigate } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip } from '@mui/material';
@@ -16,128 +16,93 @@ import InputAuto from '~/components/InputAuto';
 import InputCalendarRange from '~/components/InputCalendarRange';
 import Status from '~/components/layout/Status';
 
+import RemessaEditModal from '~/components/modal/RemessaEditModal';
 
 import { useUser } from '~/context/UserContext';
 
+import { remessa_api } from './../api';
+
 export default function Remessas() {
-    const { volumes, volumesOP, embalagensOP, usuarioLogado } = useUser();
+    const { volumes, volumesOP, embalagensOP, usuarioLogado, selectedDepartamento } = useUser();
+
+    const [remessas, setRemessas] = useState([]);
+
+    const [rows, setRows] = useState([]);
 
     if (usuarioLogado && usuarioLogado.permissao !== 'remessas') {
         return <Navigate to="/" replace />;
     }
+
+    const [openRemessa, setOpenRemessa] = useState(false);
+    const [tab, setTab] = useState(0);
+
+    const [selectedRemessa, setSelectedRemessa] = useState(null);
     
     const hoje = dayjs();
 
-    const naoEmbalados = volumesOP.filter(item => item.id_embalagem == null);
+    const createData = ({ remessa, titulo }) => {
+        const remessa_name = <Box className="linha_dupla">
+            <Button variant="outlined" size="small" onClick={() => { setSelectedRemessa({ id: remessa[0]?.id_remessa, titulo: titulo }); setOpenRemessa(true); setTab(0); }}>{titulo}</Button>
+        </Box>
+        const pedidos = <Box className="linha_dupla">
+            {unicos.map((item) => <div><Button onClick={() => { setSelectedRemessa({ id: remessa[0]?.id_remessa, titulo: titulo }); setOpenRemessa(true); setTab(1); }} variant="outlined" size="small">{item.id_pedido}</Button></div>)}
+        </Box>
+        const criacao = <Box className="linha_dupla">
+            {unicos.map((item) => <div>{formatarData(item.created_at)}</div>)}
+        </Box>
+        const saida = <Box className="linha_dupla">
+            {remessa[0].nova_saida
+                ? (<div><Box className={dayjs(remessa[0].nova_saida).isBefore(hoje) ? "data_late" : "data_alert"}>{formatarData(remessa[0].nova_saida)} <ReportProblemTwoToneIcon color="warning"/></Box></div>)
+                : (<div><Box className={dayjs(remessa[0].saida).isBefore(hoje) ? "data_late" : ""}>{formatarData(remessa[0].saida)}</Box></div>)
+            }
+        </Box>
 
-    const [statusFilter, setStatusFilter] = useState([]);
-    const [pedidoFilter, setPedidoFilter] = useState([]);
-    const [idFilter, setIdFilter] = useState([]);
-    const [destinoFilter, setDestinoFilter] = useState([]);
+        const entrega = <Box className="linha_dupla">
+            {remessa[0].nova_entrega
+                ? (<div><Box className={dayjs(remessa[0].nova_entrega).isBefore(hoje) ? "data_late" : "data_alert"}>{formatarData(remessa[0].nova_entrega)} <ReportProblemTwoToneIcon color="warning"/></Box></div>)
+                : (<div><Box className={dayjs(remessa[0].entrega).isBefore(hoje) ? "data_late" : ""}>{formatarData(remessa[0].entrega)}</Box></div>)
+            }
+        </Box>
+     
+        const comprador = <Box className="linha_dupla">
+            <div>{remessa[0].nome}</div>
+        </Box>
 
-    const destinoList = [
-        { label: 'Goiânia', value: 1},
-    ]
-    const statusList = [
-        { label: 'Pendente', value: 1},
-        { label: 'Em andamento', value: 2},
-        { label: 'Parado', value: 3},
-        { label: 'Concluído', value: 4},
-    ]
-    const pedidosList = [
-        { label: '#5951', value: 1},
-        { label: '#5952', value: 2},
-        { label: '#5953', value: 3},
-        { label: '#5955', value: 3},
-        { label: '#5956', value: 3}
-    ]
-    const idList = [
-        { label: '#3486-1', value: 5951},
-        { label: '#3486-2', value: 5952},
-    ]
+        const cidade_uf = <Box className="linha_dupla">
+            <div>{remessa[0].cidade}/{remessa[0].uf}</div>
+        </Box>
 
-    //dados da tabela
-    const createData = (remessa, pedidos, produtos, disponiveis, volumes, embalagens, destino, entrega, status) => {
-        return { remessa, pedidos, produtos, disponiveis, volumes, embalagens, destino, entrega, status };
+        return { remessa_name, pedidos, criacao, saida, entrega, comprador, cidade_uf };
     }
-    const rows = [
-        createData(
-            '5951-1',
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
-                <Chip className="stats" size="small" label="5951" />
-                <Chip className="stats" size="small" label="5952" />
-            </Box>,
-            // <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
-            //     <Chip className="stats" size="small" label="Mesa de poker" />
-            //     <Chip className="stats" size="small" label="Mesa de poker profissional" />
-            //     <Chip className="stats" size="small" label="Futmesa" />
-            // </Box>,
-            naoEmbalados.length,
-            volumesOP.filter((v) => v.id_embalagem != null).length+'/'+volumes.length,
-            embalagensOP.length,
-            'Goiânia/GO',
-            <div><Box className="data_late">02/05/2025 <TimerTwoToneIcon color="error"/></Box></div>,
-            <>
-            <Status status={volumesOP.filter((v) => v.id_embalagem != null).length == 0 ? 0 : 1} size={'small'} />
-            <Button className="link" component={Link} to="/remessas/5951-1" variant="outlined" size="small">Detalhes</Button>
-            </>
-        ),
-        createData(
-            '5953-1',
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
-                <Chip className="stats" size="small" label="5953" />
-            </Box>,
-            // <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
-            //     <Chip className="stats" size="small" label="Cadeira para mesa de poker" />
-            // </Box>,
-            0,
-            "8/10",
-            3,
-            'Goiânia/GO',
-            <div><Box className="data_alert">26/05/2025 <ReportProblemTwoToneIcon color="warning"/></Box></div>,
-            <>
-            <Status status={1} size={'small'} />
-            <Button className="link" component={Link} to="/remessas/5953-1" variant="outlined" size="small">Detalhes</Button>
-            </>
-        ),
-        createData(
-            '5954-1',
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
-                <Chip className="stats" size="small" label="5954" />
-            </Box>,
-            // <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
-            //     <Chip className="stats" size="small" label="Mesa de poker" />
-            // </Box>,
-            0,
-            "7/15",
-            2,
-            'Goiânia/GO',
-            '26/06/2025',
-            <>
-            <Status status={1} size={'small'} />
-            <Button className="link" component={Link} to="/remessas/5954-1" variant="outlined" size="small">Detalhes</Button>
-            </>
-        ),
-        createData(
-            '5954-2',
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
-                <Chip className="stats" size="small" label="5954" />
-            </Box>,
-            // <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px', maxWidth: '250px', padding: '5px 0' }}>
-            //     <Chip className="stats" size="small" label="Cadeira para mesa de poker" />
-            // </Box>,
-            0,
-            "7/7",
-            2,
-            'Inhumas/GO',
-            '26/06/2025',
-            <>
-            <Status status={4} size={'small'} />
-            <Button className="link" component={Link} to="/remessas/5954-2" variant="outlined" size="small">Detalhes</Button>
-            </>
-        ),
 
-    ];
+    const carregar = async () => {
+        try {
+            const res = await remessa_api.getRemessas();
+
+            setRemessas(res.data || []);
+
+            console.log(res.data);
+            
+
+            setRows(
+                remessas.map((item) => {
+                    return createData({
+                        remessa: item,
+                        titulo: item.titulo_remessa
+                    });
+                })
+            );
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    useEffect(() => {
+        if (!openRemessa && selectedDepartamento?.id) {
+            carregar();
+        }
+    }, [openRemessa, selectedDepartamento]);
+
     const headCells = [
         {
             id: 'remessa',
@@ -177,24 +142,11 @@ export default function Remessas() {
         <Layout>
             <Title title="Lista de remessas" icon={<LocalShippingIcon/>} />
             <Box className="index_content atividades_list">
-                <Box className="filtros">
-                    <h2>Filtros:</h2>
-                    <Box className="filter_list">
-                        <Box className="item">
-                            <InputAuto label="id" list={idList} setValue={setIdFilter} width={'100%'} />
-                        </Box>
-                        <Box className="item">
-                            <InputAuto label="Status" list={statusList} setValue={setStatusFilter} width={'100%'} />
-                        </Box>
-                        <Box className="item">
-                            <InputAuto label="Destino" list={destinoList} setValue={setDestinoFilter} width={'100%'} />
-                        </Box>
-                    </Box>
-                </Box>
                 <Box className="table_content">
                     <DataTable headCells={headCells} rows={rows}/>
                 </Box>
             </Box>
+            <RemessaEditModal selectedRemessa={selectedRemessa} open={openRemessa} setOpen={setOpenRemessa} tab={tab} setTab={setTab} />
         </Layout>
     )
 }

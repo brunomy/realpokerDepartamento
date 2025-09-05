@@ -25,7 +25,6 @@ import VistoriaChecklist from '~/components/modal/VistoriaChecklist';
 
 import dayjs from 'dayjs';
 import Status from '~/components/layout/Status';
-import { calculoStatusPedido } from './Pedidos';
 
 //icons
 import StairsTwoToneIcon from '@mui/icons-material/StairsTwoTone';
@@ -121,8 +120,6 @@ export default function Ordem({resetOrdem = false}) {
 
     const [tab, setTab] = useState(0);
 
-    const [status, setStatus] = useState(calculoStatusPedido());
-
     const handleChange = (event, newTab) => {
       setTab(newTab);
     };
@@ -150,7 +147,6 @@ export default function Ordem({resetOrdem = false}) {
             <Box className="show_content">
                 { tab === 0 && <Informacoes ordem={ordem}
                     setTab={setTab} 
-                    status={status} 
                 /> }
                 { tab === 1 && <Requisitos atualizarOrdem={carregar} requisitos_ordem={ordem?.requisitos} /> }
                 { tab === 2 && <Etapas atualizarOrdem={carregar} ordem={ordem} /> }
@@ -163,7 +159,7 @@ export default function Ordem({resetOrdem = false}) {
     )
 }
 
-function Informacoes({ ordem, setTab, status }) {
+function Informacoes({ ordem, setTab }) {
     return (
         <>
         <Box className="informacoes">

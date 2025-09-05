@@ -5,12 +5,12 @@ import '~/assets/scss/Layout.scss'
 import { useUser } from "~/context/UserContext";
 
 export default function Layout({ children }){
-    const { selectedEquipe } = useUser();
+    const { selectedEquipe, usuarioLogado } = useUser();
 
     return (
         <Box className="layout_content">
             <Header />
-            <Box className={'content '+(selectedEquipe ? 'equipe' : '')}>
+            <Box className={'content '+(selectedEquipe ? 'equipe ' : '')}>
                 {children}
             </Box>
             {!selectedEquipe && <Footer />}

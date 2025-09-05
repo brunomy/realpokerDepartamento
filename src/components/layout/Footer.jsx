@@ -127,7 +127,7 @@ export default function Footer() {
             />
         </BottomNavigation>
         }
-        { false && 
+        { usuarioLogado.permissao === "remessas" && 
         <BottomNavigation
             className="bottomNavigation"
             sx={{ width: '100%' }}
@@ -135,67 +135,12 @@ export default function Footer() {
             showLabels
         >
             <BottomNavigationAction
-                label="Pedidos"
-                value="pedidos"
-                icon={<ShoppingCartTwoToneIcon />}
-                component={Link}
-                to="/pedidos"
-                sx={{ display: usuarioLogado.permissao === "gerente" ? 'flex' : 'none' }}
-            />
-            <BottomNavigationAction
-                label="Ordens"
-                value="ordens"
-                icon={<FactoryTwoToneIcon />}
-                component={Link}
-                to="/ordens"
-                showLabel
-                sx={{ display: usuarioLogado.permissao === "gerente" ? 'flex' : 'none' }}
-            />
-            <BottomNavigationAction
-                label="Atividades"
-                value="atividades"
-                icon={<AssignmentTwoToneIcon />}
-                component={Link}
-                to="/atividades"
-                showLabel
-                sx={{ display: usuarioLogado.permissao === "atividades" ? 'flex' : 'none' }}
-
-            />
-            <BottomNavigationAction
-                label="Checklists"
-                value="checklists"
-                icon={<CheckBoxTwoToneIcon />}
-                component={Link}
-                to="/checklists"
-                showLabel
-                sx={{ display: usuarioLogado.permissao === "checklists" ? 'flex' : 'none' }}
-            />
-            <BottomNavigationAction
                 label="Remessas"
                 value="remessas"
                 icon={<LocalShippingTwoToneIcon />}
                 component={Link}
                 to="/remessas"
                 showLabel
-                sx={{ display: usuarioLogado.permissao === "remessas" ? 'flex' : 'none' }}
-            />
-            <BottomNavigationAction
-                label="Equipes"
-                value="usuarios"
-                icon={<GroupsTwoToneIcon />}
-                component={Link}
-                to="/usuarios"
-                showLabel
-                sx={{ display: usuarioLogado.permissao === "gerente" ? 'flex' : 'none' }}
-            />
-            <BottomNavigationAction
-                label="Configurações"
-                value="configuracoes"
-                icon={<SettingsApplicationsTwoToneIcon />}
-                component={Link}
-                to="/configuracoes"
-                showLabel
-                sx={{ display: usuarioLogado.permissao === "gerente" ? 'flex' : 'none' }}
             />
         </BottomNavigation>
         }

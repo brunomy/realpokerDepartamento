@@ -96,7 +96,7 @@ export default function Pedidos() {
         if (!openRemessa && selectedDepartamento?.id) {
             carregar();
         }
-    }, [openRemessa, selectedDepartamento]); // Só executa quando openRemessa muda
+    }, [openRemessa, selectedDepartamento]);
 
     //dados da tabela
     const createData = ({ remessa, titulo }) => {
@@ -152,10 +152,6 @@ export default function Pedidos() {
             id: 'criacao',
             label: 'Criação',
         },
-        // {
-        //     id: 'conclusao',
-        //     label: 'Conclusão',
-        // },
         {
             id: 'saida',
             label: 'Saída',
@@ -172,14 +168,6 @@ export default function Pedidos() {
             id: 'cidade_uf',
             label: 'Cidade/UF',
         },
-        // {
-        //     id: 'status',
-        //     label: 'Status',
-        // },
-        // {
-        //     id: 'link',
-        //     label: 'Link',
-        // },
     ];
 
     return (
@@ -208,23 +196,4 @@ export default function Pedidos() {
             <RemessaEditModal selectedRemessa={selectedRemessa} open={openRemessa} setOpen={setOpenRemessa} tab={tab} setTab={setTab} />
         </Layout>
     )
-}
-
-export function calculoStatusPedido(){
-    const { atividadesOP } = useUser();
-
-    const atividadesAndamento = atividadesOP.find((item) => item.status == 1)
-    const atividadesFinalizadas = atividadesOP.filter((item) => item.status == 4)
-
-    if(!atividadesOP)
-        return 0
-    if(atividadesAndamento)
-        return 1
-    if(atividadesFinalizadas.length != 0 && atividadesFinalizadas.length == atividadesOP.length)
-        return 4
-    else if(atividadesFinalizadas.length > 0){
-        return 1
-    }
-
-    return 0
 }
