@@ -91,6 +91,8 @@ export const atividade_api = {
 
 export const checklist_api = {
   getChecklistOrdem: (id_departamento, id) => http(`/api/getChecklistOrdem/${id_departamento}/${id}`, { method: "GET" }),
+  getOrdensChecklist: (id) => http(`/api/getOrdensChecklist/${id}`, { method: "GET" }),
+  updateChecklist: (id, payload) => http(`/api/updateChecklist/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
 };
 
 export const volumes_api = {

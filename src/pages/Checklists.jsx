@@ -1,5 +1,5 @@
 import '~/assets/scss/Index.scss';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Link, Navigate } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip, Tabs, Tab } from '@mui/material';
@@ -17,59 +17,62 @@ import Modal from '~/components/layout/Modal';
 import AdicionarChecklist from '~/components/modal/AdicionarChecklist';
 
 import { useUser } from '~/context/UserContext';
+import { checklist_api } from './../api';
 
-export default function Checklists() {
-    const { atividadesOP, checklistOP, usuarioLogado } = useUser();
-    
+
+export default function Checklists({ finalizados = false }) {
+    const { selectedDepartamento, usuarioLogado } = useUser();
+    const [rows, setRows] = useState([]);
+
     if (usuarioLogado && usuarioLogado.permissao !== 'checklists') {
         return <Navigate to="/" replace />;
     }
-    
-    const [pedidoFilter, setPedidoFilter] = useState([]);
-    const atividades = atividadesOP.filter((atividade) => atividade.status == 4).length;
-    const checklists = checklistOP.filter((checklist) => checklist.status == 1).length
-    const disponiveis = atividades - checklists;
 
+    const carregar = async () => {
+        try {
+            const res = await checklist_api.getOrdensChecklist(selectedDepartamento.id);
+            
+            if(!finalizados){
+                setRows(
+                    res.data.filter((i) => i.checklists != i.checklists_concluidos).map(item => {
+                        return createData(item);
+                    })
+                );
+            } else {
+                setRows(
+                    res.data.filter((i) => i.checklists == i.checklists_concluidos).map(item => {
+                        return createData(item);
+                    })
+                );
+            }
+            
+        } catch (err) {
+            console.log(err);
+        }
+    };
 
-    const pedidosList = [
-        { label: '#5951', value: 1},
-        { label: '#5952', value: 2},
-        { label: '#5953', value: 3},
-        { label: '#5955', value: 3},
-        { label: '#5956', value: 3}
-    ]
+    useEffect(() => {
+        carregar();
+    }, [selectedDepartamento, finalizados]); 
 
     //dados da tabela
-    const createData = (pedido, produto, disponiveis, checklists, porcentagem) => {
-        return { pedido, produto, disponiveis, checklists, porcentagem };
+    const createData = (item) => {
+        const remessa = item.nome_remessa;
+        const pedido = item.id_pedido;
+        const produto = item.nome_produto;
+        const disponiveis = <Chip label={`${item.disponiveis || 0}`} color={(item.disponiveis + item.checklists_concluidos) == item.checklists && item.disponiveis != 0 ? 'warning' : 'default'} sx={{ width: '100%' }} />;
+        const checklists = <>
+            <Chip label={`${item.checklists_concluidos || 0}/${item.checklists || 0}`} color={item.checklists_concluidos == item.checklists ? 'success' : 'default'} sx={{ width: '100%' }} />
+            <Button className="link" component={Link} to={`/checklist/${item.id}`} variant="outlined" size="small">Detalhes</Button>
+        </>;
+        return { remessa, pedido, produto, disponiveis, checklists };
     }
-    const [rows, setRows] = useState([
-        createData(
-            '5951',
-            'Mesa de poker',
-            0,
-            <Chip label="0/27" />,
-            <>
-                0%
-                <Button className="link" component={Link} to="/checklists/5951" variant="outlined" size="small">Detalhes</Button>
-            </>
-        ),
-        createData(
-            '5952',
-            'Mesa de poker profissional',
-            disponiveis,
-            <Chip label={checklists+"/27"} />,
-            <>
-                {Math.floor((100/27)*checklists)}%
-                <Button className="link" component={Link} to="/checklists/5951" variant="outlined" size="small">Detalhes</Button>
-            </>
-        ),
-        createData('5952','Futmesa',0,<Chip label="27/27" color="success" />,<>100%<Button className="link" component={Link} to="/checklists/5951" variant="outlined" size="small">Detalhes</Button></>),
-        createData('5953','Cadeira para mesa de poker',0,<Chip label="10/20" />,<>50%<Button className="link" component={Link} to="/checklists/5951" variant="outlined" size="small">Detalhes</Button></>),
-        createData('5954','Mesa de poker',0,<Chip label="10/20" />,<>50%<Button className="link" component={Link} to="/checklists/5951" variant="outlined" size="small">Detalhes</Button></>),
-        createData('5954','Cadeira para mesa de poker',0,<Chip label="20/20" color="success" />,<>100%<Button className="link" component={Link} to="/checklists/5951" variant="outlined" size="small">Detalhes</Button></>),
-    ]);
+
     const headCells = [
+        {
+            id: 'remessa',
+            label: 'Remessa',
+        },
         {
             id: 'pedido',
             label: 'Pedido',
@@ -85,25 +88,13 @@ export default function Checklists() {
         {
             id: 'checklists',
             label: 'Checklists',
-        },
-        {
-            id: 'porcentagem',
-            label: 'Porcentagem',
-        },
+        }
     ];
 
     return (
         <Layout>
             <Title title="Lista de checklists" icon={<CheckBoxIcon/>} />
             <Box className="index_content atividades_list">
-                {/* <Box className="filtros">
-                    <h2>Filtros:</h2>
-                    <Box className="filter_list">
-                        <Box className="item">
-                            <InputAuto label="Pedido" list={pedidosList} setValue={setPedidoFilter} width={'100%'} />
-                        </Box>
-                    </Box>
-                </Box> */}
                 <Box className="table_content">
                     <DataTable headCells={headCells} rows={rows}/>
                 </Box>

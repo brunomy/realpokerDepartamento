@@ -16,9 +16,8 @@ export default function InputAuto({ label, list, setValue, width, value = null, 
 
     return (
         <Autocomplete
-            sx={{ maxWidth: '100%' }}
-            value={value} // <- valor selecionado
-            inputValue={inputValue} // <- texto no input
+            value={value}
+            inputValue={inputValue}
             onChange={(event, newValue) => {
                 setInputValue(newValue?.label || '');
                 setValue(newValue || null);
@@ -37,7 +36,7 @@ export default function InputAuto({ label, list, setValue, width, value = null, 
             options={list}
             isOptionEqualToValue={(option, val) => option?.id === val?.id}
             getOptionLabel={(option) => option?.label || ''}
-            sx={{ width: width || 300 }}
+            sx={{ width: width || 300, maxWidth: '100%' }}
             renderInput={(params) => (
                 <Box sx={{ position: 'relative' }}>
                     <Typography

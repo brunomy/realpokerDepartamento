@@ -145,7 +145,7 @@ export default function Equipes() {
         const func = equipe.funcionarios_count
         const excluir = <Box>
             <Button color="error" sx={
-                {float: 'right', minWidth: 0, zIndex: 1}
+                {float: 'right', minWidth: 0, zIndex: 1, width: '50px !important'}
             } onClick={() => deletar(equipe.id)}><DeleteTwoToneIcon /></Button>
             <Button className="link" component={Link} to={`/equipe/${equipe.id}`} variant="outlined" size="small">Detalhes</Button>
         </Box>

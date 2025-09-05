@@ -27,6 +27,7 @@ export default function Footer() {
         if (path.includes('/ordens') || path.includes('/ordem')) return 'ordens';
         if (path.includes('/atividades')) return 'atividades';
         if (path.includes('/configuracoes')) return 'configuracoes';
+        if (path.includes('/checklists-finalizados')) return 'checklists-finalizados';
         if (path.includes('/checklists')) return 'checklists';
         if (path.includes('/remessas')) return 'remessas';
         if (path.includes('/usuarios') || path.includes('/usuario') || path.includes('/equipe')) return 'usuarios';
@@ -115,7 +116,14 @@ export default function Footer() {
                 component={Link}
                 to="/checklists"
                 showLabel
-                sx={{ display: usuarioLogado.permissao === "checklists" ? 'flex' : 'none' }}
+            />
+            <BottomNavigationAction
+                label="Finalizados"
+                value="checklists-finalizados"
+                icon={<CheckBoxTwoToneIcon />}
+                component={Link}
+                to="/checklists-finalizados"
+                showLabel
             />
         </BottomNavigation>
         }

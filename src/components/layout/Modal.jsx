@@ -34,14 +34,15 @@ export default function CustomizedDialogs({ children, open, setOpen, title, conf
         setError(response['error']);
         clearInputs();
       } else {
-        atualizar();
+        if(atualizar) atualizar();
         handleClose();
       }
 
       return;
     }
     if (confirm){
-      confirm();
+      await confirm();
+      if(atualizar) atualizar();
       handleClose();
     }
   };

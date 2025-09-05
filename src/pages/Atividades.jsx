@@ -166,7 +166,7 @@ export default function Atividades() {
             <br /><span style={{"fontSize": "0.7em"}}>Finalizada: {formatarDataHora(item.fim)}</span>
             </>}
         </Box>;
-        const status = <Status status={item?.id_status} size={'small'} sx={{ zIndex: 1 }} />;
+        const status = <Status status={item?.id_status == 1 && item?.fim != null ? -1 : item?.id_status} size={'small'} sx={{ zIndex: 1 }} />;
         const tempo = <TempoAtividade atividade={item} />;
         
         const acoes = <>
@@ -285,6 +285,9 @@ export function AcoesAtividades({ atividade, atualizar }){
         }
         
         const res = await atividade_api.finalizarAtividade(atividade.id, payload);
+        if(atividade.volumes > 0){
+            setOpenVolumes(true);
+        }
         return res
     }
 

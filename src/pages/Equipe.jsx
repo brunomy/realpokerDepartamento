@@ -80,7 +80,7 @@ export default function Equipe() {
         
         const excluir = <Box>
             <Button color="error" sx={
-                {float: 'right', minWidth: 0, zIndex: 1}
+                {float: 'right', minWidth: 0, zIndex: 1, width: '50px !important'}
             } onClick={() => deletar(funcionario.id)}><DeleteTwoToneIcon /></Button>
         </Box>
 

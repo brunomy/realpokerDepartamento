@@ -17,9 +17,6 @@ export default function BasicDatePicker({ label, width, value = dayjs(), setValu
             sx={{ width: width || 300 }}
             value={dayjs(value, "DD/MM/YYYY")}
             onChange={(novaData) => {
-              setValue(novaData);
-            }}
-            onChange={(novaData) => {
               setValue(novaData.format('DD/MM/YYYY'));
             }}
             disabled={disabled}

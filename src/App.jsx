@@ -33,13 +33,11 @@ function App() {
           <Route path="/" element={<Login />} />
 
           <Route path="/pedidos" element={<PrivateRoute><Pedidos /></PrivateRoute>} />
-          {/* <Route path="/pedidos/:id" element={<PrivateRoute><Pedido /></PrivateRoute>} /> */}
 
           <Route path="/ordens" element={<PrivateRoute><Ordens /></PrivateRoute>} />
           <Route path="/ordem/:id" element={<PrivateRoute><Ordem /></PrivateRoute>} />
 
           <Route path="/atividades" element={<PrivateRoute><Atividades /></PrivateRoute>} />
-          {/* <Route path="/atividades/:id" element={<PrivateRoute><Atividade /></PrivateRoute>} /> */}
 
           <Route path="/configuracoes" element={<PrivateRoute><Configuracoes /></PrivateRoute>} />
           <Route path="/configuracoes/:id" element={<PrivateRoute><ConficuracaoEtapas /></PrivateRoute>} />
@@ -47,7 +45,8 @@ function App() {
           <Route path="/configuracoes/atividade/:id" element={<PrivateRoute><ConfiguracaoCheckVol /></PrivateRoute>} />
 
           <Route path="/checklists" element={<PrivateRoute><Checklists /></PrivateRoute>} />
-          <Route path="/checklists/:id" element={<PrivateRoute><ChecklistOrder /></PrivateRoute>} />
+          <Route path="/checklists-finalizados" element={<PrivateRoute><Checklists finalizados /></PrivateRoute>} />
+          <Route path="/checklist/:id" element={<PrivateRoute><ChecklistOrder /></PrivateRoute>} />
 
           <Route path="/usuarios" element={<PrivateRoute><Usuarios /></PrivateRoute>} />
           <Route path="/usuario/:id" element={<PrivateRoute><Equipes /></PrivateRoute>} />
@@ -66,7 +65,6 @@ function App() {
 
 export function PrivateRoute({ children }) {
   const { usuarioLogado } = useUser();
-
 
   const token = localStorage.getItem('authToken');
   const equipe = localStorage.getItem('equipe');

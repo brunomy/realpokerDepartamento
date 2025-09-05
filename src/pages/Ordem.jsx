@@ -927,7 +927,7 @@ function Historico() {
     const createData = (item) => {
         const data = formatarDataHora(item?.created_at);
         const descricao = item?.descricao;
-        const responsavel = item?.nome_funcionario;
+        const responsavel = item?.nome_funcionario ? item?.nome_funcionario : item?.nome_usuario;
         const equipe = item?.nome_equipe;
 
         return { data, descricao, equipe, responsavel };
