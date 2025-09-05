@@ -197,7 +197,7 @@ export function validarCpfCnpj(documento) {
 export function calcularTempoAtividade(atividade) {
   if (!atividade) return "00:00:00";
 
-  const { tempo = 0, inicio, pausa, fim, id_status } = atividade;
+  const { tempo, inicio, pausa, fim, id_status } = atividade;
   
   // Converte tempo armazenado (segundos) para base
   let tempoTotal = parseInt(tempo) || 0;
@@ -207,7 +207,7 @@ export function calcularTempoAtividade(atividade) {
       const agora = new Date();
       const dataInicio = new Date(inicio);
       const tempoDecorrido = Math.floor((agora - dataInicio) / 1000);
-      tempoTotal = tempoDecorrido;
+      tempoTotal = tempoTotal + tempoDecorrido;
     } else {
       const agora = new Date();
       const dataInicio = new Date(pausa);

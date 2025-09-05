@@ -801,6 +801,25 @@
                         }
                     }
                 }
+                &.falha{
+                    border-color: $error;
+                    opacity: .8;
+
+                    p{
+                        &.pedido{
+                            background: $error;
+                        }
+                        &.categoria{
+                            background: rgba($error, .25);
+                        }
+                        &.etapa{
+                            background: rgba($error, .25);
+                        }
+                        &.atv{
+                            background: rgba($error, 0.141);
+                        }
+                    }
+                }
 
                 p{
                     font-size: .8em;

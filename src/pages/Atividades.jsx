@@ -166,7 +166,7 @@ export default function Atividades() {
             <br /><span style={{"fontSize": "0.7em"}}>Finalizada: {formatarDataHora(item.fim)}</span>
             </>}
         </Box>;
-        const status = <Status status={item?.id_status == 1 && item?.fim != null ? -1 : item?.id_status} size={'small'} sx={{ zIndex: 1 }} />;
+        const status = <Status status={item?.id_status == 1 && item?.tempo != null ? -1 : item?.id_status} size={'small'} sx={{ zIndex: 1 }} />;
         const tempo = <TempoAtividade atividade={item} />;
         
         const acoes = <>
@@ -246,7 +246,8 @@ export function AcoesAtividades({ atividade, atualizar }){
             id_equipe: atividade.id_equipe,
             codigo: codigo,
             titulo: atividade.atividade,
-            inicio: atividade.inicio
+            inicio: atividade.inicio,
+            tempo: atividade.tempo,
         }
         
         const res = await atividade_api.iniciarAtividade(atividade.id, payload);
@@ -367,6 +368,9 @@ function Semana({ atividades, atualizar }) {
                 const diaIndex = index + 1;
                 const isHoje = diaAtual === diaIndex;
 
+                console.log(atividadesDia);
+                
+
                 return (
                 <div className={`dia ${isHoje ? 'hoje_' : ''}`}  key={index}>
                     <h2>
@@ -383,9 +387,10 @@ function Semana({ atividades, atualizar }) {
                             <div key={atividadeIndex} 
                             className={
                                 "atividade " + (
-                                atv.id_status === 2 ? 'em andamento' :
+                                atv.id_status === 2 ? 'andamento' :
                                 atv.id_status === 3 ? 'parado' :
-                                atv.id_status === 4 ? 'finalizado' : ''
+                                atv.id_status === 4 ? 'finalizado' : 
+                                atv.id_status === 1 && atv.tempo ? 'falha' : ''
                             )}>
                                 <p className="pedido">{atv.titulo_remessa}</p>
                                 <p className="etapa">{atv.etapa}</p>
@@ -442,5 +447,9 @@ export function TempoAtividade({ atividade, size = "small" }) {
         }
     }, [atividade?.id_status, atividade?.inicio, atividade?.pausa, atividade?.fim]);
 
-    return <Chip color={atividade?.id_status === 2 ? "primary" : atividade?.id_status === 3 ? "warning" : atividade?.id_status === 4 ? "success" : "default"} size={size} label={tempoAtual} />;
+    return <Chip color={atividade?.id_status === 2 ? "primary" : 
+        atividade?.id_status === 3 ? "warning" : 
+        atividade?.id_status === 4 ? "success" : 
+        atividade?.id_status === 1 && atividade?.tempo ? "error" : "default"} size={size} label={tempoAtual} />;
+
 }
