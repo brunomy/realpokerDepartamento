@@ -31,7 +31,6 @@ export default function RemessaEditModal({ selectedRemessa, open, setOpen, tab, 
     };
     const salvar = async () => {
         if (!remessa?.id) {
-            alert('Erro: ID da remessa não encontrado');
             return;
         }
 
@@ -66,7 +65,6 @@ export default function RemessaEditModal({ selectedRemessa, open, setOpen, tab, 
             };
 
             const response = await remessa_api.updateRemessa(remessa.id, payload);
-            console.log('Resposta da API:', response);
             
             setOpen(false);
         } catch (error) {
@@ -75,9 +73,6 @@ export default function RemessaEditModal({ selectedRemessa, open, setOpen, tab, 
     };
 
     useEffect(() => {
-        if (!open){
-            setTab(0);
-        }
         if (selectedRemessa && open) {
             carregar();
         } else {
@@ -90,9 +85,10 @@ export default function RemessaEditModal({ selectedRemessa, open, setOpen, tab, 
             open={open} setOpen={setOpen} 
             title={`Remessa ${selectedRemessa?.titulo}`} 
             confirm={salvar}  
-            disabled={!validate(remessa) || tab === 1}
+            disabled={!validateRemessa(remessa) || tab === 1}
             sx={{'& .MuiDialogContent-root': { paddingTop: '0'}}}>
             <Box className="mudar_remessa">
+                { tab != null && 
                 <Tabs
                     value={tab}
                     onChange={handleChange}
@@ -103,6 +99,7 @@ export default function RemessaEditModal({ selectedRemessa, open, setOpen, tab, 
                     <Tab label="Informações" />
                     <Tab label="Ordens" />
                 </Tabs>
+                }
 
                 <div className="tab_content" style={{ height: '500px' }}>
                     { tab === 0 && <EditarRemessa remessa={remessa} setRemessa={setRemessa} /> }
@@ -113,7 +110,7 @@ export default function RemessaEditModal({ selectedRemessa, open, setOpen, tab, 
     )
 }
 
-function validate(remessa){
+export function validateRemessa(remessa){
     if (!remessa) return false;
 
     const requiredFields = [
@@ -125,9 +122,7 @@ function validate(remessa){
         'id_estado',
         'id_cidade',
         'endereco',
-        'complemento',
         'cpf_cnpj',
-        'numero',
         'bairro'
     ];
 
@@ -158,7 +153,7 @@ function validate(remessa){
 }
 
 function ListaOrdensRemessa({ idRemessa }){
-    const { selectedDepartamento } = useUser();
+    const { selectedDepartamento, usuarioLogado } = useUser();
     const [ordens, setOrdens] = useState([]);
     const [ordensAgrupadas, setOrdensAgrupadas] = useState({});
     const [loading, setLoading] = useState(true);
@@ -174,8 +169,13 @@ function ListaOrdensRemessa({ idRemessa }){
         
         setLoading(true);
         try {
-            const res = await remessa_api.getOrdensRemessaDepartamento(selectedDepartamento.id, idRemessa);
-            console.log('Resposta da API getOrdensRemessa:', res.data);
+            var res;
+            if(usuarioLogado.permissao === 'gerente'){
+                res = await remessa_api.getOrdensRemessaDepartamento(selectedDepartamento.id, idRemessa);
+            }
+            if(usuarioLogado.permissao === 'remessas'){
+                res = await remessa_api.getOrdensRemessa(idRemessa);
+            }
             
             const ordensData = res?.data || [];
             setOrdens(ordensData);
@@ -246,6 +246,10 @@ function ListaOrdensRemessa({ idRemessa }){
                     <Box sx={{ backgroundColor: 'white', '& >div:nth-child(even)': { backgroundColor: '#84848417' } }}>
                         {ordensGrupo.map((ordem, index) => {
                             // Converte string JSON dos requisitos para array
+                            if(ordem.departamentos){
+                                ordem.departamentos = typeof ordem.departamentos === 'string' ? JSON.parse(ordem.departamentos) : ordem.departamentos;
+                            }
+                            
                             let requisitos = [];
                             try {
                                 if (ordem.requisitos && typeof ordem.requisitos === 'string') {
@@ -265,7 +269,7 @@ function ListaOrdensRemessa({ idRemessa }){
                                     cursor: 'pointer',
                                     position: 'relative'
                                 }}>
-                                    <Button component={Link} to={`/ordem/`+ordem.id} sx={{ position: 'absolute', left: 0, top: 0, background: 'transparent', width: '100%', height: '100%' }}></Button>
+                                    <Button component={usuarioLogado.permissao === 'gerente' ? Link : 'div'} to={`/ordem/`+ordem.id} sx={{ position: 'absolute', left: 0, top: 0, background: 'transparent', width: '100%', height: '100%' }}></Button>
                                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#333' }}>
                                         {ordem.nome_produto}
                                     </Typography>
@@ -274,7 +278,17 @@ function ListaOrdensRemessa({ idRemessa }){
                                             {ordem.resumo}
                                         </Typography>
                                     )}
-                                    <Status status={ordem.id_status} size={'small'} />
+                                    { ordem.id_status != null && <Status status={ordem.id_status} size={'small'} />}
+
+                                    { ordem.departamentos?.length > 0 ? ordem.departamentos.map((item, idx) => (
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }} key={idx}>
+                                            <h3 style={{fontSize: '12px'}}>{item.nome_departamento}:</h3>
+                                            <Box>
+                                                <Status key={idx} status={item.id_status} size={'small'} />
+                                            </Box>
+                                        </Box>
+                                    )) : null }
+
 
                                     <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 2, mb: 1 }}>
                                         {ordem.agrupavel === 1 && 

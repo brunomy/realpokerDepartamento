@@ -648,6 +648,7 @@ const AtividadeItem = memo(function AtividadeItem({ ordem, etapa, atividade, equ
                         list={formatarArray()}
                         value={equipeSelecionada}
                         setValue={setEquipeSelecionada}
+                        size="large"
                         disabled={!checked || (atividade_criada && atividade_criada?.id_status > 1)}
                     />
                 </div>
@@ -867,7 +868,7 @@ function Volumes() {
             sx={{width: '100%'}}
         />;
 
-        const embalagem = <Chip size="small" color={item?.id_embalagem ? "success" : ""} label={item?.id_embalagem ? id_embalagem : "Não embalado"} sx={{width: '100%'}}/>;
+        const embalagem = <Chip size="small" color={item?.id_embalagem ? "success" : ""} label={item?.id_embalagem ? item?.id_embalagem : "Não embalado"} sx={{width: '100%'}}/>;
 
         return { volume, comprimento, largura, altura, peso, atividade, checklist, embalagem };
     }

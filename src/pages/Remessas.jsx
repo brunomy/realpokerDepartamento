@@ -21,26 +21,20 @@ import RemessaEditModal from '~/components/modal/RemessaEditModal';
 import { useUser } from '~/context/UserContext';
 
 import { remessa_api } from './../api';
+import { formatarData } from '../Utils';
 
 export default function Remessas() {
-    const { volumes, volumesOP, embalagensOP, usuarioLogado, selectedDepartamento } = useUser();
-
+    const { usuarioLogado } = useUser();
+    const [tab, setTab] = useState(0);
+    const [openRemessa, setOpenRemessa] = useState(false);
+    const [selectedRemessa, setSelectedRemessa] = useState(null);
+    const hoje = dayjs();
     const [remessas, setRemessas] = useState([]);
-
     const [rows, setRows] = useState([]);
 
     if (usuarioLogado && usuarioLogado.permissao !== 'remessas') {
         return <Navigate to="/" replace />;
     }
-
-    const [openRemessa, setOpenRemessa] = useState(false);
-    const [tab, setTab] = useState(0);
-
-    const [selectedRemessa, setSelectedRemessa] = useState(null);
-    
-    const hoje = dayjs();
-
-
 
     const carregar = async () => {
         try {
@@ -59,29 +53,54 @@ export default function Remessas() {
     };
 
     useEffect(() => {
-        if (!openRemessa && selectedDepartamento?.id) {
+        if (!openRemessa) {
             carregar();
         }
-    }, [openRemessa, selectedDepartamento]);
+    }, [openRemessa]);
 
 
     const createData = (item) => {
         const remessa = <Button variant="outlined" size="small" onClick={() => { setSelectedRemessa({ id: item.id, titulo: item.titulo }); setOpenRemessa(true); setTab(0); }}>{item.titulo}</Button>;
-        const pedidos = item.pedidos;
+        const array_pedidos = Array.isArray(item.pedidos) 
+        ? item.pedidos 
+        : item.pedidos 
+            ? item.pedidos.replace(/[\[\]]/g, '').split(',').map(num => num.trim())
+            : [];
 
-        console.log(item.pedidos);
-  
-        const disponiveis = 1;
-        const volumes = 1;
-        const embalagens = 1;
-        const destino = 1;
-        const entrega = 1;
-        const status = 1;
+        const pedidos = <Box className="linha_dupla">
+            {array_pedidos.map((pedido) => <div><Button onClick={() => { setSelectedRemessa({ id: item.id, titulo: item.titulo }); setOpenRemessa(true); setTab(1); }} variant="outlined" size="small">{pedido}</Button></div>)}
+        </Box>
+
+        const disponiveis = <Chip className="stats" size="small" label={ item.volumes_disponiveis - item.volumes_embalados } color={item.volumes === 0 || item.volumes_disponiveis - item.volumes_embalados == 0 ? 'default' : item.volumes_embalados === item.volumes ? 'success' : item.volumes_disponiveis + item.volumes_embalados === item.volumes ? 'warning' : 'default'} />;
+        const volumes = <Chip className="stats" size="small" label={`${item.volumes_embalados}/${item.volumes}`} color={item.volumes === 0 ? 'default' : item.volumes_embalados === item.volumes ? 'success' : 'default'} />;
+        const embalagens = <Chip className="stats" size="small" label={item.embalagens} />;
+        const destino = `${item.cidade}/${item.uf}`;
+        // const entrega = formatarData(item.nova_entrega ? item.nova_entrega : item.entrega);
+        // const saida = formatarData(item.nova_saida ? item.nova_saida : item.saida);
+
+        const saida = <Box className="linha_dupla">
+            {item.nova_saida
+                ? (<div><Box className={dayjs(item.nova_saida).isBefore(hoje) ? "data_late" : "data_alert"}>{formatarData(item.nova_saida)} <ReportProblemTwoToneIcon color="warning"/></Box></div>)
+                : (<div><Box className={dayjs(item.saida).isBefore(hoje) ? "data_late" : ""}>{formatarData(item.saida)}</Box></div>)
+            }
+        </Box>
+
+        const entrega = <Box className="linha_dupla">
+            {item.nova_entrega
+                ? (<div><Box className={dayjs(item.nova_entrega).isBefore(hoje) ? "data_late" : "data_alert"}>{formatarData(item.nova_entrega)} <ReportProblemTwoToneIcon color="warning"/></Box></div>)
+                : (<div><Box className={dayjs(item.entrega).isBefore(hoje) ? "data_late" : ""}>{formatarData(item.entrega)}</Box></div>)
+            }
+        </Box>
+
+        const status = <>
+            <Status status={item.id_status} size="small" />
+            <Button className="link" component={Link} to={"/remessa/"+item.id} variant="outlined" size="small">Detalhes</Button>
+        </>
 
 
         const cidade_uf = `${item.cidade}/${item.uf}`;
 
-        return { remessa, pedidos, disponiveis, volumes, embalagens, destino, entrega, status };
+        return { remessa, pedidos, disponiveis, volumes, embalagens, destino, saida, entrega, status };
     }
 
     const headCells = [
@@ -108,6 +127,10 @@ export default function Remessas() {
         {
             id: 'destino',
             label: 'Destino',
+        },
+        {
+            id: 'saida',
+            label: 'Saída',
         },
         {
             id: 'entrega',

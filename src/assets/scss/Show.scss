@@ -460,8 +460,11 @@
 
         .item{
             border: 2px solid $color1;
-            width: 300px;
+            width: calc((100% - 10px) / 3);
             border-radius: 3px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
 
             &.finalizado{
                 border-color: $sucess;
@@ -473,28 +476,71 @@
                 button{
                 }
             }
+            &.error{
+                border-color: $error;
+                background: #f8d7da;
 
+                h2{
+                    background: $error;
+                }
+                button{
+                }
+            }
             h2{
                 background: $color1;
                 color: #fff;
                 padding: 5px 10px;
                 font-size: .7em;
+                line-height: 1.3em;
                 font-weight: bold;
                 text-transform: uppercase;
                 margin: 0 0 5px;
             }
-            p{
-                padding: 3px 10px;
-                font-size: .8em;
+            .info{
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                padding: 5px 10px 5px 0;
 
-                span{
-                    font-weight: bold;
+                >div{
+                    width: 100%;
+                }
 
-                    &.atrasado{
-                        color: $error;
+                p{
+                    width: 100%;
+                    padding: 0 10px;
+                    margin: 0 0 3px;
+                    font-size: .8em;
+    
+                    span{
+                        font-weight: bold;
+    
+                        &.atrasado{
+                            color: $error;
+                        }
                     }
                 }
             }
+            .status_content{
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                padding: 15px 10px 5px;
+
+                div{
+                    h3{
+                        font-size: 12px;
+                        margin-bottom: 5px;
+                    }
+                }
+
+            }
+            .status{
+                padding: 5px 10px;
+                width: 100%;
+            }
+
             button{
                 padding: 0 10px;
                 font-size: .7em;

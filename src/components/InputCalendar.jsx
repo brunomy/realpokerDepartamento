@@ -20,11 +20,6 @@ export default function BasicDatePicker({ label, width, value = dayjs(), setValu
               setValue(novaData.format('DD/MM/YYYY'));
             }}
             disabled={disabled}
-            slotProps={{
-              textField: {
-                size: "small",
-              },
-            }}
         />
       </DemoContainer>
     </LocalizationProvider>

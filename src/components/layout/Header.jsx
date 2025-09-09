@@ -78,7 +78,6 @@ export default function Header() {
   }
   const verificarSenha = async () => {
       const res = await user_api.verificarUser({ id: usuarioLogado?.id, password: senha });
-      console.log(res);
       if(!res['error']){
         localStorage.removeItem("equipe");
       }
@@ -136,24 +135,26 @@ export default function Header() {
         <Box className="menu_content">
           <Button onClick={() => setActive(false)} className="close" variant="contained"><CancelTwoToneIcon /></Button>
           <div className="links">
-            <div className="links_group">
-              <h2>Departamentos</h2>
-              <div>
-              {departamentos?.length > 1 && departamentos.map((departamento) => (
-                <Button
-                  key={departamento.id}
-                  variant="contained"
-                  className={selectedDepartamento.id === departamento.id ? 'active' : ''}
-                  onClick={() => {
-                    setSelectedDepartamento(departamento);
-                    setActive(false);
-                  }}
-                >
-                  {departamento.nome}
-                </Button>
-              ))}
+            { usuarioLogado.permissao !== 'remessas' && 
+              <div className="links_group">
+                <h2>Departamentos</h2>
+                <div>
+                {departamentos?.length > 1 && departamentos.map((departamento) => (
+                  <Button
+                    key={departamento.id}
+                    variant="contained"
+                    className={selectedDepartamento.id === departamento.id ? 'active' : ''}
+                    onClick={() => {
+                      setSelectedDepartamento(departamento);
+                      setActive(false);
+                    }}
+                  >
+                    {departamento.nome}
+                  </Button>
+                ))}
+                </div>
               </div>
-            </div>
+            }
 
             { (usuarioLogado?.permissao === "atividades" && equipes?.length > 0 ) &&
               <div className="links_group">
@@ -178,6 +179,7 @@ export default function Header() {
           </div>
           <Button className="logout" variant="contained" onClick={logout}><MeetingRoomTwoToneIcon /></Button>
         </Box>
+
       </Box>
 
       <Modal open={open} setOpen={setOpen} title="Insira sua senha" confirmText="Confirmar" confirmReturn={verificarSenha} atualizar={sairDaEquipe} clearInputs={() => setSenha('')}>

@@ -53,7 +53,7 @@ function App() {
           <Route path="/equipe/:id" element={<PrivateRoute><Equipe /></PrivateRoute>} />
 
           <Route path="/remessas" element={<PrivateRoute><Remessas /></PrivateRoute>} />
-          <Route path="/remessas/:id" element={<PrivateRoute><Remessa /></PrivateRoute>} />
+          <Route path="/remessa/:id" element={<PrivateRoute><Remessa /></PrivateRoute>} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

@@ -14,49 +14,19 @@ export default function AdicionarEmbalagem({
     largura, setLargura,
     altura, setAltura,
     peso, setPeso,
-    volumesSelecionados, setVolumesSelecionados
+    volumesSelecionados, setVolumesSelecionados,
+    volumes
 }) {
-    const { volumes, volumesOP, checklistOP, checklists } = useUser();
-    const [volumesCheckados, setVolumesCheckados] = useState([]);
-
-
-    const volumesNaoEmbalados = volumesOP.filter(
-        (volume) => volume.id_embalagem === null
-    );
 
     useEffect(() => {
-        setVolumesCheckados([]);
-        const novosCheckados = [];
-
-        setDescricao('')
-        setComprimento('')
-        setLargura('')
-        setAltura('')
-        setPeso('')
-
-        volumesNaoEmbalados.forEach((volume) => {
-            const volumeChecklists = checklists.filter(
-                (checklist) => checklist.id_atividade === volume.id_atividade
-            );
-            const checklistsFinalizados = volumeChecklists.filter((item) => {
-                const checkOP = checklistOP.find(
-                    (c) => c.id_checklist === item.id
-                );
-                return checkOP?.status;
-            });
-
-            if (
-                volumeChecklists.length > 0 &&
-                checklistsFinalizados.length === volumeChecklists.length
-            ) {
-                novosCheckados.push(volume);
-            }
-        });
-
-        setVolumesCheckados(novosCheckados);
-    }, [volumesOP, checklistOP, checklists]);
-
-
+        setVolumesSelecionados([]);
+        setAltura('');
+        setLargura('');
+        setComprimento('');
+        setPeso('');
+        setDescricao('');
+    }, []);
+    
     const columns = [
         { field: "descricao", headerName: "Volume", width: 420 },
         { field: "pedido", headerName: "Pedido", width: 80 },
@@ -64,13 +34,13 @@ export default function AdicionarEmbalagem({
 
     const createData = (volume) => {
         const id = volume.id;
-        const descricao = volumes.find((v) => v.id == volume.id_volume).title;
-        const pedido = "5951";
+        const descricao = volume.volume;
+        const pedido = volume.id_pedido;
 
         return { id, descricao, pedido };
     };
 
-    const rows = volumesCheckados.map((volume, index) => createData(volume));
+    const rows = volumes.map((volume, index) => createData(volume));
 
     return (
         <Box className="adicionarEmbalagem">
@@ -80,30 +50,52 @@ export default function AdicionarEmbalagem({
                         label="Descrição" variant="outlined" sx={{width: '100%'}} />
                 </div>
                 <div className="half">
-                    <TextField value={comprimento} onChange={(e) => setComprimento(e.target.value)} label="Comprimento" variant="outlined" sx={{width: '100%'}} slotProps={{
+                    <TextField value={comprimento} 
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            if (value === '' || /^\d+$/.test(value)) {
+                                setComprimento(value);
+                            }
+                        }} 
+                        label="Comprimento" variant="outlined" sx={{width: '100%'}} slotProps={{
+                            input: {
+                                endAdornment: <InputAdornment position="end">cm</InputAdornment>,
+                            },
+                    }} />
+                </div>
+                <div className="half">
+                    <TextField value={largura} onChange={(e) => {
+                            const value = e.target.value;
+                            if (value === '' || /^\d+$/.test(value)) {
+                                setLargura(value);
+                            }
+                        }} label="Largura" variant="outlined" sx={{width: '100%'}} slotProps={{
                         input: {
                             endAdornment: <InputAdornment position="start">cm</InputAdornment>,
                         },
                     }} />
                 </div>
                 <div className="half">
-                    <TextField value={largura} onChange={(e) => setLargura(e.target.value)} label="Largura" variant="outlined" sx={{width: '100%'}} slotProps={{
+                    <TextField value={altura} onChange={(e) => {
+                            const value = e.target.value;
+                            if (value === '' || /^\d+$/.test(value)) {
+                                setAltura(value);
+                            }
+                        }} label="Altura" variant="outlined" sx={{width: '100%'}} slotProps={{
                         input: {
                             endAdornment: <InputAdornment position="start">cm</InputAdornment>,
                         },
                     }} />
                 </div>
                 <div className="half">
-                    <TextField value={altura} onChange={(e) => setAltura(e.target.value)} label="Altura" variant="outlined" sx={{width: '100%'}} slotProps={{
+                    <TextField value={peso} onChange={(e) => {
+                            const value = e.target.value;
+                            if (value === '' || /^\d+$/.test(value)) {
+                                setPeso(value);
+                            }
+                        }} label="Peso" variant="outlined" sx={{width: '100%'}} slotProps={{
                         input: {
-                            endAdornment: <InputAdornment position="start">cm</InputAdornment>,
-                        },
-                    }} />
-                </div>
-                <div className="half">
-                    <TextField value={peso} onChange={(e) => setPeso(e.target.value)} label="Peso" variant="outlined" sx={{width: '100%'}} slotProps={{
-                        input: {
-                            endAdornment: <InputAdornment position="start">kg</InputAdornment>,
+                            endAdornment: <InputAdornment position="start">gramas</InputAdornment>,
                         },
                     }} />
                 </div>

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Box, Autocomplete, Typography, TextField } from '@mui/material';
 
-export default function InputAuto({ label, list, setValue, width, value = null, disabled }) {
+export default function InputAuto({ label, list, setValue, width, value = null, disabled, size="small" }) {
     const hint = useRef('');
     const [inputValue, setInputValue] = useState('');
 
@@ -63,7 +63,7 @@ export default function InputAuto({ label, list, setValue, width, value = null, 
                             hint.current = match ? match.label : '';
                         }}
                         label={label}
-                        size="small"
+                        size={size}
                     />
                 </Box>
             )}

@@ -52,7 +52,7 @@ export const config_api = {
   deleteChecklist: (id) => http(`/api/configuracao/deletarChecklist/${id}`, { method: "DELETE", }),
   createVolume: (payload) => http("/api/configuracao/criarVolume", { method: "POST", body: JSON.stringify(payload), }),
   deleteVolume: (id) => http(`/api/configuracao/deletarVolume/${id}`, { method: "DELETE", }),
-
+  
   getEtapasAtividadesByCategory: (id_departamento, id) => http(`/api/configuracao/getEtapasAtividadesByCategory/${id_departamento}/${id}`, { method: "GET" }),
   getEquipesAtividade: (id) => http(`/api/configuracao/getEquipesAtividade/${id}`, { method: "GET" }),
 };
@@ -72,9 +72,16 @@ export const remessa_api = {
   getCidades: (idEstado) => http(`/api/getCidades/${idEstado}`, { method: "GET" }),
   getRemessa: (idRemessa) => http(`/api/getRemessa/${idRemessa}`, { method: "GET" }),
   updateRemessa: (id, payload) => http(`/api/updateRemessa/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
+  criarRemessa: (payload) => http("/api/createRemessa", { method: "POST", body: JSON.stringify(payload), }),
   getOrdensRemessa: (id) => http(`/api/getOrdensRemessa/${id}`, { method: "GET" }),
   getOrdensRemessaDepartamento: (id_departamento, id) => http(`/api/getOrdensRemessaDepartamento/${id_departamento}/${id}`, { method: "GET" }),
-  getRemessas: (idRemessa) => http(`/api/getRemessas`, { method: "GET" }),
+  getRemessas: () => http(`/api/getRemessas`, { method: "GET" }),
+  getRemessasEmAndamento: () => http(`/api/getRemessasEmAndamento`, { method: "GET" }),
+  getVolumes: (idRemessa) => http(`/api/getVolumes/${idRemessa}`, { method: "GET" }),
+  criarEmbalagem: (payload) => http("/api/criarEmbalagem", { method: "POST", body: JSON.stringify(payload), }),
+  getEmbalagens: (id) => http(`/api/getEmbalagens/${id}`, { method: "GET" }),
+  deleteEmbalagem: (id) => http(`/api/deleteEmbalagem/${id}`, { method: "DELETE", }),
+  mudarRemessaOrdem: (id, payload) => http(`/api/mudarRemessaOrdem/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
 }
 
 export const atividade_api = {

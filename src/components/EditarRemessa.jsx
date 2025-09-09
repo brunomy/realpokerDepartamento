@@ -1,6 +1,7 @@
 import '~/assets/scss/MudarRemessaModal.scss'
 import { useState, useEffect } from 'react';
 import InputCalendar from './InputCalendar';
+import { useUser } from '~/context/UserContext';
 
 import { Box, Button, Tabs, Tab, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import TextField from '@mui/material/TextField';
@@ -11,6 +12,7 @@ import { remessa_api } from '../api';
 import Loading from './Loading';
 
 export default function EditarRemessa({ remessa, setRemessa }) {
+    const { usuarioLogado } = useUser();
     const [estados, setEstados] = useState([]);
     const [cidades, setCidades] = useState([]);
     const [initialCep, setInitialCep] = useState('');
@@ -169,6 +171,7 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                         width={'100%'} 
                         value={remessa?.nova_saida ? formatarData(remessa?.nova_saida) : formatarData(remessa?.saida)} 
                         setValue={(newValue) => handleDateChange('nova_saida', newValue)} 
+                        disabled={usuarioLogado?.permissao !== 'gerente'}
                     />
                     { (remessa?.nova_saida != null) && 
                         <p style={{
@@ -187,6 +190,7 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                         width={'100%'} 
                         value={remessa?.nova_entrega ? formatarData(remessa?.nova_entrega) : formatarData(remessa?.entrega)} 
                         setValue={(newValue) => handleDateChange('nova_entrega', newValue)} 
+                        disabled={usuarioLogado?.permissao !== 'remessas'}
                     />
                     { (remessa?.nova_entrega != null) && 
                         <p style={{
@@ -212,6 +216,7 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                             maxLength: 10,
                             placeholder: "00.000-000"
                         }}
+                        disabled={usuarioLogado?.permissao !== 'remessas'}
                     />
                 </div>
                 <div className="item">
@@ -222,7 +227,7 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                         sx={{width: '100%'}} 
                         size="small"
                         onChange={(e) => setRemessa({ ...remessa, numero: e.target.value })}
-                        error={!remessa?.numero}
+                        disabled={usuarioLogado?.permissao !== 'remessas'}
                     />
                 </div>
                 <div className="item full">
@@ -234,6 +239,7 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                         size="small"
                         onChange={(e) => setRemessa({ ...remessa, endereco: e.target.value })}
                         error={!remessa?.endereco}
+                        disabled={usuarioLogado?.permissao !== 'remessas'}
                     />
                 </div>
                 <div className="item full">
@@ -244,6 +250,7 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                         sx={{width: '100%'}} 
                         size="small"
                         onChange={(e) => setRemessa({ ...remessa, complemento: e.target.value })}
+                        disabled={usuarioLogado?.permissao !== 'remessas'}
                     />
                 </div>
                 <div className="item full">
@@ -255,6 +262,7 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                         size="small"
                         onChange={(e) => setRemessa({ ...remessa, bairro: e.target.value })}
                         error={!remessa?.bairro}
+                        disabled={usuarioLogado?.permissao !== 'remessas'}
                     />
                 </div>
                 <div className="item">
@@ -268,6 +276,7 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                                 setRemessa({ ...remessa, id_estado: estadoId, id_cidade: '' });
                                 carregarCidades(estadoId);
                             }}
+                            disabled={usuarioLogado?.permissao !== 'remessas'}
                         >
                             {estados.map((estado) => (
                                 <MenuItem key={estado.id} value={estado.id}>
@@ -284,8 +293,9 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                             value={remessa?.id_cidade || ''}
                             label="Cidade"
                             onChange={(e) => setRemessa({ ...remessa, id_cidade: e.target.value })}
-                            disabled={!remessa?.id_estado}
                             error={!remessa?.id_cidade}
+                            disabled={usuarioLogado?.permissao !== 'remessas' || !remessa?.id_estado}
+
                         >
                             {cidades.length === 0 && remessa?.id_estado && (
                                 <MenuItem disabled value="">
@@ -314,6 +324,7 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                         size="small"
                         onChange={(e) => setRemessa({ ...remessa, nome: e.target.value })}
                         error={!remessa?.nome}
+                        disabled={usuarioLogado?.permissao !== 'remessas'}
                     />
                 </div>
                 <div className="item">
@@ -329,6 +340,7 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                             maxLength: 15,
                             placeholder: "(00) 00000-0000"
                         }}
+                        disabled={usuarioLogado?.permissao !== 'remessas'}
                     />
                 </div>
                 <div className="item">
@@ -343,6 +355,7 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                         inputProps={{
                             maxLength: 18,
                         }}
+                        disabled={usuarioLogado?.permissao !== 'remessas'}
                     />
                 </div>
             </Box>
