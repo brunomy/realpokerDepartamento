@@ -48,11 +48,12 @@ export default function Usuarios() {
 
 
     const carregar = async () => {
+        setRows([]);
         try {
             const res = await user_api.getUsersDepartamento(selectedDepartamento.id);
 
             setRows(
-                res.data?.map((user) => {
+                res.data?.filter(f => f.permissao == 'atividades').map((user) => {
                     return createData(
                         user.id,
                         user.nome,

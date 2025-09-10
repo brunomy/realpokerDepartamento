@@ -133,11 +133,11 @@ export default function Ordem({resetOrdem = false}) {
                     onChange={handleChange}
                     variant="scrollable"
                     scrollButtons
-                    allowScrollButtonsMobile
-                >
+                    allowScrollButtonsMobile>
+
                     <Tab label="Informações" />
                     <Tab label="Requisitos" />
-                    <Tab label="Etapas "  disabled={ordem?.id_status === 4} />
+                    <Tab label="Etapas "  disabled={ordem?.id_status} />
                     <Tab label="Atividades" disabled={!ordem?.id_status} />
                     <Tab label="Checklist" disabled={!ordem?.id_status} />
                     <Tab label="Volumes" disabled={!ordem?.id_status} />
@@ -145,11 +145,9 @@ export default function Ordem({resetOrdem = false}) {
                 </Tabs>
             </Box>
             <Box className="show_content">
-                { tab === 0 && <Informacoes ordem={ordem}
-                    setTab={setTab} 
-                /> }
+                { tab === 0 && <Informacoes ordem={ordem} setTab={setTab} /> }
                 { tab === 1 && <Requisitos atualizarOrdem={carregar} requisitos_ordem={ordem?.requisitos} /> }
-                { tab === 2 && <Etapas atualizarOrdem={carregar} ordem={ordem} /> }
+                { tab === 2 && <Etapas atualizarOrdem={carregar} ordem={ordem} setTab={setTab} /> }
                 { tab === 3 && <Atividades /> }
                 { tab === 4 && <Checklist /> }
                 { tab === 5 && <Volumes /> }
@@ -419,7 +417,7 @@ function RequisitoItem({ requisito, atualizarOrdem }) {
     )
 }
 
-function Etapas({ ordem, atualizarOrdem }) {
+function Etapas({ ordem, atualizarOrdem, setTab }) {
     const { selectedDepartamento } = useUser();
     const [etapas, setEtapas] = useState([]);
     const [atividades, setAtividades] = useState([]);
@@ -460,6 +458,7 @@ function Etapas({ ordem, atualizarOrdem }) {
         try {
             const response = await ordem_api.enviarProducao(selectedDepartamento.id, ordem.id);
             atualizarOrdem();
+            setTab(3);
         } catch (error) {
             console.error('Erro ao enviar para produção:', error);
             alert('Erro ao enviar para produção. Verifique sua conexão e tente novamente.');
@@ -553,8 +552,6 @@ const AtividadeItem = memo(function AtividadeItem({ ordem, etapa, atividade, equ
     const [dataSelecionada, setDataSelecionada] = useState(atividade_criada ? formatarData(atividade_criada.data) : dayjs().format('DD/MM/YYYY'));
 
     const criarAtividade = async () => {
-        console.log(selectedDepartamento?.id);
-        
         try {
             const response = await atividade_api.createAtividade({
                 id: idAtividade,

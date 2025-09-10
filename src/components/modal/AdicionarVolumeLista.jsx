@@ -115,28 +115,57 @@ function VolumeItem({ item, carregar, atividade}) {
                 { check && 
                     <Box className="dimensoes_form">
                         <div className="item">
-                            <TextField size="small" value={comprimento} onChange={(e) => setComprimento(e.target.value)} label="Comprimento" variant="outlined" sx={{width: '100%'}} slotProps={{
+                            <TextField size="small" value={comprimento} 
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (value === '' || /^\d+$/.test(value)) {
+                                        setComprimento(value);
+                                    }
+                                }} 
+                                label="Comprimento" variant="outlined" sx={{width: '100%'}} slotProps={{
+                                input: {
+                                    endAdornment: <InputAdornment position="start">cm</InputAdornment>,
+                                },
+                                
+                            }} />
+                        </div>
+                        <div className="item">
+                            <TextField size="small" value={largura} 
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (value === '' || /^\d+$/.test(value)) {
+                                        setLargura(value);
+                                    }
+                                }} 
+                                label="Largura" variant="outlined" sx={{width: '100%'}} slotProps={{
                                 input: {
                                     endAdornment: <InputAdornment position="start">cm</InputAdornment>,
                                 },
                             }} />
                         </div>
                         <div className="item">
-                            <TextField size="small" value={largura} onChange={(e) => setLargura(e.target.value)} label="Largura" variant="outlined" sx={{width: '100%'}} slotProps={{
+                            <TextField size="small" value={altura} 
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (value === '' || /^\d+$/.test(value)) {
+                                        setAltura(value);
+                                    }
+                                }} 
+                                label="Altura" variant="outlined" sx={{width: '100%'}} slotProps={{
                                 input: {
                                     endAdornment: <InputAdornment position="start">cm</InputAdornment>,
                                 },
                             }} />
                         </div>
                         <div className="item">
-                            <TextField size="small" value={altura} onChange={(e) => setAltura(e.target.value)} label="Altura" variant="outlined" sx={{width: '100%'}} slotProps={{
-                                input: {
-                                    endAdornment: <InputAdornment position="start">cm</InputAdornment>,
-                                },
-                            }} />
-                        </div>
-                        <div className="item">
-                            <TextField size="small" value={peso} onChange={(e) => setPeso(e.target.value)} label="Peso" variant="outlined" sx={{width: '100%'}} slotProps={{
+                            <TextField size="small" value={peso} 
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (value === '' || /^\d+$/.test(value)) {
+                                        setPeso(value);
+                                    }
+                                }} 
+                                label="Peso" variant="outlined" sx={{width: '100%'}} slotProps={{
                                 input: {
                                     endAdornment: <InputAdornment position="start">gramas</InputAdornment>,
                                 },
@@ -152,7 +181,7 @@ function VolumeItem({ item, carregar, atividade}) {
                 <Box>
                     <div className="title_content">
                         <h2>{item.volume}</h2>
-                        <Button color="error"  onClick={() => { setStatus(0); setOpen(true); }}><DeleteTwoToneIcon  /></Button>
+                        { item.chacklist_pendente > 0 && <Button color="error"  onClick={() => { setStatus(0); setOpen(true); }}><DeleteTwoToneIcon  /></Button> }
                     </div>
                     <div className="dimensoes">
                         <div>

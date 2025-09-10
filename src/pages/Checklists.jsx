@@ -29,18 +29,21 @@ export default function Checklists({ finalizados = false }) {
     }
 
     const carregar = async () => {
+        setRows([]);
         try {
-            const res = await checklist_api.getOrdensChecklist(selectedDepartamento.id);
-            
             if(!finalizados){
+                const res = await checklist_api.getOrdensChecklist(selectedDepartamento.id);
+
                 setRows(
-                    res.data.filter((i) => i.checklists != i.checklists_concluidos).map(item => {
+                    res.data.map(item => {
                         return createData(item);
                     })
                 );
             } else {
+                const res = await checklist_api.getOrdensChecklistFinalizados(selectedDepartamento.id);
+
                 setRows(
-                    res.data.filter((i) => i.checklists == i.checklists_concluidos).map(item => {
+                    res.data.map(item => {
                         return createData(item);
                     })
                 );

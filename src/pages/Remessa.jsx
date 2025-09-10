@@ -50,6 +50,7 @@ export default function Remessa() {
     const [openEdit, setOpenEdit] = useState(false);
     const [tab, setTab] = useState(0);
     const [remessaDeletada, setRemessaDeletada] = useState(false);
+    const [finalizado, setFinalizado] = useState(false);
 
     if (usuarioLogado && usuarioLogado.permissao !== 'remessas') {
         return <Navigate to="/" replace />;
@@ -59,7 +60,7 @@ export default function Remessa() {
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
-            return; // Não executa na primeira renderização
+            return;
         }
         
         carregar();
@@ -70,10 +71,9 @@ export default function Remessa() {
             const res = await remessa_api.getRemessa(idRemessa);
             setRemessa(res.data || null);
             
-            // Verifica se a remessa foi deletada
             if (res.data && res.data.deleted_at !== null) {
                 setRemessaDeletada(true);
-                return; // Para a execução aqui
+                return;
             }
 
             const res2 = await remessa_api.getVolumes(idRemessa);
@@ -93,13 +93,31 @@ export default function Remessa() {
         carregar();
     }, []);
 
+    const finalizarRemessa = async () => {
+        if (!window.confirm("Deseja finalizar a remessa?")) return;
+
+        try {
+            const response = await remessa_api.finalizarRemessa(id);
+            carregar();
+        } catch (error) {
+            console.error('Erro ao salvar remessa:', error);
+        }
+    };
+
+    useEffect(() => {
+        const ordens_pendentes = ordens.filter(i => i.departamentos.filter(d => d.id_status != 4).length > 0).length;
+        const volumes_pendentes = volumes.filter(v => v.id_embalagem == null).length;
+
+        if(ordens_pendentes == 0 && volumes_pendentes == 0 && ordens.length > 0){
+            setFinalizado(true)
+        } else {
+            setFinalizado(false)
+        }
+    }, [ordens, volumes]);
+
     if (remessaDeletada) {
         return <Navigate to="/remessas" replace />;
     }
-
-    // console.log(volumes.filter(item => item.id_embalagem == null));
-    // console.log(ordens);
-    
 
     return (
         <Layout>
@@ -108,13 +126,17 @@ export default function Remessa() {
                 <Box sx={{padding: '20px 20px 20px'}}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Button variant="contained" size="small" color="warning" onClick={() => setOpenEdit(true)}>Editar remessa</Button>
-                        <Button variant="contained" size="small" color="success" onClick={() => alert('finalizar')}>Finalizar Remessa</Button>
+                        <Button variant="contained" size="small" color="success" 
+                            onClick={finalizarRemessa}
+                            disabled={!finalizado || remessa?.id_status == 4}>
+                            Finalizar Remessa
+                        </Button>
                     </Box>
                     <RemessaEditModal selectedRemessa={remessa} open={openEdit} setOpen={setOpenEdit} tab={tab} setTab={setTab} />
                 </Box>
 
                 <ProdutosRemessa ordens={ordens} atualizar={carregar} _remessa={remessa} setIdRemessa={setIdRemessa} />
-               <Volumes volumes={volumes} remessa={remessa} embalagens={embalagens} atualizar={carregar} setEmbalagens={setEmbalagens} />
+                <Volumes volumes={volumes} remessa={remessa} embalagens={embalagens} atualizar={carregar} setEmbalagens={setEmbalagens} />
             </Box>
         </Layout>
     )
@@ -133,6 +155,8 @@ function ProdutosRemessa({ ordens, atualizar, _remessa, setIdRemessa }) {
     }, [_remessa]);
 
     const mudarRemessa = async () => {
+        if (!window.confirm("Ao mover a Ordem, as embalagens dessa remessa serão desfeitas.")) return;
+
         try {
             const payload = {
                 old_remessa: selectedOrdem.id_remessa,
@@ -145,10 +169,12 @@ function ProdutosRemessa({ ordens, atualizar, _remessa, setIdRemessa }) {
 
             setOpenModal(false);
         } catch (err) {
-            console.error("Erro ao criar etapa:", err.message);
+            console.error("Erro mover ordem:", err.message);
         }
     }
     const criarRemessa = async () => {
+        if (!window.confirm("Ao mover a Ordem, as embalagens dessa remessa serão desfeitas.")) return;
+
         try {
             const res = await remessa_api.criarRemessa({ 
                 ...newRemessa, 
@@ -194,7 +220,9 @@ function ProdutosRemessa({ ordens, atualizar, _remessa, setIdRemessa }) {
                                 }
                             </div>
                         </div>
-                        <Button variant="outlined" size="small" onClick={() => {setOpenModal(true); setSelectedOrdem(item);}}>Mudar remessa</Button>
+                        { _remessa.id_status != 4 &&
+                            <Button variant="outlined" size="small" onClick={() => {setOpenModal(true); setSelectedOrdem(item);}}>Mudar remessa</Button>
+                        }
                     </div>
                 )
             })}
@@ -205,9 +233,8 @@ function ProdutosRemessa({ ordens, atualizar, _remessa, setIdRemessa }) {
                 title="Mudar remessa" 
                 sx={{'& .MuiDialogContent-root': { paddingTop: '0'}}}
                 confirm={ tab == 0 ? mudarRemessa : criarRemessa }
-                disabled={ tab == 0 ? selectedRemessa == null : !validateRemessa(newRemessa) }
+                disabled={ tab == 0 ? selectedRemessa == null : !validateRemessa(newRemessa) } >
 
-            >
                 <MudarRemessaModal newRemessa={newRemessa} setNewRemessa={setNewRemessa} selectedOrdem={selectedOrdem} selectedRemessa={selectedRemessa} setSelectedRemessa={setSelectedRemessa} tab={tab} setTab={setTab} />
             </Modal>
         </Box>
@@ -232,8 +259,6 @@ export function Volumes({ volumes, remessa, embalagens, setEmbalagens, atualizar
             })
         );
     }, [volumes, embalagens]);
-
-    
 
     //TABELA NAO EMBALADOS
     const createData = (volume) => {
@@ -308,8 +333,8 @@ export function Volumes({ volumes, remessa, embalagens, setEmbalagens, atualizar
         const volumesResult = volumes.map((item, index) => {
             return <Chip key={index} size="small" label={item} sx={{margin: '3px 3px'}}/>;
         });
-        
-        const acoes = <Button onClick={() => deletar(embalagem.id)} color="error" sx={
+
+        const acoes = <Button disabled={remessa?.id_status == 4} onClick={() => deletar(embalagem.id)} color="error" sx={
                 {float: 'right', minWidth: 0, zIndex: 1, width: '50px !important'}
             }><DeleteTwoToneIcon /></Button>
 

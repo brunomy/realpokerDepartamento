@@ -71,12 +71,10 @@ export default function Remessas() {
             {array_pedidos.map((pedido) => <div><Button onClick={() => { setSelectedRemessa({ id: item.id, titulo: item.titulo }); setOpenRemessa(true); setTab(1); }} variant="outlined" size="small">{pedido}</Button></div>)}
         </Box>
 
-        const disponiveis = <Chip className="stats" size="small" label={ item.volumes_disponiveis - item.volumes_embalados } color={item.volumes === 0 || item.volumes_disponiveis - item.volumes_embalados == 0 ? 'default' : item.volumes_embalados === item.volumes ? 'success' : item.volumes_disponiveis + item.volumes_embalados === item.volumes ? 'warning' : 'default'} />;
+        const disponiveis = <Chip className="stats" size="small" label={ item.volumes_disponiveis - item.volumes_embalados } color={item.volumes === 0 || item.volumes_disponiveis - item.volumes_embalados == 0 ? 'default' : item.volumes_embalados === item.volumes ? 'success' : item.volumes_disponiveis === item.volumes ? 'warning' : 'default'} />;
         const volumes = <Chip className="stats" size="small" label={`${item.volumes_embalados}/${item.volumes}`} color={item.volumes === 0 ? 'default' : item.volumes_embalados === item.volumes ? 'success' : 'default'} />;
         const embalagens = <Chip className="stats" size="small" label={item.embalagens} />;
         const destino = `${item.cidade}/${item.uf}`;
-        // const entrega = formatarData(item.nova_entrega ? item.nova_entrega : item.entrega);
-        // const saida = formatarData(item.nova_saida ? item.nova_saida : item.saida);
 
         const saida = <Box className="linha_dupla">
             {item.nova_saida

@@ -160,10 +160,21 @@ function ChecklistEtapa({ etapa, openModal }) {
 }
 
 function ChecklistAtividade({ checklistItem, openModal }) {
+
+    const volumes = (() => {
+        if (!checklistItem.volumes) return [];
+        if (Array.isArray(checklistItem.volumes)) return checklistItem.volumes;
+        
+        try {
+            return JSON.parse(checklistItem.volumes);
+        } catch (error) {
+            console.log('Erro ao fazer parse dos volumes:', error);
+            return [];
+        }
+    })();
+
     return (<>
-        <h4>
-            <span>{checklistItem.nome_equipe}</span> {checklistItem.atividade}
-        </h4>
+        <h4><span>{checklistItem.nome_equipe}</span> {checklistItem.atividade}</h4>
         <Box className={`item ${
             checklistItem.status === 1 ? 'success' : 
             checklistItem.status === -1 ? 'error' : 'pending'
@@ -173,11 +184,16 @@ function ChecklistAtividade({ checklistItem, openModal }) {
                 {checklistItem.observacao && 
                     <p className="observacoes">Observações: {checklistItem.observacao}</p>
                 }
-                {checklistItem.status_atividade < 4 && checklistItem.status !== -1 &&
-                    <p className="observacoes">Aguardando a atividade ser finalizada!</p>
+                {checklistItem.status_atividade < 4 && checklistItem.status !== -1 ?
+                    <p className="observacoes">Aguardando a atividade ser finalizada!</p> :
+                    (volumes?.filter(item => item.status === 0).length > 0 && checklistItem.status !== -1) &&
+                    <p className="observacoes" style={{ color: '#ff4800' }}>Os volumes estão pendentes!</p>
                 }
+                { (volumes?.length > 0 && volumes?.filter(item => item.status === 0).length == 0) && volumes.map((volume, index) => (
+                    <p style={{ margin: '4px 0 4px 0' }} key={"volume" + index}>{volume.volume}: {volume.comprimento} x {volume.largura} x {volume.altura} cm - {volume.peso} gramas</p>
+                ))}
             </div>
-            {(checklistItem.status_atividade === 4 && checklistItem.status === 0) &&
+            {(checklistItem.status_atividade === 4 && checklistItem.status === 0 && volumes?.filter(item => item.status === 0).length == 0) &&
                 <Button variant="outlined" size="small" onClick={() => openModal(checklistItem)}>
                     Fazer vistoria
                 </Button>

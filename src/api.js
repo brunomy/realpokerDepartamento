@@ -23,12 +23,10 @@ export const user_api = {
   verificarUser: (payload) => http("/api/verificarUser", { method: "POST", body: JSON.stringify(payload) }),
   getDepartamentos: (idUser) => http(`/api/getDepartamentos/${idUser}`, { method: "GET" }),
   getUsersDepartamento: (idDepartamento) => http(`/api/getUsersDepartamento/${idDepartamento}`, { method: "GET" }),
-
   getUserEquipes: (idUser, idDepartamento) => http(`/api/getUserEquipes/${idUser}/${idDepartamento}`, { method: "GET" }),
   createEquipe: (payload) => http("/api/criarEquipe", { method: "POST", body: JSON.stringify(payload), }),
   updateEquipe: (id, payload) => http(`/api/updateEquipe/${id}`, { method: "PUT", body: JSON.stringify(payload), }),
   deleteEquipe: (id) => http(`/api/deletarEquipe/${id}`, { method: "DELETE" }),
-  
   getFuncionarios: (idEquipe) => http(`/api/getFuncionarios/${idEquipe}`, { method: "GET" }),
   createFuncionario: (payload) => http("/api/criarFuncionario", { method: "POST", body: JSON.stringify(payload), }),
   deleteFuncionario: (id) => http(`/api/deletarFuncionario/${id}`, { method: "DELETE" }),
@@ -36,23 +34,19 @@ export const user_api = {
 
 export const config_api = {
   getCategorias: (idDepartamento) => http(`/api/configuracao/${idDepartamento}`, { method: "GET" }),
-
   getEtapas: (idDepartamento, idCategoria) => http(`/api/configuracao/buscarEtapas/${idDepartamento}/categoria/${idCategoria}/etapas`, { method: "GET" }),
   createEtapa: (payload) => http("/api/configuracao/criarEtapa", { method: "POST", body: JSON.stringify(payload), }),
   updateEtapa: (id, payload) => http(`/api/configuracao/etapa/${id}`, { method: "PUT", body: JSON.stringify(payload), }),
   deleteEtapa: (id) => http(`/api/configuracao/deletarEtapa/${id}`, { method: "DELETE", }),
-  
   getAtividades: (idEtapa) => http(`/api/configuracao/buscarAtividades/${idEtapa}`, { method: "GET" }),
   createAtividade: (payload) => http("/api/configuracao/criarAtividade", { method: "POST", body: JSON.stringify(payload), }),
   updateAtividade: (id, payload) => http(`/api/configuracao/atividade/${id}`, { method: "PUT", body: JSON.stringify(payload), }),
   deleteAtividade: (id) => http(`/api/configuracao/deletarAtividade/${id}`, { method: "DELETE", }),
-
   getChecklistVolumes: (idAtividade) => http(`/api/configuracao/buscarChecklistVolumes/${idAtividade}`, { method: "GET" }),
   createChecklist: (payload) => http("/api/configuracao/criarChecklist", { method: "POST", body: JSON.stringify(payload), }),
   deleteChecklist: (id) => http(`/api/configuracao/deletarChecklist/${id}`, { method: "DELETE", }),
   createVolume: (payload) => http("/api/configuracao/criarVolume", { method: "POST", body: JSON.stringify(payload), }),
   deleteVolume: (id) => http(`/api/configuracao/deletarVolume/${id}`, { method: "DELETE", }),
-  
   getEtapasAtividadesByCategory: (id_departamento, id) => http(`/api/configuracao/getEtapasAtividadesByCategory/${id_departamento}/${id}`, { method: "GET" }),
   getEquipesAtividade: (id) => http(`/api/configuracao/getEquipesAtividade/${id}`, { method: "GET" }),
 };
@@ -82,6 +76,7 @@ export const remessa_api = {
   getEmbalagens: (id) => http(`/api/getEmbalagens/${id}`, { method: "GET" }),
   deleteEmbalagem: (id) => http(`/api/deleteEmbalagem/${id}`, { method: "DELETE", }),
   mudarRemessaOrdem: (id, payload) => http(`/api/mudarRemessaOrdem/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
+  finalizarRemessa: (id) => http(`/api/finalizarRemessa/${id}`, { method: "PUT" }),
 }
 
 export const atividade_api = {
@@ -100,6 +95,7 @@ export const atividade_api = {
 export const checklist_api = {
   getChecklistOrdem: (id_departamento, id) => http(`/api/getChecklistOrdem/${id_departamento}/${id}`, { method: "GET" }),
   getOrdensChecklist: (id) => http(`/api/getOrdensChecklist/${id}`, { method: "GET" }),
+  getOrdensChecklistFinalizados: (id) => http(`/api/getOrdensChecklistFinalizados/${id}`, { method: "GET" }),
   updateChecklist: (id, payload) => http(`/api/updateChecklist/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
 };
 

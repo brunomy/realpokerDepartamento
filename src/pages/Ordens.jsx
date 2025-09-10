@@ -65,6 +65,7 @@ export default function Ordens() {
     const [tab, setTab] = useState(0);
 
     const carregar = async () => {
+        setRows([]);
         try {
             const res = await ordem_api.getOrdens(selectedDepartamento.id);
 

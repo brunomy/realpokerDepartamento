@@ -10,7 +10,7 @@ export default function Login() {
   // const [user, setUser] = useState("gerente");
   // const [user, setUser] = useState("atividades");
   // const [user, setUser] = useState("checklists");
-  const [user, setUser] = useState("remessas");
+  const [user, setUser] = useState("");
   // const [user, setUser] = useState("bruno");
   const [password, setPassword] = useState("123456");
   const [error, setError] = useState("");
@@ -50,10 +50,15 @@ export default function Login() {
               Login
             </Button>
 
-
           {error && <p style={{ color: "red" }}>{error}</p>}
         </Box>
       </form>
+      <Box sx={{ position: 'absolute', right: 0, bottom: 0, display: 'flex', justifyContent: 'center', gap: 2, marginTop: 2, flexDirection: 'column', alignItems: 'center' }}>
+        <Button variant="contained" onClick={() => setUser('gerente')}>Gerente</Button>
+        <Button variant="contained" onClick={() => setUser('atividades')}>Atividades</Button>
+        <Button variant="contained" onClick={() => setUser('checklists')}>Checklists</Button>
+        <Button variant="contained" onClick={() => setUser('remessas')}>Remessas</Button>
+      </Box>
     </Container>
   );
 }

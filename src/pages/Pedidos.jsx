@@ -62,6 +62,8 @@ export default function Pedidos() {
     ]
 
     const carregar = async () => {
+        setRows([]);
+
         try {
             const res = await ordem_api.getOrdens(selectedDepartamento.id);
 
