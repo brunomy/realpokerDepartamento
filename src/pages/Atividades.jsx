@@ -286,7 +286,8 @@ export function AcoesAtividades({ atividade, atualizar }){
         }
         
         const res = await atividade_api.finalizarAtividade(atividade.id, payload);
-        if(atividade.volumes > 0){
+        
+        if(atividade.volumes > 0 && !res['error']){
             setOpenVolumes(true);
         }
         return res
