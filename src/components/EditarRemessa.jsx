@@ -351,7 +351,7 @@ export default function EditarRemessa({ remessa, setRemessa }) {
                         sx={{width: '100%'}} 
                         size="small"
                         onChange={handleCpfCnpjChange}
-                        error={(remessa?.cpf_cnpj && !validarCpfCnpj(remessa.cpf_cnpj)) || !remessa?.cpf_cnpj}
+                        // error={(remessa?.cpf_cnpj && !validarCpfCnpj(remessa.cpf_cnpj)) || !remessa?.cpf_cnpj}
                         inputProps={{
                             maxLength: 18,
                         }}

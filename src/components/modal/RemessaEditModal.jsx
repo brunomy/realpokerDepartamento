@@ -145,9 +145,9 @@ export function validateRemessa(remessa){
     }
 
     // Valida CPF/CNPJ (se preenchido)
-    if (remessa.cpf_cnpj && !validarCpfCnpj(remessa.cpf_cnpj)) {
-        return false;
-    }
+    // if (remessa.cpf_cnpj && !validarCpfCnpj(remessa.cpf_cnpj)) {
+    //     return false;
+    // }
 
     return true;
 }
