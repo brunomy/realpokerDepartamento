@@ -19,13 +19,6 @@
             padding: 0;
 
 
-            &.hasPhoto{
-                .obs{
-                    width: calc(100% - 140px);
-                    border-right: none;
-                }
-            }
-
             .obs{
                 width: 100%;
                 padding: 0 !important;
@@ -39,18 +32,18 @@
                 }
             }
             .anexo{
-                width: 140px;
+                width: 100%;
                 color: #434343;
                 display: flex;
-                justify-content: flex-end;
+                padding: 0 10px 10px;
+                gap: 5px;
     
                 >div{
-                    width: 70px;
-
                     h4{
                         font-size: .8em;
                         margin: 0 0 2px;
                         padding: 5px 0;
+                        background: transparent;
                     }
                     .image{
                         width: 50px;

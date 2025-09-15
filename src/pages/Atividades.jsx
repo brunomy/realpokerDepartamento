@@ -227,10 +227,6 @@ export default function Atividades() {
 export function AcoesAtividades({ atividade, atualizar }){
     const { selectedDepartamento, usuarioLogado } = useUser();
 
-    const { atividadesOP, setAtividadesOP, volumes, volumesOP } = useUser();
-    const volumes_atividade = volumes.filter((volume) => volume.id_atividade == atividade.id_atividade)
-    const volumesEnviados = volumesOP.filter((volume) => volume.id_ativ == atividade.id)
-
     const [codigo, setCodigo] = useState('');
     const [acao, setAcao] = useState('');
 

@@ -14,7 +14,6 @@ import InputAuto from '~/components/InputAuto';
 import InputCalendarRange from '~/components/InputCalendarRange';
 
 import Modal from '~/components/layout/Modal';
-import AdicionarChecklist from '~/components/modal/AdicionarChecklist';
 
 import { useUser } from '~/context/UserContext';
 import { checklist_api } from './../api';

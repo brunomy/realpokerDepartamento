@@ -110,13 +110,6 @@
             display: flex;
             flex-wrap: wrap;
 
-            &.hasPhoto{
-                .obs{
-                    width: calc(100% - 150px);
-                    border-right: none;
-                }
-            }
-
             .obs{
                 width: 100%;
                 border-left: 2px solid #d7d7d7;
@@ -133,14 +126,13 @@
                 }
             }
             .anexo{
-                width: 150px;
+                width: 100%;
                 border-right: 2px solid #d7d7d7;
                 border-left: 2px solid #d7d7d7;
                 padding: 10px 10px;
                 color: #434343;
                 display: flex;
                 gap: 10px;
-                justify-content: flex-end;
     
                 >div{
                     h4{
@@ -596,6 +588,21 @@
                     width: 150px;
                     margin: 0 auto;
                     display: block;
+                }
+            }
+
+            .anexo_requisito{
+                width: 100%;
+                height: 200px;
+                background: #000;
+                border: 2px solid $color1;
+                border-radius: 8px;
+                overflow: hidden;
+
+                img{
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
                 }
             }
             >button{

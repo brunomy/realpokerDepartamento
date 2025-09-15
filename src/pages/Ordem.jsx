@@ -5,6 +5,7 @@ import { useState, useEffect, useMemo, memo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Box, Button, Chip, Tabs, Tab, Typography, Switch, Card, CardContent, CardActions } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 import Accordion from "@mui/material/Accordion";
 import AccordionActions from "@mui/material/AccordionActions";
@@ -20,8 +21,6 @@ import InputAuto from '~/components/InputAuto';
 import DataTable from '~/components/DataTable';
 
 import { useUser } from '~/context/UserContext';
-import SelecionarEtapa from '~/components/SelecionarEtapa';
-import VistoriaChecklist from '~/components/modal/VistoriaChecklist';
 
 import dayjs from 'dayjs';
 import Status from '~/components/layout/Status';
@@ -43,10 +42,11 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import EventAvailableTwoToneIcon from '@mui/icons-material/EventAvailableTwoTone';
 import HandymanTwoToneIcon from '@mui/icons-material/HandymanTwoTone';
 import InfoProdutoModal from '../components/modal/InfoProdutoModal';
-import { ordem_api, config_api, atividade_api, checklist_api, volumes_api } from './../api';
+import { ordem_api, config_api, atividade_api, checklist_api, volumes_api, BASE_URL } from './../api';
 import { converterDataParaBanco, formatarData, formatarDataHora } from '../Utils';
 import { StatusChecklist } from '../components/layout/Status';
 import { TempoAtividade } from './Atividades';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 export default function Ordem({resetOrdem = false}) {
     const { id } = useParams();
@@ -227,7 +227,8 @@ export function InfoProduto({ ordem_id }) {
 
             setProduto({
                 ...res.data,
-                atributos: res.data.atributos ? JSON.parse(res.data.atributos) : []
+                atributos: res.data.atributos ? JSON.parse(res.data.atributos) : [],
+                requisitos: res.data.requisitos ? JSON.parse(res.data.requisitos) : [],
             });
 
         } catch (err) {
@@ -249,56 +250,69 @@ export function InfoProduto({ ordem_id }) {
                     <Box sx={{ mt: 1 }}>Qtd: {produto?.quantidade}</Box>
                 }
             </h3>
-            <div className={"obs_anexo "+(produto?.anexo || produto?.foto_final ? 'hasPhoto' : '')}>
-                <div className="obs">
+            <Box className={"obs_anexo "+(produto?.anexo || produto?.foto_final ? 'hasPhoto' : '')}>
+                <Box className="obs">
                     <h4>OBSERVAÇÕES:</h4>
                     <p>{produto?.observacao}</p>
-                </div>
+                </Box>
 
                 { (produto?.anexo || produto?.foto_final) &&
-                    <div className="anexo">
+                    <Box className="anexo">
                         { produto?.anexo && 
-                        <div>
+                        <Box>
                             <h4>ANEXO:</h4>
-                            <div className="image">
+                            <Box className="image">
                                 <img 
                                     src={'https://realpoker.com.br/uploads/'+produto?.anexo} 
                                     alt="Anexo" 
                                     onClick={() => handleImageClick('https://realpoker.com.br/uploads/'+produto?.anexo, 'Anexo')}
                                     style={{ cursor: 'pointer' }}
                                 />
-                            </div>
-                        </div>
+                            </Box>
+                        </Box>
                         }
 
                         { produto?.foto_final &&
-                        <div>
+                        <Box>
                             <h4>FINAL:</h4>
-                            <div className="image">
+                            <Box className="image">
                                 <img 
                                     src={'https://realpoker.com.br/uploads/'+produto?.foto_final} 
                                     alt="Foto Final" 
                                     onClick={() => handleImageClick('https://realpoker.com.br/uploads/'+produto?.foto_final, 'Foto Final')}
                                     style={{ cursor: 'pointer' }}
                                 />
-                            </div>
-                        </div>
+                            </Box>
+                        </Box>
                         }
-                    </div>
+
+                        { produto?.requisitos?.length > 0 && produto.requisitos.map(requisito => (
+                            requisito.anexo &&
+                            <Box>
+                                <h4>{requisito.nome_requisito}:</h4>
+                                <Box className="image">
+                                    <img 
+                                        src={`${BASE_URL}/${requisito.anexo}`} 
+                                        onClick={() => handleImageClick(`${BASE_URL}/${requisito.anexo}`, requisito.nome_requisito)}
+                                        style={{ cursor: 'pointer' }}
+                                    />
+                                </Box>
+                            </Box>
+                        ))}
+                    </Box>
                 }
-            </div>
-            
+            </Box>
         
             <Box className="info_table">
                 { produto?.atributos?.map((attr, index) => (
-                    <div key={index}>
+                    <Box key={index}>
                         <h4>{attr?.nome_conjunto}:</h4>
                         <p>
                             <span className="nome">{attr?.nome_atributo}</span>
                             { attr?.cor ? <span className="color" style={{ background: attr.cor }}></span> : null }
                             { attr?.texto ? <span className="texto">{attr.texto}</span> : null }
                         </p>
-                    </div>
+                    </Box>
                 ))}
             </Box>
 
@@ -344,6 +358,12 @@ export function InfoProduto({ ordem_id }) {
 
 function Requisitos({ atualizarOrdem, requisitos_ordem }) {
     const [requisitos, setRequisitos] = useState([]);
+    const [zoomImage, setZoomImage] = useState(null);
+    const [openZoom, setOpenZoom] = useState(false);
+    const handleImageClick = (imageSrc, title) => {
+        setZoomImage({ src: imageSrc, title });
+        setOpenZoom(true);
+    };
     
     useEffect(() => {
         setRequisitos(requisitos_ordem);
@@ -353,13 +373,48 @@ function Requisitos({ atualizarOrdem, requisitos_ordem }) {
         <Box className="requisitos">
             { 
                 requisitos.map((item, index) => (
-                    <RequisitoItem atualizarOrdem={atualizarOrdem} requisito={item} key={index} />
+                    <RequisitoItem atualizarOrdem={atualizarOrdem} requisito={item} key={index} handleImageClick={handleImageClick} />
                 ))
             }
+            <Modal 
+                open={openZoom} 
+                setOpen={setOpenZoom} 
+                title={zoomImage?.title || 'Imagem'} 
+                confirmText="Fechar"
+                confirm={() => {}}
+                sx={{
+                    '& .MuiDialogContent-root': { 
+                        textAlign: 'center',
+                        padding: '20px'
+                    }
+                }}
+            >
+                {zoomImage && (
+                    <Box sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'center', 
+                        alignItems: 'center',
+                        maxHeight: '70vh',
+                        overflow: 'hidden'
+                    }}>
+                        <img 
+                            src={zoomImage.src} 
+                            alt={zoomImage.title}
+                            style={{
+                                maxWidth: '100%',
+                                maxHeight: '100%',
+                                objectFit: 'contain',
+                                borderRadius: '8px',
+                                boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+                            }}
+                        />
+                    </Box>
+                )}
+            </Modal>
         </Box>
     )
 }
-function RequisitoItem({ requisito, atualizarOrdem }) {
+function RequisitoItem({ requisito, atualizarOrdem, handleImageClick }) {
     const concluirDependencia = async (dependenciaId) => {
         if (!window.confirm("Tem certeza que deseja concluir esta dependência?")) return;
         
@@ -383,7 +438,6 @@ function RequisitoItem({ requisito, atualizarOrdem }) {
             alert('Erro ao concluir requisito. Verifique sua conexão e tente novamente.');
         }
     };
-
     
     return (
         <div className="requisito_item">
@@ -411,10 +465,78 @@ function RequisitoItem({ requisito, atualizarOrdem }) {
                     requisito.status == 0) &&
                     <Button variant="contained" onClick={concluirRequisito}>Concluir Requisito</Button>
                 }
-                { requisito.status == 1 && <Button variant="contained" color="success">{formatarDataHora(requisito.updated_at)}</Button> }
+
+                { requisito.status == 1 && <>
+                    <Button variant="contained" color="success">{formatarDataHora(requisito.updated_at)}</Button> 
+                </>}
+
+                { requisito.anexo && <Box className="anexo_requisito">
+                    <img 
+                        src={`${BASE_URL}/${requisito.anexo}`} 
+                        onClick={() => handleImageClick(`${BASE_URL}/${requisito.anexo}`, 'Foto Final')}
+                        style={{ cursor: 'pointer' }}
+                    />
+                </Box>}
+                { requisito.status == 1 && <>
+                    <InputFileUpload id={requisito.id} anexo={requisito.anexo} atualizarOrdem={atualizarOrdem} />
+                </>}
+
             </div>
         </div>
     )
+}
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
+
+function InputFileUpload({ id, anexo, atualizarOrdem }) {
+    const [uploading, setUploading] = useState(false);
+
+    const handleFileUpload = async (event) => {
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
+
+        setUploading(true);
+        
+        try {
+            const formData = new FormData();
+            formData.append('file', files[0]);
+            
+            const response = await ordem_api.uploadAnexoRequisito(id, formData);
+        } catch (error) {
+            console.error('Erro ao fazer upload:', error);
+        } finally {
+            setUploading(false);
+            event.target.value = '';
+            atualizarOrdem();
+        }
+    };
+
+    return (
+        <Button
+            component="label"
+            role={undefined}
+            variant="contained"
+            tabIndex={-1}
+            startIcon={<CloudUploadIcon />}
+            disabled={uploading}
+        >
+            {uploading ? 'Enviando...' : anexo ? 'Substituir' : 'Enviar'}
+            <VisuallyHiddenInput
+                type="file"
+                onChange={handleFileUpload}
+                accept=".jpg,.jpeg,.png"
+            />
+        </Button>
+    );
 }
 
 function Etapas({ ordem, atualizarOrdem, setTab }) {

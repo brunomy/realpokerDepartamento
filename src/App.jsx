@@ -22,12 +22,13 @@ import ChecklistOrder from './pages/Checklist';
 import Usuarios from './pages/Usuarios';
 
 import { useUser } from "~/context/UserContext";
+import Box from '@mui/material/Box';
 
 
 function App() {
   return (
     <UserProvider>
-    <section className="container">
+    <Box className="container">
       <Router>
         <Routes>
           <Route path="/" element={<Login />} />
@@ -58,7 +59,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
-    </section>
+    </Box>
     </UserProvider>
   )
 }

@@ -1,12 +1,15 @@
 // src/api.js
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+export const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 async function http(path, options = {}) {
   const token = localStorage.getItem("authToken");
+  const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
+  const isFormData = options.body instanceof FormData;
 
   const res = await fetch(`${BASE_URL}${path}`, {
     headers: {
-      "Content-Type": "application/json",
+      ...(!isFormData ? { "Content-Type": "application/json" } : {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(options.headers || {}),
     },
@@ -59,6 +62,10 @@ export const ordem_api = {
   concluirDependencia: (id) => http(`/api/concluirDependencia/${id}`, { method: "PUT" }),
   concluirRequisito: (id) => http(`/api/concluirRequisito/${id}`, { method: "PUT" }),
   getHistorico: (id_departamento, id) => http(`/api/getHistorico/${id_departamento}/${id}`, { method: "GET" }),
+  uploadAnexoRequisito: (id, formData) => http(`/api/uploadAnexoRequisito/${id}`, { 
+    method: "POST", 
+    body: formData
+  }),
 }
 
 export const remessa_api = {
