@@ -38,28 +38,53 @@ export default function Pedidos() {
 
     const [selectedRemessa, setSelectedRemessa] = useState(null);
 
-    const [statusFilter, setStatusFilter] = useState([]);
-    const [idFilter, setIdFilter] = useState([]);
-    const [dateFilterDe, setDateFilterDe] = useState(hoje.format('YYYY-MM-DD'));
-    const [dateFilterAte, setDateFilterAte] = useState(hoje.format('YYYY-MM-DD'));
+    const [dateFilterDe, setDateFilterDe] = useState(null);
+    const [dateFilterAte, setDateFilterAte] = useState(null);
 
     const [ordens, setOrdens] = useState([]);
     const [ordensAgrupado, setOrdensAgrupado] = useState([]);
 
     const [rows, setRows] = useState([]);
 
-    const statusList = [
-        { label: 'Pendente', value: 1},
-        { label: 'Em andamento', value: 2},
-        { label: 'Parado', value: 3},
-        { label: 'Concluído', value: 4},
-    ]
-    const idList = [
-        { label: '#5951', value: 5951},
-        { label: '#5952', value: 5952},
-        { label: '#5953', value: 5953},
-        { label: '#5954', value: 5954},
-    ]
+    const [remessasList, setRemessasList] = useState([]);
+    const [remessaFilter, setRemessaFilter] = useState([]);
+
+    useEffect(() => {
+        setRows(
+            Object.entries(ordensAgrupado)
+            .filter(([titulo_remessa, itens]) => 
+                remessaFilter?.label ? titulo_remessa === remessaFilter.label : true
+            )
+            .filter(([titulo_remessa, itens]) => {
+                // Se não há nenhum filtro de data, mostra todos
+                if (!dateFilterDe && !dateFilterAte) return true;
+                
+                return itens.some(item => {
+                    const dataSaida = item.nova_saida || item.saida;
+                    const dataItem = dayjs(dataSaida);
+                    
+                    // Verifica data DE (se preenchida)
+                    const validaDataDe = !dateFilterDe || 
+                        dataItem.isAfter(dayjs(dateFilterDe)) || 
+                        dataItem.isSame(dayjs(dateFilterDe));
+                    
+                    // Verifica data ATÉ (se preenchida)
+                    const validaDataAte = !dateFilterAte || 
+                        dataItem.isBefore(dayjs(dateFilterAte)) || 
+                        dataItem.isSame(dayjs(dateFilterAte));
+                    
+                    // Item é válido se passa em ambas as validações
+                    return validaDataDe && validaDataAte;
+                });
+            })
+            .map(([titulo_remessa, itens]) => {
+                return createData({
+                    remessa: itens,
+                    titulo: titulo_remessa
+                });
+            })
+        );
+    }, [remessaFilter, dateFilterDe, dateFilterAte, ordensAgrupado]);
 
     const carregar = async () => {
         setRows([]);
@@ -81,6 +106,10 @@ export default function Pedidos() {
 
             setOrdensAgrupado(agrupado);
 
+            setRemessasList(
+                Object.keys(agrupado).map((key, index) => ({ label: key, value: index }))
+            );
+
             setRows(
                 Object.entries(agrupado).map(([titulo_remessa, itens]) => {
                     return createData({
@@ -98,7 +127,7 @@ export default function Pedidos() {
         if (!openRemessa && selectedDepartamento?.id) {
             carregar();
         }
-    }, [openRemessa, selectedDepartamento]);
+    }, [selectedDepartamento]);
 
     //dados da tabela
     const createData = ({ remessa, titulo }) => {
@@ -178,20 +207,17 @@ export default function Pedidos() {
             <Title title="Lista de pedidos" icon={<ShoppingCartIcon/>} />
       
             <Box className="index_content">
-                {/* <Box className="filtros">
+                <Box className="filtros">
                     <h2>Filtros:</h2>
                     <Box className="filter_list">
                         <Box className="item">
-                            <InputAuto label="id" list={idList} setValue={setIdFilter} width={'100%'} />
-                        </Box>
-                        <Box className="item">
-                            <InputAuto label="Status" list={statusList} setValue={setStatusFilter} width={'100%'} />
+                            <InputAuto size="large" label="Remessa" list={remessasList} value={remessaFilter} setValue={setRemessaFilter} width={'100%'} />
                         </Box>
                         <Box className="item calendario">
-                            <InputCalendarRange setFunctionDe={setDateFilterDe} setFunctionAte={setDateFilterAte} />
+                            <InputCalendarRange label="Saída" setFunctionDe={setDateFilterDe} setFunctionAte={setDateFilterAte} />
                         </Box>
                     </Box>
-                </Box> */}
+                </Box>
                 <Box className="table_content">
                     <DataTable headCells={headCells} rows={rows}/>
                 </Box>
