@@ -562,6 +562,12 @@
             .icon{
                 svg{}
             }
+            .finalizado{
+                display: block;
+                font-size: 10px;
+                text-transform: capitalize;
+                margin-top: 2px;
+            }
         }
         .step_content{
             padding: 15px 20px;
@@ -588,6 +594,12 @@
                     width: 150px;
                     margin: 0 auto;
                     display: block;
+                }
+                span{
+                    text-align: center;
+                    display: block;
+                    font-size: 12px;
+                    margin: -5px 0 0;
                 }
             }
 

@@ -79,6 +79,7 @@ export default function Equipe() {
         const codigo = funcionario.codigo
         
         const excluir = <Box>
+            <Button className="link" onClick={() => {setNovoFuncionario(funcionario); setOpenModal(true)}}>Editar</Button>
             <Button color="error" sx={
                 {float: 'right', minWidth: 0, zIndex: 1, width: '50px !important'}
             } onClick={() => deletar(funcionario.id)}><DeleteTwoToneIcon /></Button>
@@ -152,6 +153,7 @@ export default function Equipe() {
     const adicionar = async () => {
         try {
             const payload = {
+                id: novoFuncionario?.id,
                 id_equipe: id,
                 nome: novoFuncionario?.nome,
                 funcao: novoFuncionario?.funcao,
@@ -202,20 +204,20 @@ export default function Equipe() {
                 <Box className="table_content">
                     <Box className="actions" sx={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'space-between', pb: 3 }}>
                         <MudarTitulo objeto={{ id: equipe?.id, titulo: equipe?.nome }} onClick={editar} />
-                        <Button className="adicionar" variant="contained" onClick={() => setOpenModal(true)}>Adicionar funcionario</Button>
+                        <Button className="adicionar" variant="contained" onClick={() => {setOpenModal(true); setNovoFuncionario({})}}>Adicionar funcionario</Button>
                     </Box>
                     <DataTable headCells={headCells} rows={rows}/>
                 </Box>
-                <Modal open={openModal} setOpen={setOpenModal} title="Adicionar funcionário" confirm={adicionar}
+                <Modal open={openModal} setOpen={setOpenModal} title={novoFuncionario?.id ? "Editar funcionário" : "Adicionar funcionário"} confirm={adicionar}
                     disabled={
-                        funcionarios.some((funcionario) => funcionario.nome === novoFuncionario?.nome ||
-                        !novoFuncionario?.nome) ||
-                        funcionarios.some((funcionario) => funcionario.senha === novoFuncionario?.senha ||
-                        !novoFuncionario?.senha) ||
-                        funcionarios.some((funcionario) => funcionario.codigo === novoFuncionario?.codigo ||
-                        !novoFuncionario?.codigo)
+                        funcionarios.some((funcionario) => funcionario.nome === novoFuncionario?.nome && funcionario.id !== novoFuncionario?.id) ||
+                        !novoFuncionario?.nome ||
+                        funcionarios.some((funcionario) => funcionario.senha === novoFuncionario?.senha && funcionario.id !== novoFuncionario?.id) ||
+                        !novoFuncionario?.senha ||
+                        funcionarios.some((funcionario) => funcionario.codigo === novoFuncionario?.codigo && funcionario.id !== novoFuncionario?.id) ||
+                        !novoFuncionario?.codigo
                         }>
-                    <AdicionarFuncionario setNovoFuncionario={setNovoFuncionario} funcionarios={funcionarios} equipeId={id}/>
+                    <AdicionarFuncionario novoFuncionario={novoFuncionario} setNovoFuncionario={setNovoFuncionario} funcionarios={funcionarios}/>
                 </Modal>
             </Box>
         </Layout>

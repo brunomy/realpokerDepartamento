@@ -438,14 +438,17 @@ function RequisitoItem({ requisito, atualizarOrdem, handleImageClick }) {
             alert('Erro ao concluir requisito. Verifique sua conexão e tente novamente.');
         }
     };
-    
+
     return (
         <div className="requisito_item">
             <h3>
                 <span className="icon">
                     <ChecklistIcon />
                 </span>
+                <span>
                 {requisito.nome}
+                { requisito.status == 1 && <span className="finalizado">Finalizado: {formatarDataHora(requisito.updated_at)}</span>}
+                </span>
             </h3>
             <div className="step_content">
                 {requisito.dependencias?.map((dependencia) => (
@@ -455,7 +458,7 @@ function RequisitoItem({ requisito, atualizarOrdem, handleImageClick }) {
                         </h4>
 
                         { dependencia.status ? 
-                            <Button variant="contained" color="success" size="small">{ formatarDataHora(dependencia?.updated_at) }</Button> : 
+                            <span>{ formatarDataHora(dependencia?.updated_at) }</span> : 
                             <Button variant="contained"size="small" onClick={() => concluirDependencia(dependencia.id)}>Concluir</Button>
                         }
                     </div>
@@ -465,10 +468,6 @@ function RequisitoItem({ requisito, atualizarOrdem, handleImageClick }) {
                     requisito.status == 0) &&
                     <Button variant="contained" onClick={concluirRequisito}>Concluir Requisito</Button>
                 }
-
-                { requisito.status == 1 && <>
-                    <Button variant="contained" color="success">{formatarDataHora(requisito.updated_at)}</Button> 
-                </>}
 
                 { requisito.anexo && <Box className="anexo_requisito">
                     <img 
@@ -987,7 +986,7 @@ function Volumes() {
             sx={{width: '100%'}}
         />;
 
-        const embalagem = <Chip size="small" color={item?.id_embalagem ? "success" : ""} label={item?.id_embalagem ? item?.id_embalagem : "Não embalado"} sx={{width: '100%'}}/>;
+        const embalagem = <Chip size="small" color={item?.id_embalagem ? "success" : ""} label={item?.id_embalagem ? "Embalado" : "Não embalado"} sx={{width: '100%'}}/>;
 
         return { volume, comprimento, largura, altura, peso, atividade, checklist, embalagem };
     }

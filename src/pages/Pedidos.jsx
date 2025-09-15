@@ -136,6 +136,7 @@ export default function Pedidos() {
 
         const cidade_uf = <Box className="linha_dupla">
             <div>{remessa[0].cidade}/{remessa[0].uf}</div>
+            <Button onClick={() => { setSelectedRemessa({ id: remessa[0]?.id_remessa, titulo: titulo }); setOpenRemessa(true); setTab(1); }}  className="link">aaa</Button>
         </Box>
 
         return { remessa_name, pedidos, criacao, saida, entrega, comprador, cidade_uf };
