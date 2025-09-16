@@ -2,7 +2,7 @@ import '~/assets/scss/Index.scss';
 
 import { useUser } from '~/context/UserContext';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { Box, Autocomplete, Typography, TextField, Button, Chip, Tabs, Tab } from '@mui/material';
 import dayjs from 'dayjs';
@@ -49,6 +49,21 @@ export default function Atividades() {
     const [rows, setRows] = useState([]);
 
     const [tab, setTab] = useState(0);
+
+    const [remessasList, setRemessasList] = useState([]);
+    const [remessaFilter, setRemessaFilter] = useState([]);
+    const [pedidosList, setPedidosList] = useState([]);
+    const [pedidoFilter, setPedidoFilter] = useState([]);
+
+    const [statusFilter, setStatusFilter] = useState([]);
+    const statusList = useMemo(() => [
+        { label: 'Pendente', value: 0},
+        { label: 'Em produção', value: 1},
+        { label: 'Em andamento', value: 2},
+        { label: 'Parado', value: 3},
+        { label: 'Finalizado', value: 4},
+    ], []);
+
     const handleTabChange = (event, newTab) => {
         setTab(newTab);
     };
@@ -208,7 +223,7 @@ export default function Atividades() {
                     <Tab label="Lista" />
                 </Tabs>
             </Box>
-            <Box className="index_content atividades_list">
+            <Box className="index_content">
                 { (tab == 0 || tab == 2 || tab == 3) &&
                     <>
                     <Box className="table_content">
@@ -364,9 +379,6 @@ function Semana({ atividades, atualizar }) {
                 
                 const diaIndex = index + 1;
                 const isHoje = diaAtual === diaIndex;
-
-                console.log(atividadesDia);
-                
 
                 return (
                 <div className={`dia ${isHoje ? 'hoje_' : ''}`}  key={index}>

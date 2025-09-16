@@ -1,5 +1,5 @@
 import '~/assets/scss/Index.scss';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Navigate } from 'react-router-dom';
 
 import { Link } from 'react-router-dom';
@@ -33,36 +33,53 @@ export default function Ordens() {
         return <Navigate to="/" replace />;
     }
 
+    const [rows, setRows] = useState([]);
+    const [tab, setTab] = useState(0);
+
     const [ordens, setOrdens] = useState([]);
     const [selectedRemessa, setSelectedRemessa] = useState(null);
     const [openRemessa, setOpenRemessa] = useState(false);
 
-    const [statusFilter, setStatusFilter] = useState([]);
-    const [teamFilter, setTeamFilter] = useState([]);
-    const [idFilter, setIdFilter] = useState([]);
-    const [dateFilterDe, setDateFilterDe] = useState(hoje.format('YYYY-MM-DD'));
-    const [dateFilterAte, setDateFilterAte] = useState(hoje.format('YYYY-MM-DD'));
+    const [remessasList, setRemessasList] = useState([]);
+    const [remessaFilter, setRemessaFilter] = useState([]);
+    const [pedidosList, setPedidosList] = useState([]);
+    const [pedidoFilter, setPedidoFilter] = useState([]);
 
-    const statusList = [
-        { label: 'Pendente', value: 1},
+    const [statusFilter, setStatusFilter] = useState([]);
+    const statusList = useMemo(() => [
+        { label: 'Pendente', value: 0},
+        { label: 'Em produção', value: 1},
         { label: 'Em andamento', value: 2},
         { label: 'Parado', value: 3},
-        { label: 'Concluído', value: 4},
-    ]
-    const teamList = [
-        { label: 'M1', value: 1},
-        { label: 'M2', value: 2},
-        { label: 'M3', value: 3}
-    ]
-    const idList = [
-        { label: '#5951', value: 5951},
-        { label: '#5952', value: 5952},
-        { label: '#5953', value: 5953},
-        { label: '#5954', value: 5954},
-    ]
+        { label: 'Finalizado', value: 4},
+    ], []);
 
-    const [rows, setRows] = useState([]);
-    const [tab, setTab] = useState(0);
+    useEffect(() => {
+        setRows(
+            ordens
+                .filter(i => remessaFilter?.label ? i.titulo_remessa === remessaFilter.label : true)
+                .filter(i => pedidoFilter?.value ? i.id_pedido === pedidoFilter.value : true)
+                .filter(i => statusFilter?.value != null ? i.id_status === statusFilter.value : true)
+                .map(item => {
+                    return createData({
+                        id: item.id,
+                        remessa: { id: item.id_remessa, titulo: item.titulo_remessa },
+                        pedido: item.id_pedido,
+                        categoria: item.nome_categoria,
+                        nome: item.nome_produto,
+                        quantidade: item.agrupavel ? item.quantidade : 1,
+                        producao: item.data_producao,
+                        conclusao: item.maior_data_atividade,
+                        requisitos: item.requisitos,
+                        status: item.id_status,
+                        atividades: item.atividades,
+                        atividades_finalizadas: item.atividades_finalizadas
+                    });
+                })
+        );
+    }, [remessaFilter, pedidoFilter, statusFilter]);
+
+
 
     const carregar = async () => {
         setRows([]);
@@ -70,6 +87,22 @@ export default function Ordens() {
             const res = await ordem_api.getOrdens(selectedDepartamento.id);
 
             setOrdens(res.data || []);
+
+            const remessasUnicas = [...new Set(res.data.map(item => item.titulo_remessa))];
+            setRemessasList(
+                remessasUnicas.map((titulo_remessa, index) => ({ 
+                    label: titulo_remessa, 
+                    value: titulo_remessa
+                }))
+            );
+
+            const pedidosUnicos = [...new Set(res.data.map(item => item?.id_pedido))];
+            setPedidosList(
+                pedidosUnicos.map((id_pedido, index) => ({ 
+                    label: String(id_pedido), 
+                    value: id_pedido
+                }))
+            );
 
             setRows(
                 res.data.map(item => {
@@ -186,24 +219,25 @@ export default function Ordens() {
     return (
         <Layout>
             <Title title="Lista de ordens" icon={<FactoryIcon/>} />
-            <Box className="index_content atividades_list">
-                {/* <Box className="filtros">
-                    <h2>Filtros:</h2>
+            <Box className="index_content">
+                <Box className="filtros">
+                    <Box className="filtros_header">
+                        <h2>Filtros:</h2>
+                        <Button size="small" onClick={() => { setRemessaFilter(null), setPedidoFilter(null), setStatusFilter(null) }}>Limpar</Button>
+                    </Box>
+                        
                     <Box className="filter_list">
                         <Box className="item">
-                            <InputAuto label="id" list={idList} setValue={setIdFilter} width={'100%'} />
+                            <InputAuto size="large" label="Remessa" list={remessasList} value={remessaFilter} setValue={setRemessaFilter} width={'100%'} />
                         </Box>
                         <Box className="item">
-                            <InputAuto label="Equipe" list={teamList} setValue={setTeamFilter} width={'100%'} />
+                            <InputAuto size="large" label="Pedido" list={pedidosList} value={pedidoFilter} setValue={setPedidoFilter} width={'100%'} />
                         </Box>
                         <Box className="item">
-                            <InputAuto label="Status" list={statusList} setValue={setStatusFilter} width={'100%'} />
-                        </Box>
-                        <Box className="item calendario">
-                            <InputCalendarRange setFunctionDe={setDateFilterDe} setFunctionAte={setDateFilterAte} />
+                            <InputAuto size="large" label="Status" list={statusList} value={statusFilter} setValue={setStatusFilter} width={'100%'} />
                         </Box>
                     </Box>
-                </Box> */}
+                </Box>
                 <Box className="table_content">
                     <DataTable headCells={headCells} rows={rows}/>
                 </Box>

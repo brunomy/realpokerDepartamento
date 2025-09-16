@@ -208,13 +208,17 @@ export default function Pedidos() {
       
             <Box className="index_content">
                 <Box className="filtros">
-                    <h2>Filtros:</h2>
+                    <Box className="filtros_header">
+                        <h2>Filtros:</h2>
+                        <Button size="small" onClick={() => { setRemessaFilter(null); setDateFilterDe(null); setDateFilterAte(null); }}>Limpar</Button>
+                    </Box>
+                        
                     <Box className="filter_list">
                         <Box className="item">
                             <InputAuto size="large" label="Remessa" list={remessasList} value={remessaFilter} setValue={setRemessaFilter} width={'100%'} />
                         </Box>
                         <Box className="item calendario">
-                            <InputCalendarRange label="Saída" setFunctionDe={setDateFilterDe} setFunctionAte={setDateFilterAte} />
+                            <InputCalendarRange label="Saída" de={dateFilterDe} ate={dateFilterAte} setFunctionDe={setDateFilterDe} setFunctionAte={setDateFilterAte} />
                         </Box>
                     </Box>
                 </Box>

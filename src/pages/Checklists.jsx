@@ -31,7 +31,7 @@ export default function Checklists({ finalizados = false }) {
         setRows([]);
         try {
             if(!finalizados){
-                const res = await checklist_api.getOrdensChecklist(selectedDepartamento.id);
+                const res = await checklist_api.getOrdensChecklist(selectedDepartamento?.id);
 
                 setRows(
                     res.data.map(item => {
@@ -39,7 +39,7 @@ export default function Checklists({ finalizados = false }) {
                     })
                 );
             } else {
-                const res = await checklist_api.getOrdensChecklistFinalizados(selectedDepartamento.id);
+                const res = await checklist_api.getOrdensChecklistFinalizados(selectedDepartamento?.id);
 
                 setRows(
                     res.data.map(item => {
@@ -54,7 +54,9 @@ export default function Checklists({ finalizados = false }) {
     };
 
     useEffect(() => {
-        carregar();
+        if(selectedDepartamento){
+            carregar();
+        }
     }, [selectedDepartamento, finalizados]); 
 
     //dados da tabela
