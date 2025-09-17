@@ -17,6 +17,7 @@ import Modal from '~/components/layout/Modal';
 import AdicionarString from '~/components/modal/AdicionarString';
 import { config_api } from './../api';
 import SaveIcon from '@mui/icons-material/Save';
+import { useAutoUpdate } from "../hooks/useAutoUpdate";
 
 export default function ConficuracaoEtapas() {
     const { selectedDepartamento, usuarioLogado } = useUser();
@@ -97,6 +98,7 @@ export default function ConficuracaoEtapas() {
             setError(err.message);
         }
     };
+    useAutoUpdate(carregar);
 
     const adicionar = async () => {
         try {
@@ -189,7 +191,9 @@ export function MudarTitulo({ objeto, onClick, disabled }) {
     const [novo, setNovo] = useState(objeto?.titulo);
 
     useEffect(() => {
-        setNovo(objeto?.titulo ?? '');
+        if(!novo){
+            setNovo(objeto?.titulo ?? '');
+        }
     }, [objeto]);
     
     const handleClick = () => {

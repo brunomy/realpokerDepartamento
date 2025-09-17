@@ -13,6 +13,7 @@ import Title from "~/components/layout/Title";
 import { useUser } from "~/context/UserContext";
 
 import { config_api } from './../api';
+import { useAutoUpdate } from '../hooks/useAutoUpdate';
 
 export default function Configuracoes() {
     const { selectedDepartamento, usuarioLogado } = useUser();
@@ -25,37 +26,38 @@ export default function Configuracoes() {
 
     const [rows, setRows] = useState([]);
 
-    useEffect(() => {
-        const fetchCategorias = async () => {
-            try {
-                const res = await config_api.getCategorias(selectedDepartamento.id);
+    const carregar = async () => {
+        try {
+            const res = await config_api.getCategorias(selectedDepartamento.id);
+    
+            setRows(
+                res.data?.map((categoria) => {
+                    return createData(
+                        categoria.nome,
+                        categoria.etapas_count,
+                        categoria.atividades_count,
+                        categoria.checklists_count,
+                        <>
+                        {categoria.volumes_count}
+                            <Button className="link" component={Link} to={`/configuracoes/${categoria.id}`} variant="outlined" size="small">
+                                <EditSquareIcon />
+                            </Button>
+                        </>
+                    );
+                }) || []
+            );
+        } catch (err) {
+            setRows([]);
+            setError(err.message);
+        }
+    }
+    useAutoUpdate(carregar);
 
-                setRows(
-                    res.data?.map((categoria) => {
-                        return createData(
-                            categoria.nome,
-                            categoria.etapas_count,
-                            categoria.atividades_count,
-                            categoria.checklists_count,
-                            <>
-                            {categoria.volumes_count}
-                                <Button className="link" component={Link} to={`/configuracoes/${categoria.id}`} variant="outlined" size="small">
-                                    <EditSquareIcon />
-                                </Button>
-                            </>
-                        );
-                    }) || []
-                );
-            } catch (err) {
-                setRows([]);
-                setError(err.message);
-            }
-        };
+    useEffect(() => {
         if (selectedDepartamento?.id) {
-            fetchCategorias();
+            carregar();
         }
     }, [selectedDepartamento]);
-
 
 
     //dados da tabela

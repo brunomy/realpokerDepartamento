@@ -29,6 +29,7 @@ import { useUser } from '~/context/UserContext';
 
 import { user_api } from './../api';
 import { MudarTitulo } from './ConficuracaoEtapas';
+import { useAutoUpdate } from '../hooks/useAutoUpdate';
 
 export default function Equipe() {
     const { id } = useParams();
@@ -149,6 +150,7 @@ export default function Equipe() {
             setError(err.message);
         }
     };
+    useAutoUpdate(carregar);
 
     const adicionar = async () => {
         try {

@@ -24,6 +24,7 @@ import AdicionarString from '~/components/modal/AdicionarString';
 
 import { config_api } from './../api';
 import { MudarTitulo } from "./ConficuracaoEtapas";
+import { useAutoUpdate } from "../hooks/useAutoUpdate";
 
 export default function ConfiguracaoCheckVol() {
     const { selectedDepartamento, usuarioLogado } = useUser();
@@ -88,6 +89,7 @@ export default function ConfiguracaoCheckVol() {
             setError(err.message);
         }
     };
+    useAutoUpdate(carregar);
 
     const editar = async (id, titulo) => {
         try {

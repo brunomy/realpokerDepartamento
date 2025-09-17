@@ -22,6 +22,7 @@ import { useUser } from '~/context/UserContext';
 
 import { remessa_api } from './../api';
 import { formatarData } from '../Utils';
+import { useAutoUpdate } from '../hooks/useAutoUpdate';
 
 export default function Remessas() {
     const { usuarioLogado } = useUser();
@@ -51,6 +52,7 @@ export default function Remessas() {
             console.log(err);
         }
     };
+    useAutoUpdate(carregar);
 
     useEffect(() => {
         if (!openRemessa) {

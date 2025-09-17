@@ -20,6 +20,7 @@ import Modal from "~/components/layout/Modal";
 import VistoriaChecklist from "~/components/modal/VistoriaChecklist";
 import InfoProdutoModal from "~/components/modal/InfoProdutoModal";
 import { checklist_api } from './../api';
+import { useAutoUpdate } from "../hooks/useAutoUpdate";
 
 export default function ChecklistOrder() {
     const { id } = useParams();
@@ -68,6 +69,7 @@ export function Checklist() {
             console.log(err);
         }
     };
+    useAutoUpdate(carregar);
 
     const agruparPorEtapa = (dados) => {
         return dados.reduce((acc, item) => {

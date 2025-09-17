@@ -34,6 +34,7 @@ import CheckCircleTwoToneIcon from '@mui/icons-material/CheckCircleTwoTone';
 import MoveToInboxTwoToneIcon from '@mui/icons-material/MoveToInboxTwoTone';
 import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
 import ArchiveIcon from '@mui/icons-material/Archive';
+import { useAutoUpdate } from '../hooks/useAutoUpdate';
 
 export default function Atividades() {
     const { selectedDepartamento, selectedEquipe, usuarioLogado } = useUser();
@@ -105,6 +106,7 @@ export default function Atividades() {
             console.log(err);
         }
     };
+    useAutoUpdate(carregar);
 
     useEffect(() => {
         carregar();

@@ -25,6 +25,7 @@ import AdicionarString from '~/components/modal/AdicionarString';
 
 import { config_api } from './../api';
 import { MudarTitulo } from "./ConficuracaoEtapas";
+import { useAutoUpdate } from "../hooks/useAutoUpdate";
 
 export default function ConfiguracaoAtividades() {
     const { selectedDepartamento, usuarioLogado } = useUser();
@@ -105,6 +106,7 @@ export default function ConfiguracaoAtividades() {
             setError(err.message);
         }
     };
+    useAutoUpdate(carregar);
 
     const adicionar = async () => {
         try {

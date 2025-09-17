@@ -62,6 +62,7 @@ export const ordem_api = {
   concluirDependencia: (id) => http(`/api/concluirDependencia/${id}`, { method: "PUT" }),
   concluirRequisito: (id) => http(`/api/concluirRequisito/${id}`, { method: "PUT" }),
   getHistorico: (id_departamento, id) => http(`/api/getHistorico/${id_departamento}/${id}`, { method: "GET" }),
+  getHistoricoAtividade: (id) => http(`/api/getHistoricoAtividade/${id}`, { method: "GET" }),
   uploadAnexoRequisito: (id, formData) => http(`/api/uploadAnexoRequisito/${id}`, { 
     method: "POST", 
     body: formData

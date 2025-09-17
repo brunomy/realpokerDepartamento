@@ -23,6 +23,7 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 
 import { useUser } from '~/context/UserContext';
+import { useAutoUpdate } from '../hooks/useAutoUpdate';
 
 
 export default function Usuarios() {
@@ -33,6 +34,7 @@ export default function Usuarios() {
     }
 
     const [error, setError] = useState("");
+    const [usuarios, setUsuarios] = useState([]);
 
     const [rows, setRows] = useState([]);
 
@@ -48,26 +50,33 @@ export default function Usuarios() {
 
 
     const carregar = async () => {
-        setRows([]);
         try {
             const res = await user_api.getUsersDepartamento(selectedDepartamento.id);
 
-            setRows(
-                res.data?.filter(f => f.permissao == 'atividades').map((user) => {
-                    return createData(
-                        user.id,
-                        user.nome,
-                        user.permissao,
-                        user.equipes_count,
-                        user.funcionarios_count
-                    );
-                }) || []
-            );
+            const stringified = JSON.stringify(usuarios);
+            const resDataStringified = JSON.stringify(res.data || []);
+
+            if (resDataStringified !== stringified) {
+                setRows(
+                    res.data?.filter(f => f.permissao == 'atividades').map((user) => {
+                        return createData(
+                            user.id,
+                            user.nome,
+                            user.permissao,
+                            user.equipes_count,
+                            user.funcionarios_count
+                        );
+                    }) || []
+                );
+                setUsuarios(res.data || []);
+            }
+
         } catch (err) {
             setRows([]);
             setError(err.message);
         }
     };
+    useAutoUpdate(carregar);
 
     useEffect(() => {
         carregar();

@@ -769,7 +769,7 @@
             padding: 0 0 15px;
 
             &.hoje_{
-                background: rgba($color1, .18);
+                background: rgba($color1, .5);
             }
             
 
@@ -811,7 +811,6 @@
 
                 &.andamento{
                     border-color: $color1;
-                    opacity: .8;
 
                     p{
                         &.pedido{
@@ -830,7 +829,6 @@
                 }
                 &.parado{
                     border-color: $warning;
-                    opacity: .8;
 
                     p{
                         &.pedido{
@@ -849,7 +847,6 @@
                 }
                 &.finalizado{
                     border-color: $sucess;
-                    opacity: .8;
 
                     p{
                         &.pedido{
@@ -868,7 +865,6 @@
                 }
                 &.falha{
                     border-color: $error;
-                    opacity: .8;
 
                     p{
                         &.pedido{

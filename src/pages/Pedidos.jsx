@@ -23,6 +23,7 @@ import ReportProblemTwoToneIcon from '@mui/icons-material/ReportProblemTwoTone';
 
 import { ordem_api } from './../api';
 import { formatarData } from '../Utils';
+import { useAutoUpdate } from '../hooks/useAutoUpdate';
 
 
 export default function Pedidos() {
@@ -49,34 +50,38 @@ export default function Pedidos() {
     const [remessasList, setRemessasList] = useState([]);
     const [remessaFilter, setRemessaFilter] = useState([]);
 
+    const filter = (dados) => {
+        return dados
+        .filter(([titulo_remessa, itens]) => 
+            remessaFilter?.label ? titulo_remessa === remessaFilter.label : true
+        )
+        .filter(([titulo_remessa, itens]) => {
+            // Se não há nenhum filtro de data, mostra todos
+            if (!dateFilterDe && !dateFilterAte) return true;
+            
+            return itens.some(item => {
+                const dataSaida = item.nova_saida || item.saida;
+                const dataItem = dayjs(dataSaida);
+                
+                // Verifica data DE (se preenchida)
+                const validaDataDe = !dateFilterDe || 
+                    dataItem.isAfter(dayjs(dateFilterDe)) || 
+                    dataItem.isSame(dayjs(dateFilterDe));
+                
+                // Verifica data ATÉ (se preenchida)
+                const validaDataAte = !dateFilterAte || 
+                    dataItem.isBefore(dayjs(dateFilterAte)) || 
+                    dataItem.isSame(dayjs(dateFilterAte));
+                
+                // Item é válido se passa em ambas as validações
+                return validaDataDe && validaDataAte;
+            });
+        });       
+    }
+
     useEffect(() => {
         setRows(
-            Object.entries(ordensAgrupado)
-            .filter(([titulo_remessa, itens]) => 
-                remessaFilter?.label ? titulo_remessa === remessaFilter.label : true
-            )
-            .filter(([titulo_remessa, itens]) => {
-                // Se não há nenhum filtro de data, mostra todos
-                if (!dateFilterDe && !dateFilterAte) return true;
-                
-                return itens.some(item => {
-                    const dataSaida = item.nova_saida || item.saida;
-                    const dataItem = dayjs(dataSaida);
-                    
-                    // Verifica data DE (se preenchida)
-                    const validaDataDe = !dateFilterDe || 
-                        dataItem.isAfter(dayjs(dateFilterDe)) || 
-                        dataItem.isSame(dayjs(dateFilterDe));
-                    
-                    // Verifica data ATÉ (se preenchida)
-                    const validaDataAte = !dateFilterAte || 
-                        dataItem.isBefore(dayjs(dateFilterAte)) || 
-                        dataItem.isSame(dayjs(dateFilterAte));
-                    
-                    // Item é válido se passa em ambas as validações
-                    return validaDataDe && validaDataAte;
-                });
-            })
+            filter(Object.entries(ordensAgrupado))
             .map(([titulo_remessa, itens]) => {
                 return createData({
                     remessa: itens,
@@ -87,47 +92,53 @@ export default function Pedidos() {
     }, [remessaFilter, dateFilterDe, dateFilterAte, ordensAgrupado]);
 
     const carregar = async () => {
-        setRows([]);
-
         try {
             const res = await ordem_api.getOrdens(selectedDepartamento.id);
 
-            setOrdens(res.data || []);
+            const stringified = JSON.stringify(ordens);
+            const resDataStringified = JSON.stringify(res.data || []);
 
-            const agrupado = res.data
-                .sort((a, b) => a.titulo_remessa.localeCompare(b.titulo_remessa))
-                .reduce((acc, item) => {
-                    if (!acc[item.titulo_remessa]) {
-                    acc[item.titulo_remessa] = [];
-                    }
-                    acc[item.titulo_remessa].push(item);
-                    return acc;
-            }, {});
+            if (resDataStringified !== stringified) {
+                setOrdens(res.data || []);
 
-            setOrdensAgrupado(agrupado);
+                const agrupado = res.data
+                    .sort((a, b) => a.titulo_remessa.localeCompare(b.titulo_remessa))
+                    .reduce((acc, item) => {
+                        if (!acc[item.titulo_remessa]) {
+                        acc[item.titulo_remessa] = [];
+                        }
+                        acc[item.titulo_remessa].push(item);
+                        return acc;
+                }, {});
 
-            setRemessasList(
-                Object.keys(agrupado).map((key, index) => ({ label: key, value: index }))
-            );
+                setOrdensAgrupado(agrupado);
+    
+                setRemessasList(
+                    Object.keys(agrupado).map((key, index) => ({ label: key, value: index }))
+                );
 
-            setRows(
-                Object.entries(agrupado).map(([titulo_remessa, itens]) => {
-                    return createData({
-                        remessa: itens,
-                        titulo: titulo_remessa
-                    });
-                })
-            );
+                setRows(
+                    filter(Object.entries(agrupado)).map(([titulo_remessa, itens]) => {
+                        return createData({
+                            remessa: itens,
+                            titulo: titulo_remessa
+                        });
+                    })
+                );
+            }
+
         } catch (err) {
             console.log(err);
         }
     };
 
+    useAutoUpdate(carregar);
+
     useEffect(() => {
         if (!openRemessa && selectedDepartamento?.id) {
             carregar();
         }
-    }, [selectedDepartamento]);
+    }, [selectedDepartamento, openRemessa]);
 
     //dados da tabela
     const createData = ({ remessa, titulo }) => {

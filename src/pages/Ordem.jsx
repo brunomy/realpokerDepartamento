@@ -47,6 +47,7 @@ import { converterDataParaBanco, formatarData, formatarDataHora } from '../Utils
 import { StatusChecklist } from '../components/layout/Status';
 import { TempoAtividade } from './Atividades';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { useAutoUpdate } from '../hooks/useAutoUpdate';
 
 export default function Ordem({resetOrdem = false}) {
     const { id } = useParams();
@@ -83,7 +84,7 @@ export default function Ordem({resetOrdem = false}) {
     }, [selectedDepartamento, ordem, navigate]);
 
     const carregar = async () => {
-        if (!id) return;
+        if (!id || tab > 1) return;
         
         try {
             const res = await ordem_api.getOrdem(selectedDepartamento.id, id);
@@ -117,6 +118,8 @@ export default function Ordem({resetOrdem = false}) {
             setError(err.message);
         }
     };
+
+    useAutoUpdate(carregar);
 
     const [tab, setTab] = useState(0);
 
@@ -236,6 +239,7 @@ export function InfoProduto({ ordem_id }) {
             setError(err.message);
         }
     };
+    useAutoUpdate(carregar);
 
     useEffect(() => {
         carregar();
@@ -572,6 +576,7 @@ function Etapas({ ordem, atualizarOrdem, setTab }) {
             console.log(err.message);
         }
     };
+    useAutoUpdate(carregar);
 
     const enviarProducao = async () => {
         if (!window.confirm("Tem certeza que deseja enviar esta ordem para produção?")) return;
@@ -781,6 +786,8 @@ function Atividades() {
     const [error, setError] = useState(null);
     const [atividades, setAtividades] = useState([]);
     const [rows, setRows] = useState([]);
+    const [historicoAtividade, setHistoricoAtividade] = useState([]);
+    const [open, setOpen] = useState(false);
 
     const carregar = async () => {
         if (!id) return;
@@ -798,6 +805,17 @@ function Atividades() {
             setError(err.message);
         }
     };
+    useAutoUpdate(carregar);
+
+    const carregarHistorico = async (atividadeId) => {
+        try {
+            const res = await ordem_api.getHistoricoAtividade(atividadeId);
+            
+            setHistoricoAtividade(res.data);
+        } catch (err) {
+            console.log(err.message);
+        }
+    }
 
     useEffect(() => {
         setRows(
@@ -819,7 +837,7 @@ function Atividades() {
 
         const status = <>
             <Status status={item.id_status} size='small' />
-            <Button className="link" variant="outlined" size="small">Detalhes</Button>
+            <Button className="link" disabled={item.id_status === 1} variant="outlined" size="small" onClick={() => {carregarHistorico(item.id); setOpen(true);}}>Detalhes</Button>
         </>;
         
         return { equipe, etapa, atividade_name, producao, fim, tempo, status };
@@ -838,6 +856,15 @@ function Atividades() {
     return (
         <Box className="atividades">
             <DataTable headCells={headCells} rows={rows}/>
+            <Modal 
+                open={open} setOpen={setOpen} 
+                title={`Histórico da Atividade`} 
+                confirmText='Fechar'
+                confirm={() => {setOpen(false);}}
+                sx={{'& .MuiPaper-root': { width: '100%', maxWidth: '1000px'}}}>
+
+                <HistoricoTable historico={historicoAtividade} />
+            </Modal>
         </Box>
     );
 }
@@ -871,6 +898,7 @@ function Checklist() {
             setError(err.message);
         }
     };
+    useAutoUpdate(carregar);
 
     useEffect(() => {
         setRows(
@@ -961,6 +989,7 @@ function Volumes() {
             setError(err.message);
         }
     };
+    useAutoUpdate(carregar);
 
     useEffect(() => {
         setRows(
@@ -1015,7 +1044,6 @@ function Historico() {
     const { id } = useParams();
     const [error, setError] = useState(null);
     const [historico, setHistorico] = useState([]);
-    const [rows, setRows] = useState([]);
 
     const carregar = async () => {
         if (!id) return;
@@ -1028,17 +1056,28 @@ function Historico() {
             setError(err.message);
         }
     };
+    useAutoUpdate(carregar);
+
+    useEffect(() => {
+        carregar();
+    }, [id]);
+
+
+    return (
+        <Box className="historico">
+            <HistoricoTable historico={historico} />
+        </Box>
+    )
+}
+
+export function HistoricoTable({ historico }){
+    const [rows, setRows] = useState([]);
 
     useEffect(() => {
         setRows(
             historico.map((item) => createData(item))
         );
     }, [historico]);
-
-    useEffect(() => {
-        carregar();
-    }, [id]);
-
     const createData = (item) => {
         const data = formatarDataHora(item?.created_at);
         const descricao = item?.descricao;
@@ -1055,8 +1094,6 @@ function Historico() {
         { id: 'responsavel', label: 'Responsável', },
     ];
     return (
-        <Box className="historico">
-            <DataTable headCells={headCells} rows={rows} />
-        </Box>
+        <DataTable headCells={headCells} rows={rows} />
     )
 }

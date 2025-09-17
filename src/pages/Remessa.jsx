@@ -38,6 +38,7 @@ import MudarRemessaModal from '../components/modal/MudarRemessaModal';
 import { remessa_api } from './../api';
 import RemessaEditModal, { validateRemessa } from '../components/modal/RemessaEditModal';
 import { formatarData } from '../Utils';
+import { useAutoUpdate } from '../hooks/useAutoUpdate';
 
 export default function Remessa() {
     const { id } = useParams();
@@ -88,6 +89,7 @@ export default function Remessa() {
             console.log(err);
         }
     };
+    useAutoUpdate(carregar);
 
     useEffect(() => {
         carregar();

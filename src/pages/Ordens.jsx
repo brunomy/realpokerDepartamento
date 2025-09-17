@@ -24,6 +24,7 @@ import { useUser } from '~/context/UserContext';
 import { ordem_api } from './../api';
 import { formatarData } from '../Utils';
 import RemessaEditModal from '../components/modal/RemessaEditModal';
+import { useAutoUpdate } from '../hooks/useAutoUpdate';
 
 export default function Ordens() {
     const { selectedDepartamento, usuarioLogado } = useUser();
@@ -54,39 +55,64 @@ export default function Ordens() {
         { label: 'Finalizado', value: 4},
     ], []);
 
+    const filter = (dados) => {
+        return dados
+            .filter(i => remessaFilter?.label ? i.titulo_remessa === remessaFilter.label : true)
+            .filter(i => pedidoFilter?.value ? i.id_pedido === pedidoFilter.value : true)
+            .filter(i => statusFilter?.value != null ? i.id_status === statusFilter.value : true);
+    }
+
     useEffect(() => {
         setRows(
-            ordens
-                .filter(i => remessaFilter?.label ? i.titulo_remessa === remessaFilter.label : true)
-                .filter(i => pedidoFilter?.value ? i.id_pedido === pedidoFilter.value : true)
-                .filter(i => statusFilter?.value != null ? i.id_status === statusFilter.value : true)
-                .map(item => {
-                    return createData({
-                        id: item.id,
-                        remessa: { id: item.id_remessa, titulo: item.titulo_remessa },
-                        pedido: item.id_pedido,
-                        categoria: item.nome_categoria,
-                        nome: item.nome_produto,
-                        quantidade: item.agrupavel ? item.quantidade : 1,
-                        producao: item.data_producao,
-                        conclusao: item.maior_data_atividade,
-                        requisitos: item.requisitos,
-                        status: item.id_status,
-                        atividades: item.atividades,
-                        atividades_finalizadas: item.atividades_finalizadas
-                    });
-                })
+            filter(ordens).map(item => {
+                return createData({
+                    id: item.id,
+                    remessa: { id: item.id_remessa, titulo: item.titulo_remessa },
+                    pedido: item.id_pedido,
+                    categoria: item.nome_categoria,
+                    nome: item.nome_produto,
+                    quantidade: item.agrupavel ? item.quantidade : 1,
+                    producao: item.data_producao,
+                    conclusao: item.maior_data_atividade,
+                    requisitos: item.requisitos,
+                    status: item.id_status,
+                    atividades: item.atividades,
+                    atividades_finalizadas: item.atividades_finalizadas
+                });
+            })
         );
-    }, [remessaFilter, pedidoFilter, statusFilter]);
+    }, [remessaFilter, pedidoFilter, statusFilter, ordens]);
 
 
 
     const carregar = async () => {
-        setRows([]);
         try {
-            const res = await ordem_api.getOrdens(selectedDepartamento.id);
+            const res = await ordem_api.getOrdens(selectedDepartamento?.id);
 
-            setOrdens(res.data || []);
+            const stringified = JSON.stringify(ordens);
+            const resDataStringified = JSON.stringify(res.data || []);
+
+            if (resDataStringified !== stringified) {
+                setOrdens(res.data || []);
+                setRows(
+                    filter(res.data).map(item => {
+                        return createData({
+                            id: item.id,
+                            remessa: { id: item.id_remessa, titulo: item.titulo_remessa },
+                            pedido: item.id_pedido,
+                            categoria: item.nome_categoria,
+                            nome: item.nome_produto,
+                            quantidade: item.agrupavel ? item.quantidade : 1,
+                            producao: item.data_producao,
+                            conclusao: item.maior_data_atividade,
+                            requisitos: item.requisitos,
+                            status: item.id_status,
+                            atividades: item.atividades,
+                            atividades_finalizadas: item.atividades_finalizadas
+                        });
+                    })
+                );
+            }
 
             const remessasUnicas = [...new Set(res.data.map(item => item.titulo_remessa))];
             setRemessasList(
@@ -103,34 +129,16 @@ export default function Ordens() {
                     value: id_pedido
                 }))
             );
-
-            setRows(
-                res.data.map(item => {
-                    return createData({
-                        id: item.id,
-                        remessa: { id: item.id_remessa, titulo: item.titulo_remessa },
-                        pedido: item.id_pedido,
-                        categoria: item.nome_categoria,
-                        nome: item.nome_produto,
-                        quantidade: item.agrupavel ? item.quantidade : 1,
-                        producao: item.data_producao,
-                        conclusao: item.maior_data_atividade,
-                        requisitos: item.requisitos,
-                        status: item.id_status,
-                        atividades: item.atividades,
-                        atividades_finalizadas: item.atividades_finalizadas
-                    });
-                })
-            );
         } catch (err) {
             console.log(err);
         }
     };
+    useAutoUpdate(carregar);
+
 
     useEffect(() => {
         carregar();
     }, [selectedDepartamento]); 
-
 
     //dados da tabela
     const createData = ({ id, remessa, pedido, categoria, nome, quantidade, producao, conclusao, requisitos, status, atividades, atividades_finalizadas }) => {

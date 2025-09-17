@@ -17,6 +17,7 @@ import Modal from '~/components/layout/Modal';
 
 import { useUser } from '~/context/UserContext';
 import { checklist_api } from './../api';
+import { useAutoUpdate } from '../hooks/useAutoUpdate';
 
 
 export default function Checklists({ finalizados = false }) {
@@ -28,7 +29,6 @@ export default function Checklists({ finalizados = false }) {
     }
 
     const carregar = async () => {
-        setRows([]);
         try {
             if(!finalizados){
                 const res = await checklist_api.getOrdensChecklist(selectedDepartamento?.id);
@@ -52,6 +52,7 @@ export default function Checklists({ finalizados = false }) {
             console.log(err);
         }
     };
+    useAutoUpdate(carregar);
 
     useEffect(() => {
         if(selectedDepartamento){

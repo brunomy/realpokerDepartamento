@@ -25,6 +25,7 @@ import { useUser } from '~/context/UserContext';
 
 import { user_api } from './../api';
 import { MudarTitulo } from './ConficuracaoEtapas';
+import { useAutoUpdate } from '../hooks/useAutoUpdate';
 
 
 export default function Equipes() {
@@ -94,6 +95,7 @@ export default function Equipes() {
             setError(err.message);
         }
     };
+    useAutoUpdate(carregar);
 
     const adicionar = async () => {
         try {
